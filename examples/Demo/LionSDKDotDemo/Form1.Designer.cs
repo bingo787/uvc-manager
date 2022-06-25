@@ -557,6 +557,7 @@
             this.buttonConnectHVPort.TabIndex = 2;
             this.buttonConnectHVPort.Text = "应用";
             this.buttonConnectHVPort.UseVisualStyleBackColor = true;
+            this.buttonConnectHVPort.Click += new System.EventHandler(this.buttonConnectHVPort_Click);
             // 
             // comboBoxHVStopBit
             // 
@@ -671,6 +672,7 @@
             this.buttonConnectPLC.TabIndex = 2;
             this.buttonConnectPLC.Text = "应用";
             this.buttonConnectPLC.UseVisualStyleBackColor = true;
+            this.buttonConnectPLC.Click += new System.EventHandler(this.buttonConnectPLC_Click);
             // 
             // comboBoxPLCStopBit
             // 

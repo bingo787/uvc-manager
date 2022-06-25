@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LionSDK;
 
+using SerialPortController;
+
 namespace LionSDKDotDemo
 {
     public partial class Demo : Form
@@ -63,7 +65,7 @@ namespace LionSDKDotDemo
 
             // HV
             this.comboBoxHVPort.Items.AddRange(port.ToArray());
-            this.comboBoxHVPort.SelectedIndex = 0;
+            this.comboBoxHVPort.SelectedIndex = -1;
 
             this.comboBoxHVBaudRate.Items.AddRange(rate);
             this.comboBoxHVBaudRate.SelectedIndex = 0;
@@ -79,7 +81,7 @@ namespace LionSDKDotDemo
 
             /// PLC 
             this.comboBoxPLCPort.Items.AddRange(port.ToArray());
-            this.comboBoxPLCPort.SelectedIndex = 0;
+            this.comboBoxPLCPort.SelectedIndex = -1;
 
             this.comboBoxPLCBaudRate.Items.AddRange(rate);
             this.comboBoxPLCBaudRate.SelectedIndex = 0;
@@ -524,7 +526,7 @@ namespace LionSDKDotDemo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        TcpClient client_;
+        private TcpClient client_;
         private void buttonConnectServer_Click(object sender, EventArgs e)
         {
             client_ = new TcpClient();
@@ -536,6 +538,46 @@ namespace LionSDKDotDemo
             client_.SendAnalyseImageCommand();
             
         }
+        /// <summary>
+        /// 连接高压串口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public static HVSerialPortControler HVSerialPort;
+        private void buttonConnectHVPort_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                HVSerialPort = HVSerialPortControler.Instance;
+                HVSerialPort.OpenSerialPort();
+                HVSerialPort.Connect();
+            }
+            catch {
 
+                MessageBox.Show("高压串口连接失败");
+            }
+
+        }
+
+        /// <summary>
+        /// 连接PLC串口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public static PLCSerialPortController PLCSerialPort;
+        private void buttonConnectPLC_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                PLCSerialPort = PLCSerialPortController.Instance;
+                PLCSerialPort.OpenSerialPort();
+            }
+            catch {
+                MessageBox.Show("PLC串口连接失败");
+            }
+
+
+        }
     }
 }
