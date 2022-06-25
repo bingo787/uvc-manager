@@ -7,6 +7,8 @@ examples/Demo/LionSDKDemo/x64/
 examples/Demo/LionSDKDotDemo/bin/
 examples/Demo/LionSDKDotDemo/obj/
 examples/Demo/Release/
+SerialPortController/bin/
+SerialPortController/obj/
 # Visual Studio 2015/2017 cache/options directory
 .vs/
 
