@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,6 +52,47 @@ namespace LionSDKDotDemo
 
             this.textBoxCheckTime.Text = "5000";
             this.textBoxGetTime.Text = "10000";
+            // 初始化串口参数
+
+
+            List<string> port = SerialPort.GetPortNames().ToList();
+            string[] rate = {"4800","9600","19200","38400","43000","56000","57600","115200" };
+            string[] databit = { "8", "7", "6" };
+            string[] checkbit = { "None","Odd","Even"};
+            string[] stopbit = { "1", "2"};
+
+            // HV
+            this.comboBoxHVPort.Items.AddRange(port.ToArray());
+            this.comboBoxHVPort.SelectedIndex = 0;
+
+            this.comboBoxHVBaudRate.Items.AddRange(rate);
+            this.comboBoxHVBaudRate.SelectedIndex = 0;
+
+            this.comBoxHVDataBit.Items.AddRange(databit);
+            this.comBoxHVDataBit.SelectedIndex = 0;
+
+            this.comBoxHVCheckBit.Items.AddRange(checkbit);
+            this.comBoxHVCheckBit.SelectedIndex = 0;
+
+            this.comboBoxHVStopBit.Items.AddRange(stopbit);
+            this.comboBoxHVStopBit.SelectedIndex = 0;
+
+            /// PLC 
+            this.comboBoxPLCPort.Items.AddRange(port.ToArray());
+            this.comboBoxPLCPort.SelectedIndex = 0;
+
+            this.comboBoxPLCBaudRate.Items.AddRange(rate);
+            this.comboBoxPLCBaudRate.SelectedIndex = 0;
+
+            this.comboBoxPLCDataBit.Items.AddRange(checkbit);
+            this.comboBoxPLCDataBit.SelectedIndex = 0;
+
+            this.comboBoxPLCCheckBit.Items.AddRange(checkbit);
+            this.comboBoxPLCCheckBit.SelectedIndex = 0;
+
+            this.comboBoxPLCStopBit.Items.AddRange(stopbit);
+            this.comboBoxPLCStopBit.SelectedIndex = 0;
+
         }
 
         private void buttonEnumDev_Click(object sender, EventArgs e)
@@ -494,5 +536,6 @@ namespace LionSDKDotDemo
             client_.SendAnalyseImageCommand();
             
         }
+
     }
 }
