@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using LionSDK;
 
@@ -473,6 +474,25 @@ namespace LionSDKDotDemo
         private void buttonExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+
+        /// <summary>
+        /// 连接视觉检测服务
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        TcpClient client_;
+        private void buttonConnectServer_Click(object sender, EventArgs e)
+        {
+            client_ = new TcpClient();
+            client_.Connect();
+        }
+
+        private void buttonAnalyse_Click(object sender, EventArgs e)
+        {
+            client_.SendAnalyseImageCommand();
+            
         }
     }
 }
