@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using LionSDK;
 
 using SerialPortController;
+using Timer = System.Threading.Timer;
 
 namespace LionSDKDotDemo
 {
@@ -20,14 +21,23 @@ namespace LionSDKDotDemo
     {
 
         // 常量
-
-        const int HV_MaxKV = 80; // 80kv
+        const int systemTimeTick = 1000;
+        const double HV_MaxKV = 80.0f; // 80kv
         const int HV_MaxCurrent = 1000; //1000mA
         const string BEFORE_ANALIYSIS_IMAGE_PATH = "D:\\001.jpg";
         const string AFTER_ANALISY_IMAGE_PATH = "D:\\002.jpg";
 
+        // 控制器对象
+        private static TcpClient tcpClient = new TcpClient();
+
+        //定义Timer类
+        System.Timers.Timer timer;
+        //定义委托
+        public delegate void UpdateStatusBarInfo(string value);
+
         //当前的设备对象
         private List<LU_DEVICE> listDev = new List<LU_DEVICE>();
+
         public Demo()
         {
             InitializeComponent();
@@ -89,9 +99,20 @@ namespace LionSDKDotDemo
             this.comboBoxHVStopBit.Items.AddRange(stopbit);
             this.comboBoxHVStopBit.SelectedIndex = 0;
 
+            // 设置高压状态
             this.labelHVPortLED.Text = "●";
+            // 高压未连接的话，无法设置电压电流
             TriggerHVPortStatus(false);
 
+            // 设置高压的最大最小值
+            this.trackBarCurrent.Maximum = HV_MaxCurrent;
+            this.trackBarKV.Maximum = (int)HV_MaxKV*1000;
+
+            this.labelXrayStatus.Text = "●";
+            this.labelXrayStatus.ForeColor = Color.Red;
+            
+
+      
 
             /// PLC 
             this.comboBoxPLCPort.Items.AddRange(port.ToArray());
@@ -108,16 +129,40 @@ namespace LionSDKDotDemo
 
             this.comboBoxPLCStopBit.Items.AddRange(stopbit);
             this.comboBoxPLCStopBit.SelectedIndex = 0;
+            
+            // PLC 的串口状态设置
+            this.labelPLCPortStatus.Text = "●";
+            labelPLCPortStatus.ForeColor = Color.Red;
+            buttonConnectPLC.Text = "打开串口";
 
-            // 设置高压参数的最大值
+            // 系统状态监控
+            Timer timer = new Timer(new TimerCallback(timeUp), null, Timeout.Infinite, systemTimeTick);
 
-            this.trackBarCurrent.Maximum = HV_MaxCurrent;
-            this.trackBarKV.Maximum = HV_MaxKV;
+            timer.Change(0,1000);
 
-            // 高压未连接的话，无法设置电压电流
-            TriggerHVPortStatus(false);
 
         }
+        private void timeUp(object value) {
+            this.Invoke(new UpdateStatusBarInfo(UpdateSystemTime), "");
+            
+        }
+
+        private void UpdateSystemTime(string obj) {
+            labelSystemTime.Text = DateTime.Now.ToLongTimeString() + " " + DateTime.Now.ToLongDateString();
+
+
+            
+            //try
+            //{
+            //    buttonGetDevState_Click(null, null);
+            //}
+            //catch {
+
+            //}
+
+
+        }
+
 
         private void TriggerHVPortStatus(bool open) {
             if (open)
@@ -132,6 +177,8 @@ namespace LionSDKDotDemo
 
             this.trackBarCurrent.Enabled = open;
             this.trackBarKV.Enabled = open;
+            this.textBoxCurrent.Enabled = open;
+            this.textBoxKV.Enabled = open;
 
         }
 
@@ -398,6 +445,7 @@ namespace LionSDKDotDemo
                     {
                         //获取设备状态
                         LUDEV_STATE state = LUDEV_STATE.LUDEVSTATE_UNOPNE;
+
                         if (LionCom.LU_SUCCESS == LionSDK.LionSDK.GetDeviceState(ref luDev, ref state))
                         {
                             //更亲状态信息
@@ -519,19 +567,24 @@ namespace LionSDKDotDemo
                             {
                                 this.pictureBoxImage.Load(strFile);
 
-                                // 拷贝图像, 图像检测服务只支持jpg格式。
-                                strFile.Replace("bmp","jpg");
-                                File.Copy(strFile, BEFORE_ANALIYSIS_IMAGE_PATH, true);
+                                if (tcpClient.IsConnected()) {
+                                    // 拷贝图像, 图像检测服务只支持jpg格式。
+                                    strFile.Replace("bmp", "jpg");
+                                    File.Copy(strFile, BEFORE_ANALIYSIS_IMAGE_PATH, true);
 
-                                // 分析图像
-                                TcpClient.ANALYSIS_RESULT ret = tcpClient.AnalysisImage();
-                                if ((int)ret >= 0)
-                                {
-                                    this.pictureBoxImage.Load(AFTER_ANALISY_IMAGE_PATH);
+                                    // 分析图像
+                                    TcpClient.ANALYSIS_RESULT ret = tcpClient.AnalysisImage();
+                                    if ((int)ret >= 0)
+                                    {
+                                        this.pictureBoxImage.Load(AFTER_ANALISY_IMAGE_PATH);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
+                                    }
                                 }
-                                else {
-                                    MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
-                                }
+
+
                                
                             }
                             else {
@@ -575,6 +628,16 @@ namespace LionSDKDotDemo
 
         private void buttonExit_Click(object sender, EventArgs e)
         {
+            try
+            {
+                tcpClient.Disconnect();
+                HVSerialPortControler.Instance.XRayOff();
+                PLCSerialPortController.Instance.CloseSerialPort();
+            }
+            catch {
+
+            }
+
             Application.Exit();
         }
 
@@ -584,11 +647,21 @@ namespace LionSDKDotDemo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private TcpClient tcpClient;
+
         private void buttonConnectServer_Click(object sender, EventArgs e)
         {
-            tcpClient = new TcpClient();
-            tcpClient.Connect();
+            if (tcpClient.IsConnected())
+            {
+                tcpClient.Disconnect();
+                buttonConnectServer.Text = "连接检测服务";
+                buttonConnectServer.ForeColor = Color.Red;
+            }
+            else {
+                tcpClient.Connect();
+                buttonConnectServer.Text = "断开检测服务";
+                buttonConnectServer.ForeColor = Color.Green;
+            }
+           
         }
 
         private void buttonAnalyse_Click(object sender, EventArgs e)
@@ -610,21 +683,20 @@ namespace LionSDKDotDemo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static HVSerialPortControler HVSerialPort;
+
         private void buttonConnectHVPort_Click(object sender, EventArgs e)
         {
 
-            if (HVSerialPort.IsOpen())
+            if (HVSerialPortControler.Instance.IsOpen())
             {
-                HVSerialPort.CloseControlSystem();
+                HVSerialPortControler.Instance.CloseControlSystem();
                 TriggerHVPortStatus(false);
             }
             else {
                 try
                 {
-                    HVSerialPort = HVSerialPortControler.Instance;
-                    HVSerialPort.OpenSerialPort();
-                    HVSerialPort.Connect();
+                    HVSerialPortControler.Instance.OpenSerialPort();
+                    HVSerialPortControler.Instance.Connect();
                     TriggerHVPortStatus(true);
                 }
                 catch
@@ -644,33 +716,51 @@ namespace LionSDKDotDemo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static PLCSerialPortController PLCSerialPort;
         private void buttonConnectPLC_Click(object sender, EventArgs e)
         {
 
-            try
+            if (PLCSerialPortController.Instance.IsOpen())
             {
-                PLCSerialPort = PLCSerialPortController.Instance;
-                PLCSerialPort.OpenSerialPort();
+
+                PLCSerialPortController.Instance.CloseSerialPort();
+
+                labelPLCPortStatus.ForeColor = Color.Red;
+                buttonConnectPLC.Text = "打开串口";
+
             }
-            catch {
-                MessageBox.Show("PLC串口连接失败");
+            else {
+                try
+                {
+                    PLCSerialPortController.Instance.OpenSerialPort();
+                    labelPLCPortStatus.ForeColor = Color.Green;
+                    buttonConnectPLC.Text = "关闭串口";
+                }
+                catch
+                {
+                    labelPLCPortStatus.ForeColor = Color.Red;
+                    buttonConnectPLC.Text = "打开串口";
+                    MessageBox.Show("PLC串口打开失败");
+                }
+
             }
+
+
 
 
         }
 
         private void trackBarKV_Scroll(object sender, EventArgs e)
         {
-            textBoxKV.Text = trackBarKV.Value.ToString();
+            textBoxKV.Text = (trackBarKV.Value/1000.0f).ToString("F2");
         }
 
         private void textBoxKV_TextChanged(object sender, EventArgs e)
         {
-            int kv = 0;
-            if (int.TryParse(textBoxKV.Text.ToString(), out kv) && kv <= HV_MaxKV)
+            double kv = 0;
+            if (double.TryParse(textBoxKV.Text.ToString(), out kv) && kv <= HV_MaxKV)
             {
-                trackBarKV.Value = kv;
+                trackBarKV.Value = (int)kv*1000;
+                HVSerialPortControler.Instance.SetKV(kv);
             }
             else {
                 MessageBox.Show("输入的参数非法或者超过上线");
@@ -689,10 +779,37 @@ namespace LionSDKDotDemo
             if (int.TryParse(textBoxCurrent.Text.ToString(), out current) && current <= HV_MaxCurrent)
             {
                 trackBarCurrent.Value = current;
+                HVSerialPortControler.Instance.SetCurrent(current);
             }
             else
             {
                 MessageBox.Show("输入的参数非法或者超过上线");
+            }
+        }
+
+        private void buttonXrayOnOff_Click(object sender, EventArgs e)
+        {
+
+            if (!HVSerialPortControler.Instance.IsOpen()) {
+
+                MessageBox.Show("请先打开高压串口！");
+                return;
+            }
+
+            if (labelXrayStatus.ForeColor == Color.Red)
+            {
+                // 打开光源
+                HVSerialPortControler.Instance.XRayOn();
+                labelXrayStatus.ForeColor = Color.Green;
+                buttonXrayOnOff.Text = "关闭光源";
+
+            }
+            else {
+                // 关闭
+
+                HVSerialPortControler.Instance.XRayOff();
+                labelXrayStatus.ForeColor = Color.Red;
+                buttonXrayOnOff.Text = "打开光源";
             }
         }
     }

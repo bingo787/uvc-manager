@@ -17,8 +17,10 @@ namespace SerialPortController
         const byte SP = 0x20;
         Char StartTag = (Char)(STX);
         Char EndTag = (Char)(0x0D);
+
+        private bool _running = false;
+
         private static HVSerialPortControler _instance;
-        private bool _running = true;
         public static HVSerialPortControler Instance
         {
             get

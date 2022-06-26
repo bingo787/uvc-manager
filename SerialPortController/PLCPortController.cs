@@ -14,6 +14,12 @@ namespace SerialPortController
 
         bool _running;
         #endregion
+
+        public bool IsOpen() {
+            return _running;
+        }
+
+
         #region 属性
         private static PLCSerialPortController _instance;
         public static PLCSerialPortController Instance

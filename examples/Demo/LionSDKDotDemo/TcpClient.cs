@@ -23,6 +23,11 @@ namespace LionSDKDotDemo
         const byte CR = 0x0D;
         const byte LF = 0x0A;
         bool running_ = false;
+
+        public bool IsConnected() {
+            return running_;
+        }
+
         public void Disconnect() {
             running_ = false;
             heartBeatSocket_.Disconnect(false);
@@ -62,13 +67,19 @@ namespace LionSDKDotDemo
 
         private void SendHeartBeat() {
             while (running_) {
+                try
+                {
+                    Thread.Sleep(500);
+                    byte[] msg = { 0xff, CR, LF };
+                    heartBeatSocket_.Send(msg);
+                    int len = heartBeatSocket_.Receive(receiveBuffer);
 
-                Thread.Sleep(500);
-                byte[] msg = {0xff, CR, LF };
-                heartBeatSocket_.Send(msg);
-                int len = heartBeatSocket_.Receive(receiveBuffer);
+                    Console.WriteLine("beat...");
+                }
+                catch {
+                    MessageBox.Show("图像检测服务或已断开连接，心跳检测异常");
+                }
 
-                Console.WriteLine("beat...");
 
             }
         }
