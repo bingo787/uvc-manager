@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LionSDK;
@@ -16,6 +18,14 @@ namespace LionSDKDotDemo
 {
     public partial class Demo : Form
     {
+
+        // 常量
+
+        const int HV_MaxKV = 80; // 80kv
+        const int HV_MaxCurrent = 1000; //1000mA
+        const string BEFORE_ANALIYSIS_IMAGE_PATH = "D:\\001.jpg";
+        const string AFTER_ANALISY_IMAGE_PATH = "D:\\002.jpg";
+
         //当前的设备对象
         private List<LU_DEVICE> listDev = new List<LU_DEVICE>();
         public Demo()
@@ -79,6 +89,10 @@ namespace LionSDKDotDemo
             this.comboBoxHVStopBit.Items.AddRange(stopbit);
             this.comboBoxHVStopBit.SelectedIndex = 0;
 
+            this.labelHVPortLED.Text = "●";
+            TriggerHVPortStatus(false);
+
+
             /// PLC 
             this.comboBoxPLCPort.Items.AddRange(port.ToArray());
             this.comboBoxPLCPort.SelectedIndex = -1;
@@ -94,6 +108,30 @@ namespace LionSDKDotDemo
 
             this.comboBoxPLCStopBit.Items.AddRange(stopbit);
             this.comboBoxPLCStopBit.SelectedIndex = 0;
+
+            // 设置高压参数的最大值
+
+            this.trackBarCurrent.Maximum = HV_MaxCurrent;
+            this.trackBarKV.Maximum = HV_MaxKV;
+
+            // 高压未连接的话，无法设置电压电流
+            TriggerHVPortStatus(false);
+
+        }
+
+        private void TriggerHVPortStatus(bool open) {
+            if (open)
+            {
+                this.labelHVPortLED.ForeColor = Color.Green;
+                this.buttonConnectHVPort.Text = "关闭串口";
+            }
+            else {
+                this.labelHVPortLED.ForeColor = Color.Red;
+                this.buttonConnectHVPort.Text = "打开串口";
+            }
+
+            this.trackBarCurrent.Enabled = open;
+            this.trackBarKV.Enabled = open;
 
         }
 
@@ -355,8 +393,7 @@ namespace LionSDKDotDemo
                 if (listDev[d].uvcIdentity.Id == id)
                 {
                     LU_DEVICE luDev = listDev[d];
-                    //
-                    LU_PARAM param = new LU_PARAM();
+                    
                     unsafe
                     {
                         //获取设备状态
@@ -367,7 +404,7 @@ namespace LionSDKDotDemo
                             switch (state)
                             {
                                 case LUDEV_STATE.LUDEVSTATE_UNOPNE:				//设备未打开
-                                    this.labelStateInfo.Text = "设备状态: 设备未打开!";
+                                    this.labelStateInfo.Text =  "设备状态: 设备未打开!";
                                     break;
                                 case LUDEV_STATE.LUDEVSTATE_OPEN:					//设备打开
                                     this.labelStateInfo.Text = "设备状态: 设备打开!";
@@ -479,7 +516,28 @@ namespace LionSDKDotDemo
                         if (LionCom.LU_SUCCESS == LionSDK.LionSDK.GetImage(ref luDev, 0, ref data, ref nBuf, ref strFile))
                         {
                             if (!string.IsNullOrEmpty(strFile))
+                            {
                                 this.pictureBoxImage.Load(strFile);
+
+                                // 拷贝图像, 图像检测服务只支持jpg格式。
+                                strFile.Replace("bmp","jpg");
+                                File.Copy(strFile, BEFORE_ANALIYSIS_IMAGE_PATH, true);
+
+                                // 分析图像
+                                TcpClient.ANALYSIS_RESULT ret = tcpClient.AnalysisImage();
+                                if ((int)ret >= 0)
+                                {
+                                    this.pictureBoxImage.Load(AFTER_ANALISY_IMAGE_PATH);
+                                }
+                                else {
+                                    MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
+                                }
+                               
+                            }
+                            else {
+                                MessageBox.Show("图像获取失败! 路径为空");
+                            }
+
                         }
 
                     }
@@ -526,17 +584,26 @@ namespace LionSDKDotDemo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private TcpClient client_;
+        private TcpClient tcpClient;
         private void buttonConnectServer_Click(object sender, EventArgs e)
         {
-            client_ = new TcpClient();
-            client_.Connect();
+            tcpClient = new TcpClient();
+            tcpClient.Connect();
         }
 
         private void buttonAnalyse_Click(object sender, EventArgs e)
         {
-            client_.SendAnalyseImageCommand();
-            
+            // 分析图像
+            TcpClient.ANALYSIS_RESULT ret = tcpClient.AnalysisImage();
+            if ((int)ret >= 0)
+            {
+                this.pictureBoxImage.Load(AFTER_ANALISY_IMAGE_PATH);
+            }
+            else
+            {
+                MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
+            }
+
         }
         /// <summary>
         /// 连接高压串口
@@ -546,16 +613,29 @@ namespace LionSDKDotDemo
         public static HVSerialPortControler HVSerialPort;
         private void buttonConnectHVPort_Click(object sender, EventArgs e)
         {
-            try
-            {
-                HVSerialPort = HVSerialPortControler.Instance;
-                HVSerialPort.OpenSerialPort();
-                HVSerialPort.Connect();
-            }
-            catch {
 
-                MessageBox.Show("高压串口连接失败");
+            if (HVSerialPort.IsOpen())
+            {
+                HVSerialPort.CloseControlSystem();
+                TriggerHVPortStatus(false);
             }
+            else {
+                try
+                {
+                    HVSerialPort = HVSerialPortControler.Instance;
+                    HVSerialPort.OpenSerialPort();
+                    HVSerialPort.Connect();
+                    TriggerHVPortStatus(true);
+                }
+                catch
+                {
+                    MessageBox.Show("高压串口打开失败");
+                    TriggerHVPortStatus(false);
+                }
+
+            }
+
+          
 
         }
 
@@ -578,6 +658,42 @@ namespace LionSDKDotDemo
             }
 
 
+        }
+
+        private void trackBarKV_Scroll(object sender, EventArgs e)
+        {
+            textBoxKV.Text = trackBarKV.Value.ToString();
+        }
+
+        private void textBoxKV_TextChanged(object sender, EventArgs e)
+        {
+            int kv = 0;
+            if (int.TryParse(textBoxKV.Text.ToString(), out kv) && kv <= HV_MaxKV)
+            {
+                trackBarKV.Value = kv;
+            }
+            else {
+                MessageBox.Show("输入的参数非法或者超过上线");
+            }
+           
+        }
+
+        private void trackBarCurrent_Scroll(object sender, EventArgs e)
+        {
+            textBoxCurrent.Text = trackBarCurrent.Value.ToString();
+        }
+
+        private void textBoxCurrent_TextChanged(object sender, EventArgs e)
+        {
+            int current = 0;
+            if (int.TryParse(textBoxCurrent.Text.ToString(), out current) && current <= HV_MaxCurrent)
+            {
+                trackBarCurrent.Value = current;
+            }
+            else
+            {
+                MessageBox.Show("输入的参数非法或者超过上线");
+            }
         }
     }
 }

@@ -22,7 +22,12 @@ namespace LionSDKDotDemo
 
         const byte CR = 0x0D;
         const byte LF = 0x0A;
-
+        bool running_ = false;
+        public void Disconnect() {
+            running_ = false;
+            heartBeatSocket_.Disconnect(false);
+            clientSocket_.Disconnect(false);
+        }
         public void Connect() {
 
             IPAddress serverIp = IPAddress.Parse("127.0.0.1");
@@ -41,6 +46,8 @@ namespace LionSDKDotDemo
                 const int dataPort = 12342;
                 clientSocket_ = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 clientSocket_.Connect(new IPEndPoint(serverIp, dataPort));
+
+                running_ = true;
             }
             catch (Exception ex)
             {
@@ -54,7 +61,7 @@ namespace LionSDKDotDemo
         }
 
         private void SendHeartBeat() {
-            while (true) {
+            while (running_) {
 
                 Thread.Sleep(500);
                 byte[] msg = {0xff, CR, LF };
@@ -70,7 +77,16 @@ namespace LionSDKDotDemo
         /// 分析图像
         /// </summary>
         /// <returns> 返回0表示OK，返回1表示NG， 返回-1表示错误</returns>
-        public int SendAnalyseImageCommand()
+        public enum ANALYSIS_RESULT {
+
+            OK = 0,
+            NG = 1,
+            PARSE_RECV_ERROR = -1,
+            SEND_CMD_ERROR = -2,
+
+
+        };
+        public ANALYSIS_RESULT AnalysisImage()
         {
             try
             {
@@ -86,25 +102,26 @@ namespace LionSDKDotDemo
                 //"3,OK"
                 byte[] recvMsg = new byte[32];
                 int len = clientSocket_.Receive(recvMsg);
+
                 String s = Encoding.Default.GetString(recvMsg, 0, len);
-                MessageBox.Show(s);
+                Console.WriteLine("recv: " + s);
+
                 if (s.Contains("OK"))
                 {
-                    return 0;
+                    return ANALYSIS_RESULT.OK;
                 }
                 else if (s.Contains("NG"))
                 {
-                    return 1;
+                    return ANALYSIS_RESULT.NG;
                 }
                 else
                 {
-                    return -2;
+                    return ANALYSIS_RESULT.PARSE_RECV_ERROR;
                 }
 
             }
             catch {
-                MessageBox.Show("图像分析指令发送失败！");
-                return -1;
+                return ANALYSIS_RESULT.SEND_CMD_ERROR;
             }
  
         }

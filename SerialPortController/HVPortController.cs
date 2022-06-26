@@ -95,6 +95,10 @@ namespace SerialPortController
         }
         #endregion
 
+        public bool IsOpen() {
+            return _running;
+        }
+
         /// <summary>
         /// 打开端口
         /// </summary>
