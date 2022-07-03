@@ -92,18 +92,22 @@ namespace LionSDKDotDemo
 
             OK = 0,
             NG = 1,
-            PARSE_RECV_ERROR = -1,
-            SEND_CMD_ERROR = -2,
+            E_INVALID_CMD = -1,
+            E_NO_SPACE = -2,
+            E_NO_FILE = -3,
+            E_UNKNOWN = -99
 
 
         };
-        public ANALYSIS_RESULT AnalysisImage()
+        public ANALYSIS_RESULT ProcessImage(string path)
         {
             try
             {
                 //
                 List<byte> command = new List<byte>();
-                byte[] cmd = ASCIIEncoding.ASCII.GetBytes("T1,");
+                byte[] head = { 0xAA, 0xBB };
+                byte[] cmd = ASCIIEncoding.ASCII.GetBytes("PS," + path);
+                command.AddRange(head);
                 command.AddRange(cmd);
                 command.Add(CR);
                 command.Add(LF);
@@ -125,14 +129,26 @@ namespace LionSDKDotDemo
                 {
                     return ANALYSIS_RESULT.NG;
                 }
+                else if (s.Contains("E_INVALID_CMD"))
+                {
+                    return ANALYSIS_RESULT.E_INVALID_CMD;
+                }
+                else if (s.Contains("E_NO_FILE"))
+                {
+                    return ANALYSIS_RESULT.E_NO_FILE;
+                }
+                else if (s.Contains("E_NO_SPACE"))
+                {
+                    return ANALYSIS_RESULT.E_NO_SPACE;
+                }
                 else
                 {
-                    return ANALYSIS_RESULT.PARSE_RECV_ERROR;
+                    return ANALYSIS_RESULT.E_UNKNOWN;
                 }
 
             }
             catch {
-                return ANALYSIS_RESULT.SEND_CMD_ERROR;
+                return ANALYSIS_RESULT.E_UNKNOWN;
             }
  
         }

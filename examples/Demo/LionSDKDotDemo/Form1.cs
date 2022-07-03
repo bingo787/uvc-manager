@@ -24,8 +24,6 @@ namespace LionSDKDotDemo
         const int systemTimeTick = 1000;
         const double HV_MaxKV = 80.0f; // 80kv
         const int HV_MaxCurrent = 1000; //1000mA
-        const string BEFORE_ANALIYSIS_IMAGE_PATH = "D:\\001.jpg";
-        const string AFTER_ANALISY_IMAGE_PATH = "D:\\002.jpg";
 
         // 控制器对象
         private static TcpClient tcpClient = new TcpClient();
@@ -86,6 +84,7 @@ namespace LionSDKDotDemo
             // HV
             this.comboBoxHVPort.Items.AddRange(port.ToArray());
             this.comboBoxHVPort.SelectedIndex = -1;
+
 
             this.comboBoxHVBaudRate.Items.AddRange(rate);
             this.comboBoxHVBaudRate.SelectedIndex = 0;
@@ -570,13 +569,20 @@ namespace LionSDKDotDemo
                                 if (tcpClient.IsConnected()) {
                                     // 拷贝图像, 图像检测服务只支持jpg格式。
                                     strFile.Replace("bmp", "jpg");
-                                    File.Copy(strFile, BEFORE_ANALIYSIS_IMAGE_PATH, true);
+
+                                    string fileName = "D:\\temp\\"  + DateTime.Now.ToFileTime().ToString() +".jpg";
+                                    File.Copy(strFile,  fileName, true);
 
                                     // 分析图像
-                                    TcpClient.ANALYSIS_RESULT ret = tcpClient.AnalysisImage();
-                                    if ((int)ret >= 0)
+                                    TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage(fileName);
+                                    if (ret == TcpClient.ANALYSIS_RESULT.OK)
                                     {
-                                        this.pictureBoxImage.Load(AFTER_ANALISY_IMAGE_PATH);
+                                        string image = fileName.Replace(".jpg", "_OK.jpg");
+                                        this.pictureBoxImage.Load(image);
+                                    }
+                                    else if (ret == TcpClient.ANALYSIS_RESULT.NG) {
+                                        string image = fileName.Replace(".jpg", "_NG.jpg");
+                                        this.pictureBoxImage.Load(image);
                                     }
                                     else
                                     {
@@ -667,10 +673,10 @@ namespace LionSDKDotDemo
         private void buttonAnalyse_Click(object sender, EventArgs e)
         {
             // 分析图像
-            TcpClient.ANALYSIS_RESULT ret = tcpClient.AnalysisImage();
+            TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage("D://temp//001.jpg");
             if ((int)ret >= 0)
             {
-                this.pictureBoxImage.Load(AFTER_ANALISY_IMAGE_PATH);
+                this.pictureBoxImage.Load("D://temp//001_OK.jpg");
             }
             else
             {
