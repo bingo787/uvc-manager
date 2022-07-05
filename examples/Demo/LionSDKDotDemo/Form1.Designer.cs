@@ -846,6 +846,7 @@
             this.MinimumSize = new System.Drawing.Size(1200, 754);
             this.Name = "Demo";
             this.Text = "睿奥自动化检测控制软件";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Demo_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();

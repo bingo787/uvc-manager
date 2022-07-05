@@ -83,6 +83,31 @@ namespace LionSDKDotDemo
 
         }
 
+        void SaveConfig() {
+            Config.Instance.WriteString("HVPortPara", "PortName", this.comboBoxHVPort.Text);
+            Config.Instance.WriteString("HVPortPara", "BaudRate", this.comboBoxHVBaudRate.Text);
+            Config.Instance.WriteString("HVPortPara", "Parity", this.comBoxHVCheckBit.Text);
+            Config.Instance.WriteString("HVPortPara", "DataBits", this.comBoxHVDataBit.Text);
+            Config.Instance.WriteString("HVPortPara", "StopBits", this.comboBoxHVStopBit.Text);
+
+            Config.Instance.WriteString("HVPortPara", "KV", this.textBoxKV.Text);
+            Config.Instance.WriteString("HVPortPara", "Current", this.textBoxCurrent.Text);
+
+            Config.Instance.WriteString("PLCPortPara", "PortName", this.comboBoxPLCPort.Text);
+            Config.Instance.WriteString("PLCPortPara", "BaudRate", this.comboBoxPLCBaudRate.Text);
+            Config.Instance.WriteString("PLCPortPara", "Parity", this.comboBoxPLCCheckBit.Text);
+            Config.Instance.WriteString("PLCPortPara", "DataBits", this.comboBoxPLCDataBit.Text);
+            Config.Instance.WriteString("PLCPortPara", "StopBits", this.comboBoxPLCStopBit.Text);
+
+            Config.Instance.WriteString("UVCSetting", "Mode", this.comboBoxModel.Text);
+            Config.Instance.WriteString("UVCSetting", "Binning", this.comboBoxBinning.Text);
+            Config.Instance.WriteString("UVCSetting", "FPGA", this.comboBoxFilter.Text);
+            Config.Instance.WriteString("UVCSetting", "XrayType", this.comboBoxRay.Text);
+            Config.Instance.WriteString("UVCSetting", "CheckTimeout", this.textBoxCheckTime.Text);
+            Config.Instance.WriteString("UVCSetting", "GetImageTimeout", this.textBoxGetTime.Text);
+
+        }
+
         public Demo()
         {
             InitializeComponent();
@@ -613,6 +638,7 @@ namespace LionSDKDotDemo
                 tcpClient.Disconnect();
                 HVSerialPortControler.Instance.XRayOff();
                 HVSerialPortControler.Instance.CloseControlSystem();
+                PLCPortController.Instance.CloseSerialPort();
 
             }
             catch {
@@ -808,5 +834,38 @@ namespace LionSDKDotDemo
             }
         }
 
+
+     
+
+        private void Demo_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 弹出提示框
+            DialogResult result = MessageBox.Show("确定要关闭窗体吗?", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            if (result == DialogResult.Yes)
+            {
+                // 关闭窗体
+                e.Cancel = false;
+                SaveConfig();
+
+                try
+                {
+                    tcpClient.Disconnect();
+                    HVSerialPortControler.Instance.XRayOff();
+                    HVSerialPortControler.Instance.CloseControlSystem();
+                    PLCPortController.Instance.CloseSerialPort();
+
+                }
+                catch
+                {
+
+                }
+
+            }
+            else
+            {
+                // 不关闭窗体
+                e.Cancel = true;
+            }
+        }
     }
 }
