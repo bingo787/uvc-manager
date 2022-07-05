@@ -30,11 +30,11 @@ namespace SerialPortController
                 return _instance;
             }
         }
-        private static string PORTPARAPATH = System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "HV_SerialPortConfig.xml");
+
 
         private HVSerialPortControler()
         {
-            InitilizeHVStatusThread();
+            InitilizeHVStatusThread(); 
         }
         /// <summary>
         /// 初始化高压XRay曝光状态
@@ -83,20 +83,6 @@ namespace SerialPortController
         SerialPort _serialPort;
         #endregion
 
-        #region 属性
-
-        /// <summary>
-        /// 数据位
-        /// </summary>
-        public SerialPortController.Setting.PortPara PortPara
-        {
-            get
-            {
-                return ConfigHelper.Get<SerialPortController.Setting.PortPara>(PORTPARAPATH);
-            }
-        }
-        #endregion
-
         public bool IsOpen() {
             return _running;
         }
@@ -104,18 +90,7 @@ namespace SerialPortController
         /// <summary>
         /// 打开端口
         /// </summary>
-        public void OpenSerialPort()
-        {
-            _serialPort = new SerialPort(PortPara.PortName, PortPara.BaudRate, PortPara.Parity, PortPara.DataBits, PortPara.StopBits);
 
-            _serialPort.DataReceived += _serialPort_DataReceived;
-            _serialPort.WriteTimeout = 1000;
-            _serialPort.ReadTimeout = 1000;
-
-            _running = true;
-
-            _serialPort.Open();
-        }
         /// <summary>
         /// 打开端口
         /// </summary>
@@ -126,6 +101,7 @@ namespace SerialPortController
             _serialPort.WriteTimeout = 1000;
             _serialPort.ReadTimeout = 1000;
             _serialPort.Open();
+            _running = true;
         }
         public void CloseControlSystem()
         {
@@ -448,7 +424,6 @@ namespace SerialPortController
             try
             {
                 _serialPort.Close();
-                //ConfigHelper.Save(PORTPARAPATH, PortPara);
             }
             catch (Exception ex)
             {

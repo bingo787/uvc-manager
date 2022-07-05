@@ -17,24 +17,71 @@ using Timer = System.Threading.Timer;
 
 namespace LionSDKDotDemo
 {
+
+
     public partial class Demo : Form
     {
 
         // 常量
-        const int systemTimeTick = 1000;
-        const double HV_MaxKV = 80.0f; // 80kv
-        const int HV_MaxCurrent = 1000; //1000mA
+
+        double HV_MaxKV = 80.0f; // 80kv
+        int HV_MaxCurrent = 1000; //1000mA
+
+        List<string> rate = new List<string> { "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200" };
+        List<string> databit = new List<string> { "8", "7", "6" };
+        List<string> checkbit = new List<string> { "None", "Odd", "Even" };
+        List<string> stopbit = new List<string> { "1", "2" };
+        List<string> port = SerialPort.GetPortNames().ToList();
+
+        List<string> uvcMode = new List<string> {"AC", "VTC" };
+        List<string> uvcBinning = new List<string> { "No", "Binning"};
+        List<string> uvcFPGA = new List<string> {"Raw", "FPGA" };
+        List<string> uvcXrayType = new List<string> { "VTC-D", "VTC-A"};
+
 
         // 控制器对象
         private static TcpClient tcpClient = new TcpClient();
 
-        //定义Timer类
-        System.Timers.Timer timer;
-        //定义委托
-        public delegate void UpdateStatusBarInfo(string value);
 
         //当前的设备对象
         private List<LU_DEVICE> listDev = new List<LU_DEVICE>();
+
+        private void LoadConfig() {
+
+
+            // UVC
+            this.comboBoxModel.SelectedIndex = uvcMode.IndexOf(Config.Instance.ReadString("UVCSetting", "Mode"));
+            this.comboBoxBinning.SelectedIndex = uvcBinning.IndexOf(Config.Instance.ReadString("UVCSetting", "Binning"));
+            this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
+            this.comboBoxRay.SelectedIndex = uvcXrayType.IndexOf(Config.Instance.ReadString("UVCSetting", "XrayType"));
+
+            this.textBoxCheckTime.Text = Config.Instance.ReadString("UVCSetting", "CheckTimeout");
+            this.textBoxGetTime.Text = Config.Instance.ReadString("UVCSetting", "GetImageTimeout");
+
+            // HV port
+            PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
+            this.comboBoxHVPort.SelectedIndex = port.IndexOf(HVPortPara.PortName.ToString());
+            this.comboBoxHVBaudRate.SelectedIndex = rate.IndexOf(HVPortPara.BaudRate.ToString());
+            this.comBoxHVDataBit.SelectedIndex = databit.IndexOf(HVPortPara.DataBits.ToString());
+            this.comBoxHVCheckBit.SelectedIndex = checkbit.IndexOf(HVPortPara.Parity.ToString());
+            this.comboBoxHVStopBit.SelectedIndex = stopbit.IndexOf(HVPortPara.StopBits.ToString());
+
+            this.textBoxCurrent.Text = Config.Instance.ReadString("HVSettingPara", "Current");
+            this.textBoxKV.Text = Config.Instance.ReadString("HVSettingPara", "KV");
+
+            double.TryParse(Config.Instance.ReadString("HVSettingPara", "KV_Max"), out HV_MaxKV);
+            int.TryParse(Config.Instance.ReadString("HVSettingPara", "KV_Current"), out HV_MaxCurrent);
+
+
+            // PLC port
+            PortPara PLCPortPara = Config.Instance.GetPortPara("PLCPortPara");
+            this.comboBoxPLCPort.SelectedIndex = port.IndexOf(PLCPortPara.PortName.ToString());
+            this.comboBoxPLCBaudRate.SelectedIndex = rate.IndexOf(PLCPortPara.BaudRate.ToString());
+            this.comboBoxPLCDataBit.SelectedIndex = databit.IndexOf(PLCPortPara.DataBits.ToString());
+            this.comboBoxPLCCheckBit.SelectedIndex = checkbit.IndexOf(PLCPortPara.Parity.ToString());
+            this.comboBoxPLCStopBit.SelectedIndex = stopbit.IndexOf(PLCPortPara.StopBits.ToString());
+
+        }
 
         public Demo()
         {
@@ -49,119 +96,48 @@ namespace LionSDKDotDemo
             this.treeViewDevice.ShowPlusMinus = true;
             this.treeViewDevice.ShowRootLines = true;
 
-            //初始化参数
-            this.comboBoxModel.Items.Clear();
-            this.comboBoxModel.Items.Add("AC 出图");
-            this.comboBoxModel.Items.Add("VTC 出图");
-            this.comboBoxModel.SelectedIndex = 0;
+            // 初始化参数
+            this.comboBoxModel.DataSource = uvcMode;
+            this.comboBoxBinning.DataSource = uvcBinning;
+            this.comboBoxFilter.DataSource = uvcFPGA;
+            this.comboBoxRay.DataSource = uvcXrayType;
 
-            this.comboBoxBinning.Items.Clear();
-            this.comboBoxBinning.Items.Add("No Binning");
-            this.comboBoxBinning.Items.Add("Binning");
-            this.comboBoxBinning.SelectedIndex = 0;
-
-            this.comboBoxFilter.Items.Clear();
-            this.comboBoxFilter.Items.Add("原始图像");
-            this.comboBoxFilter.Items.Add("FPGA 进行坏点过滤");
-            this.comboBoxFilter.SelectedIndex = 0;
-
-            this.comboBoxRay.Items.Clear();
-            this.comboBoxRay.Items.Add("VTC-D");
-            this.comboBoxRay.Items.Add("VTC-A");
-            this.comboBoxRay.SelectedIndex = 0;
-
-            this.textBoxCheckTime.Text = "5000";
-            this.textBoxGetTime.Text = "10000";
             // 初始化串口参数
-
-
-            List<string> port = SerialPort.GetPortNames().ToList();
-            string[] rate = {"4800","9600","19200","38400","43000","56000","57600","115200" };
-            string[] databit = { "8", "7", "6" };
-            string[] checkbit = { "None","Odd","Even"};
-            string[] stopbit = { "1", "2"};
-
-            // HV
             this.comboBoxHVPort.Items.AddRange(port.ToArray());
-            this.comboBoxHVPort.SelectedIndex = -1;
+            this.comboBoxHVBaudRate.Items.AddRange(rate.ToArray());
+            this.comBoxHVDataBit.Items.AddRange(databit.ToArray());
+            this.comBoxHVCheckBit.Items.AddRange(checkbit.ToArray());
+            this.comboBoxHVStopBit.Items.AddRange(stopbit.ToArray());
+
+            this.comboBoxPLCPort.Items.AddRange(port.ToArray());
+            this.comboBoxPLCBaudRate.Items.AddRange(rate.ToArray());
+            this.comboBoxPLCDataBit.Items.AddRange(databit.ToArray());
+            this.comboBoxPLCCheckBit.Items.AddRange(checkbit.ToArray());
+            this.comboBoxPLCStopBit.Items.AddRange(stopbit.ToArray());
 
 
-            this.comboBoxHVBaudRate.Items.AddRange(rate);
-            this.comboBoxHVBaudRate.SelectedIndex = 0;
-
-            this.comBoxHVDataBit.Items.AddRange(databit);
-            this.comBoxHVDataBit.SelectedIndex = 0;
-
-            this.comBoxHVCheckBit.Items.AddRange(checkbit);
-            this.comBoxHVCheckBit.SelectedIndex = 0;
-
-            this.comboBoxHVStopBit.Items.AddRange(stopbit);
-            this.comboBoxHVStopBit.SelectedIndex = 0;
+            LoadConfig();
 
             // 设置高压状态
             this.labelHVPortLED.Text = "●";
             // 高压未连接的话，无法设置电压电流
             TriggerHVPortStatus(false);
 
-            // 设置高压的最大最小值
-            this.trackBarCurrent.Maximum = HV_MaxCurrent;
-            this.trackBarKV.Maximum = (int)HV_MaxKV*1000;
 
             this.labelXrayStatus.Text = "●";
             this.labelXrayStatus.ForeColor = Color.Red;
             
 
-      
-
-            /// PLC 
-            this.comboBoxPLCPort.Items.AddRange(port.ToArray());
-            this.comboBoxPLCPort.SelectedIndex = -1;
-
-            this.comboBoxPLCBaudRate.Items.AddRange(rate);
-            this.comboBoxPLCBaudRate.SelectedIndex = 0;
-
-            this.comboBoxPLCDataBit.Items.AddRange(checkbit);
-            this.comboBoxPLCDataBit.SelectedIndex = 0;
-
-            this.comboBoxPLCCheckBit.Items.AddRange(checkbit);
-            this.comboBoxPLCCheckBit.SelectedIndex = 0;
-
-            this.comboBoxPLCStopBit.Items.AddRange(stopbit);
-            this.comboBoxPLCStopBit.SelectedIndex = 0;
+     
             
             // PLC 的串口状态设置
             this.labelPLCPortStatus.Text = "●";
             labelPLCPortStatus.ForeColor = Color.Red;
             buttonConnectPLC.Text = "打开串口";
 
-            // 系统状态监控
-            Timer timer = new Timer(new TimerCallback(timeUp), null, Timeout.Infinite, systemTimeTick);
-
-            timer.Change(0,1000);
 
 
         }
-        private void timeUp(object value) {
-            this.Invoke(new UpdateStatusBarInfo(UpdateSystemTime), "");
-            
-        }
-
-        private void UpdateSystemTime(string obj) {
-            labelSystemTime.Text = DateTime.Now.ToLongTimeString() + " " + DateTime.Now.ToLongDateString();
-
-
-            
-            //try
-            //{
-            //    buttonGetDevState_Click(null, null);
-            //}
-            //catch {
-
-            //}
-
-
-        }
-
 
         private void TriggerHVPortStatus(bool open) {
             if (open)
@@ -174,8 +150,6 @@ namespace LionSDKDotDemo
                 this.buttonConnectHVPort.Text = "打开串口";
             }
 
-            this.trackBarCurrent.Enabled = open;
-            this.trackBarKV.Enabled = open;
             this.textBoxCurrent.Enabled = open;
             this.textBoxKV.Enabled = open;
 
@@ -638,7 +612,8 @@ namespace LionSDKDotDemo
             {
                 tcpClient.Disconnect();
                 HVSerialPortControler.Instance.XRayOff();
-                PLCSerialPortController.Instance.CloseSerialPort();
+                HVSerialPortControler.Instance.CloseControlSystem();
+
             }
             catch {
 
@@ -684,6 +659,9 @@ namespace LionSDKDotDemo
             }
 
         }
+
+
+
         /// <summary>
         /// 连接高压串口
         /// </summary>
@@ -701,7 +679,12 @@ namespace LionSDKDotDemo
             else {
                 try
                 {
-                    HVSerialPortControler.Instance.OpenSerialPort();
+                    HVSerialPortControler.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
+                        int.Parse(this.comboBoxHVBaudRate.Text),
+                        (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
+                        int.Parse(this.comBoxHVDataBit.Text),
+                        (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
+
                     HVSerialPortControler.Instance.Connect();
                     TriggerHVPortStatus(true);
                 }
@@ -725,19 +708,24 @@ namespace LionSDKDotDemo
         private void buttonConnectPLC_Click(object sender, EventArgs e)
         {
 
-            if (PLCSerialPortController.Instance.IsOpen())
+            if (PLCPortController.Instance.IsOpen())
             {
-
-                PLCSerialPortController.Instance.CloseSerialPort();
-
+                PLCPortController.Instance.CloseSerialPort();
                 labelPLCPortStatus.ForeColor = Color.Red;
                 buttonConnectPLC.Text = "打开串口";
 
             }
-            else {
+            else
+            {
                 try
                 {
-                    PLCSerialPortController.Instance.OpenSerialPort();
+                    PLCPortController.Instance.OpenSerialPort(this.comboBoxPLCPort.Text,
+                       int.Parse(this.comboBoxPLCBaudRate.Text),
+                       (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comboBoxPLCCheckBit.Text),
+                       int.Parse(this.comboBoxPLCDataBit.Text),
+                       (System.IO.Ports.StopBits)int.Parse(this.comboBoxPLCStopBit.Text));
+
+
                     labelPLCPortStatus.ForeColor = Color.Green;
                     buttonConnectPLC.Text = "关闭串口";
                 }
@@ -755,17 +743,17 @@ namespace LionSDKDotDemo
 
         }
 
-        private void trackBarKV_Scroll(object sender, EventArgs e)
-        {
-            textBoxKV.Text = (trackBarKV.Value/1000.0f).ToString("F2");
-        }
 
         private void textBoxKV_TextChanged(object sender, EventArgs e)
         {
+
+            if (!HVSerialPortControler.Instance.IsOpen())
+            {
+                return;
+            }
             double kv = 0;
             if (double.TryParse(textBoxKV.Text.ToString(), out kv) && kv <= HV_MaxKV)
             {
-                trackBarKV.Value = (int)kv*1000;
                 HVSerialPortControler.Instance.SetKV(kv);
             }
             else {
@@ -774,17 +762,18 @@ namespace LionSDKDotDemo
            
         }
 
-        private void trackBarCurrent_Scroll(object sender, EventArgs e)
-        {
-            textBoxCurrent.Text = trackBarCurrent.Value.ToString();
-        }
+
 
         private void textBoxCurrent_TextChanged(object sender, EventArgs e)
         {
             int current = 0;
+
+            if (!HVSerialPortControler.Instance.IsOpen()) {
+                return;
+            }
+
             if (int.TryParse(textBoxCurrent.Text.ToString(), out current) && current <= HV_MaxCurrent)
             {
-                trackBarCurrent.Value = current;
                 HVSerialPortControler.Instance.SetCurrent(current);
             }
             else
@@ -818,5 +807,6 @@ namespace LionSDKDotDemo
                 buttonXrayOnOff.Text = "打开光源";
             }
         }
+
     }
 }

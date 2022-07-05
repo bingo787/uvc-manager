@@ -79,15 +79,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigHelper.cs" />
     <Compile Include="HVPortController.cs" />
+    <Compile Include="IniFile.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="PLCPortController.cs" />
-    <Compile Include="PortPara.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="PLC_SerialPortConfig.xml" />
-    <Content Include="HV_SerialPortConfig.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

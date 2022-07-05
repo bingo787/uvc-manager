@@ -51,8 +51,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.trackBarCurrent = new System.Windows.Forms.TrackBar();
-            this.trackBarKV = new System.Windows.Forms.TrackBar();
             this.textBoxCurrent = new System.Windows.Forms.TextBox();
             this.textBoxKV = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -94,18 +92,16 @@
             this.comboBoxPLCPort = new System.Windows.Forms.ComboBox();
             this.label28 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.buttonAsynchronous = new System.Windows.Forms.Button();
             this.labelHVStatusInfo = new System.Windows.Forms.Label();
             this.labelPLCInfo = new System.Windows.Forms.Label();
             this.labelTCPServer = new System.Windows.Forms.Label();
             this.labelSystemTime = new System.Windows.Forms.Label();
-            this.buttonAsynchronous = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
             this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarCurrent)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarKV)).BeginInit();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox7.SuspendLayout();
@@ -359,46 +355,22 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "设备序列号:";
             // 
-            // trackBarCurrent
-            // 
-            this.trackBarCurrent.Location = new System.Drawing.Point(255, 10);
-            this.trackBarCurrent.Margin = new System.Windows.Forms.Padding(2);
-            this.trackBarCurrent.Maximum = 1000;
-            this.trackBarCurrent.Name = "trackBarCurrent";
-            this.trackBarCurrent.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBarCurrent.Size = new System.Drawing.Size(45, 150);
-            this.trackBarCurrent.TabIndex = 45;
-            this.trackBarCurrent.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBarCurrent.Scroll += new System.EventHandler(this.trackBarCurrent_Scroll);
-            // 
-            // trackBarKV
-            // 
-            this.trackBarKV.Location = new System.Drawing.Point(176, 10);
-            this.trackBarKV.Margin = new System.Windows.Forms.Padding(2);
-            this.trackBarKV.Maximum = 20;
-            this.trackBarKV.Name = "trackBarKV";
-            this.trackBarKV.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBarKV.Size = new System.Drawing.Size(45, 150);
-            this.trackBarKV.TabIndex = 44;
-            this.trackBarKV.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBarKV.Scroll += new System.EventHandler(this.trackBarKV_Scroll);
-            // 
             // textBoxCurrent
             // 
-            this.textBoxCurrent.Location = new System.Drawing.Point(255, 159);
+            this.textBoxCurrent.Location = new System.Drawing.Point(224, 60);
             this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxCurrent.Name = "textBoxCurrent";
-            this.textBoxCurrent.Size = new System.Drawing.Size(45, 21);
+            this.textBoxCurrent.Size = new System.Drawing.Size(61, 21);
             this.textBoxCurrent.TabIndex = 27;
             this.textBoxCurrent.Text = "0";
             this.textBoxCurrent.TextChanged += new System.EventHandler(this.textBoxCurrent_TextChanged);
             // 
             // textBoxKV
             // 
-            this.textBoxKV.Location = new System.Drawing.Point(176, 159);
+            this.textBoxKV.Location = new System.Drawing.Point(224, 32);
             this.textBoxKV.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxKV.Name = "textBoxKV";
-            this.textBoxKV.Size = new System.Drawing.Size(45, 21);
+            this.textBoxKV.Size = new System.Drawing.Size(61, 21);
             this.textBoxKV.TabIndex = 26;
             this.textBoxKV.Text = "0";
             this.textBoxKV.TextChanged += new System.EventHandler(this.textBoxKV_TextChanged);
@@ -406,22 +378,22 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(255, 182);
+            this.label13.Location = new System.Drawing.Point(158, 64);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(53, 12);
+            this.label13.Size = new System.Drawing.Size(59, 12);
             this.label13.TabIndex = 12;
-            this.label13.Text = "电流(mA)";
+            this.label13.Text = "电流(mA):";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(176, 182);
+            this.label2.Location = new System.Drawing.Point(158, 36);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 12);
+            this.label2.Size = new System.Drawing.Size(59, 12);
             this.label2.TabIndex = 1;
-            this.label2.Text = "电压(kV)";
+            this.label2.Text = "电压(kV):";
             // 
             // buttonEnumDev
             // 
@@ -520,9 +492,7 @@
             this.groupBox5.Controls.Add(this.label22);
             this.groupBox5.Controls.Add(this.comBoxHVDataBit);
             this.groupBox5.Controls.Add(this.label21);
-            this.groupBox5.Controls.Add(this.trackBarCurrent);
             this.groupBox5.Controls.Add(this.comboBoxHVBaudRate);
-            this.groupBox5.Controls.Add(this.trackBarKV);
             this.groupBox5.Controls.Add(this.label20);
             this.groupBox5.Controls.Add(this.comboBoxHVPort);
             this.groupBox5.Controls.Add(this.label17);
@@ -540,7 +510,7 @@
             // labelXrayStatus
             // 
             this.labelXrayStatus.AutoSize = true;
-            this.labelXrayStatus.Location = new System.Drawing.Point(29, 213);
+            this.labelXrayStatus.Location = new System.Drawing.Point(179, 94);
             this.labelXrayStatus.Name = "labelXrayStatus";
             this.labelXrayStatus.Size = new System.Drawing.Size(11, 12);
             this.labelXrayStatus.TabIndex = 48;
@@ -548,7 +518,7 @@
             // 
             // buttonXrayOnOff
             // 
-            this.buttonXrayOnOff.Location = new System.Drawing.Point(64, 208);
+            this.buttonXrayOnOff.Location = new System.Drawing.Point(222, 89);
             this.buttonXrayOnOff.Name = "buttonXrayOnOff";
             this.buttonXrayOnOff.Size = new System.Drawing.Size(63, 23);
             this.buttonXrayOnOff.TabIndex = 47;
@@ -800,6 +770,17 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "控制区域";
             // 
+            // buttonAsynchronous
+            // 
+            this.buttonAsynchronous.Location = new System.Drawing.Point(35, 94);
+            this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonAsynchronous.Name = "buttonAsynchronous";
+            this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
+            this.buttonAsynchronous.TabIndex = 20;
+            this.buttonAsynchronous.Text = "异步获取图像";
+            this.buttonAsynchronous.UseVisualStyleBackColor = true;
+            this.buttonAsynchronous.Click += new System.EventHandler(this.buttonAsynchronous_Click);
+            // 
             // labelHVStatusInfo
             // 
             this.labelHVStatusInfo.AutoSize = true;
@@ -840,17 +821,6 @@
             this.labelSystemTime.TabIndex = 16;
             this.labelSystemTime.Text = "2020/01/10 19:15:10";
             // 
-            // buttonAsynchronous
-            // 
-            this.buttonAsynchronous.Location = new System.Drawing.Point(35, 94);
-            this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonAsynchronous.Name = "buttonAsynchronous";
-            this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
-            this.buttonAsynchronous.TabIndex = 20;
-            this.buttonAsynchronous.Text = "异步获取图像";
-            this.buttonAsynchronous.UseVisualStyleBackColor = true;
-            this.buttonAsynchronous.Click += new System.EventHandler(this.buttonAsynchronous_Click);
-            // 
             // Demo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -883,8 +853,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarCurrent)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarKV)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox6.ResumeLayout(false);
@@ -914,8 +882,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label labelStateInfo;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TrackBar trackBarCurrent;
-        private System.Windows.Forms.TrackBar trackBarKV;
         private System.Windows.Forms.ComboBox comboBoxRay;
         private System.Windows.Forms.ComboBox comboBoxFilter;
         private System.Windows.Forms.ComboBox comboBoxBinning;
