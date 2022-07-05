@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using NModbus.IO;
+using NModbus.Device;
+using NModbus;
 
 namespace SerialPortController
 {
     public class PLCPortController
     {
 
-        SerialPort _serialPort;
+        SerialPort _serialPort = null;
+        IModbusSerialMaster _modbusSerialMaster = null;
+ 
         private static PLCPortController _instance;
         public static PLCPortController Instance
         {
