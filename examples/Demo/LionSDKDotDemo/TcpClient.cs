@@ -56,9 +56,7 @@ namespace LionSDKDotDemo
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show("图像检测服务连接失败！ " +  ex.ToString());
-
 
             }
 
@@ -78,6 +76,7 @@ namespace LionSDKDotDemo
                 }
                 catch {
                     MessageBox.Show("图像检测服务或已断开连接，心跳检测异常");
+                    break;
                 }
 
 
@@ -111,11 +110,12 @@ namespace LionSDKDotDemo
                 command.AddRange(cmd);
                 command.Add(CR);
                 command.Add(LF);
+
+                Console.WriteLine("send: " + Encoding.Default.GetString(command.ToArray(), 0, command.ToArray().Length));
                 clientSocket_.Send(command.ToArray());
 
-
                 //"3,OK"
-                byte[] recvMsg = new byte[32];
+                byte[] recvMsg = new byte[64];
                 int len = clientSocket_.Receive(recvMsg);
 
                 String s = Encoding.Default.GetString(recvMsg, 0, len);

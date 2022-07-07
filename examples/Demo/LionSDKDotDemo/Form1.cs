@@ -569,7 +569,7 @@ namespace LionSDKDotDemo
                                     // 拷贝图像, 图像检测服务只支持jpg格式。
                                     strFile.Replace("bmp", "jpg");
 
-                                    string fileName = "D:\\temp\\"  + DateTime.Now.ToFileTime().ToString() +".jpg";
+                                    string fileName = "D:\\temp\\"  + DateTime.Now.ToString("yyyyMMddhhmmss") + ".jpg";
                                     File.Copy(strFile,  fileName, true);
 
                                     // 分析图像
