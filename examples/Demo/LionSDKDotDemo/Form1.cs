@@ -13,7 +13,8 @@ using System.Windows.Forms;
 using LionSDK;
 
 using SerialPortController;
-using Timer = System.Threading.Timer;
+using DAL;
+
 
 namespace LionSDKDotDemo
 {
@@ -26,6 +27,8 @@ namespace LionSDKDotDemo
 
         double HV_MaxKV = 80.0f; // 80kv
         int HV_MaxCurrent = 1000; //1000mA
+        UInt32 SensorCheckTime = 5000;
+        UInt32 SensorGetImageTime = 100000;
 
         List<string> rate = new List<string> { "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200" };
         List<string> databit = new List<string> { "8", "7", "6" };
@@ -51,12 +54,10 @@ namespace LionSDKDotDemo
 
             // UVC
             this.comboBoxModel.SelectedIndex = uvcMode.IndexOf(Config.Instance.ReadString("UVCSetting", "Mode"));
-            this.comboBoxBinning.SelectedIndex = uvcBinning.IndexOf(Config.Instance.ReadString("UVCSetting", "Binning"));
             this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
-            this.comboBoxRay.SelectedIndex = uvcXrayType.IndexOf(Config.Instance.ReadString("UVCSetting", "XrayType"));
+
 
             this.textBoxCheckTime.Text = Config.Instance.ReadString("UVCSetting", "CheckTimeout");
-            this.textBoxGetTime.Text = Config.Instance.ReadString("UVCSetting", "GetImageTimeout");
 
             // HV port
             PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
@@ -73,13 +74,6 @@ namespace LionSDKDotDemo
             int.TryParse(Config.Instance.ReadString("HVSettingPara", "KV_Current"), out HV_MaxCurrent);
 
 
-            // PLC port
-            PortPara PLCPortPara = Config.Instance.GetPortPara("PLCPortPara");
-            this.comboBoxPLCPort.SelectedIndex = port.IndexOf(PLCPortPara.PortName.ToString());
-            this.comboBoxPLCBaudRate.SelectedIndex = rate.IndexOf(PLCPortPara.BaudRate.ToString());
-            this.comboBoxPLCDataBit.SelectedIndex = databit.IndexOf(PLCPortPara.DataBits.ToString());
-            this.comboBoxPLCCheckBit.SelectedIndex = checkbit.IndexOf(PLCPortPara.Parity.ToString());
-            this.comboBoxPLCStopBit.SelectedIndex = stopbit.IndexOf(PLCPortPara.StopBits.ToString());
 
         }
 
@@ -93,18 +87,10 @@ namespace LionSDKDotDemo
             Config.Instance.WriteString("HVPortPara", "KV", this.textBoxKV.Text);
             Config.Instance.WriteString("HVPortPara", "Current", this.textBoxCurrent.Text);
 
-            Config.Instance.WriteString("PLCPortPara", "PortName", this.comboBoxPLCPort.Text);
-            Config.Instance.WriteString("PLCPortPara", "BaudRate", this.comboBoxPLCBaudRate.Text);
-            Config.Instance.WriteString("PLCPortPara", "Parity", this.comboBoxPLCCheckBit.Text);
-            Config.Instance.WriteString("PLCPortPara", "DataBits", this.comboBoxPLCDataBit.Text);
-            Config.Instance.WriteString("PLCPortPara", "StopBits", this.comboBoxPLCStopBit.Text);
-
             Config.Instance.WriteString("UVCSetting", "Mode", this.comboBoxModel.Text);
-            Config.Instance.WriteString("UVCSetting", "Binning", this.comboBoxBinning.Text);
             Config.Instance.WriteString("UVCSetting", "FPGA", this.comboBoxFilter.Text);
-            Config.Instance.WriteString("UVCSetting", "XrayType", this.comboBoxRay.Text);
             Config.Instance.WriteString("UVCSetting", "CheckTimeout", this.textBoxCheckTime.Text);
-            Config.Instance.WriteString("UVCSetting", "GetImageTimeout", this.textBoxGetTime.Text);
+
 
         }
 
@@ -123,9 +109,7 @@ namespace LionSDKDotDemo
 
             // 初始化参数
             this.comboBoxModel.DataSource = uvcMode;
-            this.comboBoxBinning.DataSource = uvcBinning;
             this.comboBoxFilter.DataSource = uvcFPGA;
-            this.comboBoxRay.DataSource = uvcXrayType;
 
             // 初始化串口参数
             this.comboBoxHVPort.Items.AddRange(port.ToArray());
@@ -133,12 +117,6 @@ namespace LionSDKDotDemo
             this.comBoxHVDataBit.Items.AddRange(databit.ToArray());
             this.comBoxHVCheckBit.Items.AddRange(checkbit.ToArray());
             this.comboBoxHVStopBit.Items.AddRange(stopbit.ToArray());
-
-            this.comboBoxPLCPort.Items.AddRange(port.ToArray());
-            this.comboBoxPLCBaudRate.Items.AddRange(rate.ToArray());
-            this.comboBoxPLCDataBit.Items.AddRange(databit.ToArray());
-            this.comboBoxPLCCheckBit.Items.AddRange(checkbit.ToArray());
-            this.comboBoxPLCStopBit.Items.AddRange(stopbit.ToArray());
 
 
             LoadConfig();
@@ -156,9 +134,9 @@ namespace LionSDKDotDemo
      
             
             // PLC 的串口状态设置
-            this.labelPLCPortStatus.Text = "●";
-            labelPLCPortStatus.ForeColor = Color.Red;
-            buttonConnectPLC.Text = "打开串口";
+            this.labelPLCStatus.Text = "●";
+            labelPLCStatus.ForeColor = Color.Red;
+            buttonConnectPLC.Text = "连接";
 
 
 
@@ -297,17 +275,17 @@ namespace LionSDKDotDemo
             //出图模式
             int nImgModel = this.comboBoxModel.SelectedIndex;
             //Binning模式
-            int nBinning = this.comboBoxBinning.SelectedIndex;
+            int nBinning = 0; //this.comboBoxBinning.SelectedIndex;
             //图像处理标志
             int nFilter = this.comboBoxFilter.SelectedIndex;
             //X-RAY类型
-            int nRay = this.comboBoxRay.SelectedIndex;
-            //检测图像时间
-            string strCheckTime = this.textBoxGetTime.Text;
-            UInt32 nCheckTime = Convert.ToUInt32(strCheckTime);
+            int nRay = 0;// this.comboBoxRay.SelectedIndex;
+                         //检测图像时间
+                        
+            UInt32 nCheckTime = SensorCheckTime; 
             //获取图像时间
-            string strGetTime = this.textBoxGetTime.Text;
-            UInt32 nGetTime = Convert.ToUInt32(strGetTime);
+ 
+            UInt32 nGetTime = SensorGetImageTime;
             //////
             UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
@@ -559,18 +537,20 @@ namespace LionSDKDotDemo
                         string strFile="";
                         int nBuf = 0;
                         byte[] data = null;
-                        if (LionCom.LU_SUCCESS == LionSDK.LionSDK.GetImage(ref luDev, 0, ref data, ref nBuf, ref strFile))
+                        int ret_image = LionSDK.LionSDK.GetImage(ref luDev, 0, ref data, ref nBuf, ref strFile);
+                        if (LionCom.LU_SUCCESS == ret_image)
                         {
                             if (!string.IsNullOrEmpty(strFile))
                             {
                                 this.pictureBoxImage.Load(strFile);
 
-                                if (tcpClient.IsConnected()) {
+                                if (tcpClient.IsConnected())
+                                {
                                     // 拷贝图像, 图像检测服务只支持jpg格式。
                                     strFile.Replace("bmp", "jpg");
 
-                                    string fileName = "D:\\temp\\"  + DateTime.Now.ToString("yyyyMMddhhmmss") + ".jpg";
-                                    File.Copy(strFile,  fileName, true);
+                                    string fileName = "D:\\temp\\" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".jpg";
+                                    File.Copy(strFile, fileName, true);
 
                                     // 分析图像
                                     TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage(fileName);
@@ -579,7 +559,8 @@ namespace LionSDKDotDemo
                                         string image = fileName.Replace(".jpg", "_OK.jpg");
                                         this.pictureBoxImage.Load(image);
                                     }
-                                    else if (ret == TcpClient.ANALYSIS_RESULT.NG) {
+                                    else if (ret == TcpClient.ANALYSIS_RESULT.NG)
+                                    {
                                         string image = fileName.Replace(".jpg", "_NG.jpg");
                                         this.pictureBoxImage.Load(image);
                                     }
@@ -590,12 +571,16 @@ namespace LionSDKDotDemo
                                 }
 
 
-                               
+
                             }
-                            else {
+                            else
+                            {
                                 MessageBox.Show("图像获取失败! 路径为空");
                             }
 
+                        }
+                        else {
+                            MessageBox.Show("图像获取失败!  " +  ret_image.ToString());
                         }
 
                     }
@@ -638,7 +623,6 @@ namespace LionSDKDotDemo
                 tcpClient.Disconnect();
                 HVSerialPortControler.Instance.XRayOff();
                 HVSerialPortControler.Instance.CloseControlSystem();
-                PLCPortController.Instance.CloseSerialPort();
 
             }
             catch {
@@ -727,46 +711,43 @@ namespace LionSDKDotDemo
         }
 
         /// <summary>
-        /// 连接PLC串口
+        /// 连接PLC
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+
+        static bool IsConnectedPLC = false;
         private void buttonConnectPLC_Click(object sender, EventArgs e)
         {
 
-            if (PLCPortController.Instance.IsOpen())
-            {
-                PLCPortController.Instance.CloseSerialPort();
-                labelPLCPortStatus.ForeColor = Color.Red;
-                buttonConnectPLC.Text = "打开串口";
+            
 
-            }
-            else
+            if (!IsConnectedPLC)
             {
                 try
                 {
-                    PLCPortController.Instance.OpenSerialPort(this.comboBoxPLCPort.Text,
-                       int.Parse(this.comboBoxPLCBaudRate.Text),
-                       (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comboBoxPLCCheckBit.Text),
-                       int.Parse(this.comboBoxPLCDataBit.Text),
-                       (System.IO.Ports.StopBits)int.Parse(this.comboBoxPLCStopBit.Text));
+                    
+                    bool ret = PLCHelperModbusTCP.fnGetInstance().ConnectServer(textBoxIpAddress.Text, textBoxPort.Text);
+
+                    if (!ret)
+                    {
+                        MessageBox.Show("PLC连接失败 " + textBoxIpAddress.Text + ":" + textBoxPort.Text);
+                        return;
+                    }
 
 
-                    labelPLCPortStatus.ForeColor = Color.Green;
-                    buttonConnectPLC.Text = "关闭串口";
+                    labelPLCStatus.ForeColor = Color.Green;
+                    buttonConnectPLC.Text = "已连接";
+                    IsConnectedPLC = true;
                 }
                 catch
                 {
-                    labelPLCPortStatus.ForeColor = Color.Red;
-                    buttonConnectPLC.Text = "打开串口";
-                    MessageBox.Show("PLC串口打开失败");
+                    labelPLCStatus.ForeColor = Color.Red;
+                    buttonConnectPLC.Text = "连接";
+                    MessageBox.Show("PLC连接失败 " + textBoxIpAddress.Text + ":" + textBoxPort.Text);
                 }
 
             }
-
-
-
-
         }
 
 
@@ -778,7 +759,7 @@ namespace LionSDKDotDemo
                 return;
             }
             double kv = 0;
-            if (double.TryParse(textBoxKV.Text.ToString(), out kv) && kv <= HV_MaxKV)
+            if (double.TryParse(textBoxKV.Text.ToString(), out kv) && kv < HV_MaxKV)
             {
                 HVSerialPortControler.Instance.SetKV(kv);
             }
@@ -798,7 +779,7 @@ namespace LionSDKDotDemo
                 return;
             }
 
-            if (int.TryParse(textBoxCurrent.Text.ToString(), out current) && current <= HV_MaxCurrent)
+            if (int.TryParse(textBoxCurrent.Text.ToString(), out current) && current < HV_MaxCurrent)
             {
                 HVSerialPortControler.Instance.SetCurrent(current);
             }
@@ -852,7 +833,7 @@ namespace LionSDKDotDemo
                     tcpClient.Disconnect();
                     HVSerialPortControler.Instance.XRayOff();
                     HVSerialPortControler.Instance.CloseControlSystem();
-                    PLCPortController.Instance.CloseSerialPort();
+                    PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
 
                 }
                 catch
@@ -866,6 +847,27 @@ namespace LionSDKDotDemo
                 // 不关闭窗体
                 e.Cancel = true;
             }
+        }
+
+        private void buttonM1601_Click(object sender, EventArgs e)
+        {
+
+            /// 往M1610 写值可以触发 M2010
+            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1601, true);
+            bool ret =  PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
+            Console.WriteLine("M2010 " + ret.ToString());
+        }
+
+        private void buttonD999_Click(object sender, EventArgs e)
+        {
+            Int32 ret = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt32(999);
+
+            Console.WriteLine("D999 " + ret.ToString());
+
+            Int16 ret2 = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999) ;
+
+            Console.WriteLine("D999 " + ret2.ToString());
+
         }
     }
 }

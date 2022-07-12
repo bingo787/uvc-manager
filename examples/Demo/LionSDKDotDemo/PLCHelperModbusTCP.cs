@@ -49,7 +49,10 @@ namespace DAL
             return destinationByte;
         }
 
-
+        public void DisConnectServer() {
+            socketClient.Disconnect(false);
+        }
+            
         public bool ConnectServer(string IPstr, string port)
         {
             try

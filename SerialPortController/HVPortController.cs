@@ -366,7 +366,8 @@ namespace SerialPortController
             //Comm Port Echo  FREV  N/A  <STX>XNNN<CR>  XNNN = 2000 
             if (message.StartsWith("2000"))
             {
-                Connected.Invoke();
+
+              //  Connected.Invoke();
                 return;
             }
 

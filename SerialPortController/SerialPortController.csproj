@@ -95,7 +95,6 @@
     <Compile Include="HVPortController.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="PLCPortController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
