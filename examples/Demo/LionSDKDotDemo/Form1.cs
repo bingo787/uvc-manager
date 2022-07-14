@@ -71,7 +71,9 @@ namespace LionSDKDotDemo
             this.textBoxKV.Text = Config.Instance.ReadString("HVSettingPara", "KV");
 
             double.TryParse(Config.Instance.ReadString("HVSettingPara", "KV_Max"), out HV_MaxKV);
-            int.TryParse(Config.Instance.ReadString("HVSettingPara", "KV_Current"), out HV_MaxCurrent);
+            int.TryParse(Config.Instance.ReadString("HVSettingPara", "Current_Max"), out HV_MaxCurrent);
+
+            Console.WriteLine("KV_Max = {0}, Current_Max = {1}", HV_MaxKV, HV_MaxCurrent);
 
 
 
@@ -84,8 +86,8 @@ namespace LionSDKDotDemo
             Config.Instance.WriteString("HVPortPara", "DataBits", this.comBoxHVDataBit.Text);
             Config.Instance.WriteString("HVPortPara", "StopBits", this.comboBoxHVStopBit.Text);
 
-            Config.Instance.WriteString("HVPortPara", "KV", this.textBoxKV.Text);
-            Config.Instance.WriteString("HVPortPara", "Current", this.textBoxCurrent.Text);
+            Config.Instance.WriteString("HVSettingPara", "KV", this.textBoxKV.Text);
+            Config.Instance.WriteString("HVSettingPara", "Current", this.textBoxCurrent.Text);
 
             Config.Instance.WriteString("UVCSetting", "Mode", this.comboBoxModel.Text);
             Config.Instance.WriteString("UVCSetting", "FPGA", this.comboBoxFilter.Text);
@@ -131,14 +133,12 @@ namespace LionSDKDotDemo
             this.labelXrayStatus.ForeColor = Color.Red;
             
 
-     
-            
-            // PLC 的串口状态设置
+            // PLC  状态设置
             this.labelPLCStatus.Text = "●";
             labelPLCStatus.ForeColor = Color.Red;
             buttonConnectPLC.Text = "连接";
 
-
+            buttonClearImage_Click(null, null);
 
         }
 
@@ -759,14 +759,21 @@ namespace LionSDKDotDemo
                 return;
             }
             double kv = 0;
-            if (double.TryParse(textBoxKV.Text.ToString(), out kv) && kv < HV_MaxKV)
+
+            if (!double.TryParse(textBoxKV.Text.ToString(), out kv)) {
+
+                MessageBox.Show("输入的参数非法");
+                return;
+            }
+            if (kv > HV_MaxKV)
             {
-                HVSerialPortControler.Instance.SetKV(kv);
+                MessageBox.Show("输入的参数超过最大值 " + HV_MaxKV.ToString());
+                return;
             }
-            else {
-                MessageBox.Show("输入的参数非法或者超过上线");
-            }
-           
+
+
+            HVSerialPortControler.Instance.SetKV(kv);
+
         }
 
 
@@ -779,14 +786,20 @@ namespace LionSDKDotDemo
                 return;
             }
 
-            if (int.TryParse(textBoxCurrent.Text.ToString(), out current) && current < HV_MaxCurrent)
+            if (!int.TryParse(textBoxKV.Text.ToString(), out current))
             {
-                HVSerialPortControler.Instance.SetCurrent(current);
+
+                MessageBox.Show("输入的参数非法");
+                return;
             }
-            else
+            if (current > HV_MaxCurrent)
             {
-                MessageBox.Show("输入的参数非法或者超过上线");
+                MessageBox.Show("输入的参数超过最大值 " + HV_MaxCurrent.ToString());
+                return;
             }
+
+
+            HVSerialPortControler.Instance.SetCurrent(current);
         }
 
         private void buttonXrayOnOff_Click(object sender, EventArgs e)
@@ -856,17 +869,19 @@ namespace LionSDKDotDemo
             PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1601, true);
             bool ret =  PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
             Console.WriteLine("M2010 " + ret.ToString());
+
+            Int16 ret2 = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
+            Console.WriteLine("D999 " + ret2.ToString());
         }
 
-        private void buttonD999_Click(object sender, EventArgs e)
+        private void buttonClearImage_Click(object sender, EventArgs e)
         {
-            Int32 ret = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt32(999);
 
-            Console.WriteLine("D999 " + ret.ToString());
-
-            Int16 ret2 = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999) ;
-
-            Console.WriteLine("D999 " + ret2.ToString());
+            /// 清空图像可以加载一张提前准备好的图像。
+            pictureBoxImage.Load("no_image.png");
+            pictureBoxImage.Invalidate();
+            pictureBoxImage1.Load("no_image.png");
+            pictureBoxImage1.Invalidate();
 
         }
     }

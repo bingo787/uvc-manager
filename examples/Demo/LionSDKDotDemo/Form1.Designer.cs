@@ -655,7 +655,7 @@
             this.buttonClearImage.TabIndex = 26;
             this.buttonClearImage.Text = "清空显示";
             this.buttonClearImage.UseVisualStyleBackColor = true;
-            this.buttonClearImage.Click += new System.EventHandler(this.buttonD999_Click);
+            this.buttonClearImage.Click += new System.EventHandler(this.buttonClearImage_Click);
             // 
             // buttonM1601
             // 
