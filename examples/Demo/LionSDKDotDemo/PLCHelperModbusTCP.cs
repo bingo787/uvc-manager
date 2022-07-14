@@ -36,6 +36,7 @@ namespace DAL
         public static Socket socketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
   
         int delaytime = 20;
+        public bool IsConnected = false;
        
         private byte[] ConvertBytes(string sourceStr)
         {
@@ -51,6 +52,7 @@ namespace DAL
 
         public void DisConnectServer() {
             socketClient.Disconnect(false);
+            IsConnected = false;
         }
             
         public bool ConnectServer(string IPstr, string port)
@@ -61,6 +63,7 @@ namespace DAL
                 IPEndPoint point = new IPEndPoint(ip, Convert.ToInt32(port));
                 socketClient.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 1000);
                 socketClient.Connect(point);
+                IsConnected = true;
                 return true;
             }
             catch (Exception ex)

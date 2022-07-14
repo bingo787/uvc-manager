@@ -524,6 +524,9 @@ namespace LionSDKDotDemo
             if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null)
                 return;
             //同步获取图像
+
+
+
             UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
             for (int d = 0; d < listDev.Count; d++)
@@ -535,6 +538,8 @@ namespace LionSDKDotDemo
                     unsafe
                     {
                         string strFile="";
+
+
                         int nBuf = 0;
                         byte[] data = null;
                         int ret_image = LionSDK.LionSDK.GetImage(ref luDev, 0, ref data, ref nBuf, ref strFile);
@@ -542,26 +547,52 @@ namespace LionSDKDotDemo
                         {
                             if (!string.IsNullOrEmpty(strFile))
                             {
+
                                 this.pictureBoxImage.Load(strFile);
 
+                                string copyFileName = "D:\\temp\\";
+
+                                // 拷贝图像
+                                strFile.Replace("bmp", "jpg");
+
+                                copyFileName += DateTime.Now.ToString("yyyyMMddhhmmss");
+                                copyFileName += "_";
+
+                                // 如果PLC已经连接，则读取地址，命名图片
+                                //  202121222020_999.jpg
+                                if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+                                {
+
+                                    Int16 pos = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
+                                    Console.WriteLine("D999 " + pos.ToString());
+                                    copyFileName += pos.ToString();
+                                }
+                                else
+                                {
+                                    copyFileName += "x";
+
+                                }
+                                copyFileName += ".jpg";
+
+
+                                File.Copy(strFile, copyFileName, true);
+
+                                Console.WriteLine("文件已拷贝到 " + copyFileName);
+                                
+                                // 如果图片处理服务已经连接 就分析图像
                                 if (tcpClient.IsConnected())
                                 {
-                                    // 拷贝图像, 图像检测服务只支持jpg格式。
-                                    strFile.Replace("bmp", "jpg");
-
-                                    string fileName = "D:\\temp\\" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".jpg";
-                                    File.Copy(strFile, fileName, true);
 
                                     // 分析图像
-                                    TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage(fileName);
+                                    TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage(copyFileName);
                                     if (ret == TcpClient.ANALYSIS_RESULT.OK)
                                     {
-                                        string image = fileName.Replace(".jpg", "_OK.jpg");
+                                        string image = copyFileName.Replace(".jpg", "_OK.jpg");
                                         this.pictureBoxImage.Load(image);
                                     }
                                     else if (ret == TcpClient.ANALYSIS_RESULT.NG)
                                     {
-                                        string image = fileName.Replace(".jpg", "_NG.jpg");
+                                        string image = copyFileName.Replace(".jpg", "_NG.jpg");
                                         this.pictureBoxImage.Load(image);
                                     }
                                     else
@@ -569,8 +600,6 @@ namespace LionSDKDotDemo
                                         MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
                                     }
                                 }
-
-
 
                             }
                             else
@@ -870,8 +899,7 @@ namespace LionSDKDotDemo
             bool ret =  PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
             Console.WriteLine("M2010 " + ret.ToString());
 
-            Int16 ret2 = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
-            Console.WriteLine("D999 " + ret2.ToString());
+
         }
 
         private void buttonClearImage_Click(object sender, EventArgs e)
