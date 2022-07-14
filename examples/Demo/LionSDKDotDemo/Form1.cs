@@ -203,6 +203,8 @@ namespace LionSDKDotDemo
 
         }
 
+        private uint[] ImageIds = {0,1 };
+
         private void buttonEnumDev_Click(object sender, EventArgs e)
         {
             this.treeViewDevice.Nodes.Clear();
@@ -220,7 +222,9 @@ namespace LionSDKDotDemo
                     string strText = System.Text.Encoding.ASCII.GetString(luDev.uvcIdentity.Name);
                     TreeNode node = new TreeNode();
                     node.Text = strText;
+                    ImageIds[d] = luDev.uvcIdentity.Id;
                     node.Name = Convert.ToString(luDev.uvcIdentity.Id);
+
                     root.Nodes.Add(node);
                 }
             }
@@ -534,14 +538,13 @@ namespace LionSDKDotDemo
         /// <param name="e"></param>
         private void buttonAsynchronous_Click(object sender, EventArgs e)
         {
-            if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null)
-                return;
-            //同步获取图像
-            UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
-            //
+            //if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null) {
+            //    MessageBox.Show("请先选择设备");
+            //    return;
+            //}
+
             for (int d = 0; d < listDev.Count; d++)
             {
-                if (listDev[d].uvcIdentity.Id == id)
                 {
                     LU_DEVICE luDev = listDev[d];
                     //
@@ -555,7 +558,6 @@ namespace LionSDKDotDemo
                         }
 
                     }
-                    break;
                 }
             }
         }
@@ -567,32 +569,50 @@ namespace LionSDKDotDemo
         /// <param name="e"></param>
         private void buttonSynchronous_Click(object sender, EventArgs e)
         {
-            if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null)
-                return;
+
+            Console.WriteLine("同步获取图像开始...");
+            //if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null)
+            //{
+            //    MessageBox.Show("请先选择设备");
+            //    return;
+            //}
             //同步获取图像
 
-            UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
             for (int d = 0; d < listDev.Count; d++)
             {
-                if (listDev[d].uvcIdentity.Id == id)
+               // Console.WriteLine("listDev[d].uvcIdentity.Id  {0}", listDev[d].uvcIdentity.Id);
                 {
                     LU_DEVICE luDev = listDev[d];
-                    //
                     unsafe
                     {
                         string strFile="";
 
-
                         int nBuf = 0;
                         byte[] data = null;
                         int ret_image = LionSDK.LionSDK.GetImage(ref luDev, 0, ref data, ref nBuf, ref strFile);
+
                         if (LionCom.LU_SUCCESS == ret_image)
                         {
                             if (!string.IsNullOrEmpty(strFile))
                             {
                                 // 显示图像
-                                this.pictureBoxImage.Load(strFile);
+
+
+                                if (luDev.uvcIdentity.Id == ImageIds[0])
+                                {
+                                    this.pictureBoxImage.Load(strFile);
+                                }
+                                else if (luDev.uvcIdentity.Id == ImageIds[1])
+                                {
+                                    this.pictureBoxImage1.Load(strFile);
+                                }
+                                else
+                                {
+                                    MessageBox.Show("请重新枚举设备!");
+                                    return;
+                                }
+
 
                                 // 处理图像
                                 ProcessImage(strFile.Replace("bmp", "jpg"));    
@@ -608,7 +628,7 @@ namespace LionSDKDotDemo
                         }
 
                     }
-                    break;
+                    //break;
                 }
             }
         }
@@ -673,8 +693,20 @@ namespace LionSDKDotDemo
             if (!string.IsNullOrEmpty(pFile)) {
 
                 // 显示
-                this.pictureBoxImage.Load(pFile);
 
+                if (device.uvcIdentity.Id == ImageIds[0])
+                {
+                    this.pictureBoxImage.Load(pFile);
+                }
+                else if (device.uvcIdentity.Id == ImageIds[1])
+                {
+                    this.pictureBoxImage1.Load(pFile);
+                }
+                else {
+                    MessageBox.Show("请重新枚举设备!");
+                    return 0 ;
+                }
+                
                 // 处理
                 ProcessImage(pFile.Replace("bmp", "jpg"));
             }
