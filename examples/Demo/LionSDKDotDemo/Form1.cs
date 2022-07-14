@@ -41,7 +41,8 @@ namespace LionSDKDotDemo
         List<string> uvcFPGA = new List<string> {"Raw", "FPGA" };
         List<string> uvcXrayType = new List<string> { "VTC-D", "VTC-A"};
 
-
+        // 读取PLC状态的线程`
+        private Thread monitorPlcCommandThread; 
         // 控制器对象
         private static TcpClient tcpClient = new TcpClient();
 
@@ -75,6 +76,10 @@ namespace LionSDKDotDemo
 
             Console.WriteLine("KV_Max = {0}, Current_Max = {1}", HV_MaxKV, HV_MaxCurrent);
 
+            // PLC 参数设置
+
+            this.textBoxIpAddress.Text = Config.Instance.ReadString("PLCPara", "IP");
+            this.textBoxPort.Text = Config.Instance.ReadString("PLCPara", "Port");
 
 
         }
@@ -93,6 +98,42 @@ namespace LionSDKDotDemo
             Config.Instance.WriteString("UVCSetting", "FPGA", this.comboBoxFilter.Text);
             Config.Instance.WriteString("UVCSetting", "CheckTimeout", this.textBoxCheckTime.Text);
 
+            Config.Instance.WriteString("PLCPara", "IP", this.textBoxIpAddress.Text);
+            Config.Instance.WriteString("PLCPara", "Port", this.textBoxPort.Text);
+
+        }
+
+
+        private void MonitorPLC() {
+
+            while (true){
+
+                try
+                {
+                    bool ret = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
+                    Console.WriteLine("M2010 " + ret.ToString());
+
+                    if (ret == true)
+                    {
+                        // 拍照
+
+                        buttonAsynchronous_Click(null, null);
+                    }
+                    else
+                    {
+
+                        // 不拍照
+                    }
+                }
+                catch {
+                    MessageBox.Show("PLC M2010读取异常, 请重新连接PLC");
+                    break;
+                }
+
+             
+            }
+
+          
 
         }
 
@@ -137,6 +178,10 @@ namespace LionSDKDotDemo
             this.labelPLCStatus.Text = "●";
             labelPLCStatus.ForeColor = Color.Red;
             buttonConnectPLC.Text = "连接";
+
+            // 曝光时间设置暂时不支持
+            this.textBoxCheckTime.Enabled = false;
+
 
             buttonClearImage_Click(null, null);
 
@@ -503,9 +548,10 @@ namespace LionSDKDotDemo
                     unsafe
                     {
                         LionCom.LionImageCallback callback = new LionCom.LionImageCallback(AsyncImageCallback);
-                        if (LionCom.LU_SUCCESS == LionSDK.LionSDK.GetImage(ref luDev, 0, callback))
+                        int ret = LionSDK.LionSDK.GetImage(ref luDev, 0, callback);
+                        if (LionCom.LU_SUCCESS != ret)
                         {
-                            
+                            MessageBox.Show("异步采集图像失败 " + ret.ToString());
                         }
 
                     }
@@ -524,8 +570,6 @@ namespace LionSDKDotDemo
             if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null)
                 return;
             //同步获取图像
-
-
 
             UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
@@ -547,60 +591,11 @@ namespace LionSDKDotDemo
                         {
                             if (!string.IsNullOrEmpty(strFile))
                             {
-
+                                // 显示图像
                                 this.pictureBoxImage.Load(strFile);
 
-                                string copyFileName = "D:\\temp\\";
-
-                                // 拷贝图像
-                                strFile.Replace("bmp", "jpg");
-
-                                copyFileName += DateTime.Now.ToString("yyyyMMddhhmmss");
-                                copyFileName += "_";
-
-                                // 如果PLC已经连接，则读取地址，命名图片
-                                //  202121222020_999.jpg
-                                if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
-                                {
-
-                                    Int16 pos = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
-                                    Console.WriteLine("D999 " + pos.ToString());
-                                    copyFileName += pos.ToString();
-                                }
-                                else
-                                {
-                                    copyFileName += "x";
-
-                                }
-                                copyFileName += ".jpg";
-
-
-                                File.Copy(strFile, copyFileName, true);
-
-                                Console.WriteLine("文件已拷贝到 " + copyFileName);
-                                
-                                // 如果图片处理服务已经连接 就分析图像
-                                if (tcpClient.IsConnected())
-                                {
-
-                                    // 分析图像
-                                    TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage(copyFileName);
-                                    if (ret == TcpClient.ANALYSIS_RESULT.OK)
-                                    {
-                                        string image = copyFileName.Replace(".jpg", "_OK.jpg");
-                                        this.pictureBoxImage.Load(image);
-                                    }
-                                    else if (ret == TcpClient.ANALYSIS_RESULT.NG)
-                                    {
-                                        string image = copyFileName.Replace(".jpg", "_NG.jpg");
-                                        this.pictureBoxImage.Load(image);
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
-                                    }
-                                }
-
+                                // 处理图像
+                                ProcessImage(strFile.Replace("bmp", "jpg"));    
                             }
                             else
                             {
@@ -619,11 +614,71 @@ namespace LionSDKDotDemo
         }
 
 
+        private void ProcessImage(string imageFile) {
+
+
+            string copyFileName = "D:\\temp\\";
+
+            copyFileName += DateTime.Now.ToString("yyyyMMddhhmmss");
+            copyFileName += "_";
+
+            // 如果PLC已经连接，则读取地址，命名图片
+            //  202121222020_999.jpg
+            if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+            {
+
+                Int16 pos = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
+                Console.WriteLine("D999 " + pos.ToString());
+                copyFileName += pos.ToString();
+            }
+            else
+            {
+                copyFileName += "x";
+
+            }
+            copyFileName += ".jpg";
+
+
+            File.Copy(imageFile, copyFileName, true);
+
+            Console.WriteLine("文件已拷贝到 " + copyFileName);
+
+            // 如果图片处理服务已经连接 就分析图像
+            if (tcpClient.IsConnected())
+            {
+
+                // 分析图像
+                TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage(copyFileName);
+                if (ret == TcpClient.ANALYSIS_RESULT.OK)
+                {
+                    string image = copyFileName.Replace(".jpg", "_OK.jpg");
+                    this.pictureBoxImage.Load(image);
+                }
+                else if (ret == TcpClient.ANALYSIS_RESULT.NG)
+                {
+                    string image = copyFileName.Replace(".jpg", "_NG.jpg");
+                    this.pictureBoxImage.Load(image);
+                }
+                else
+                {
+                    MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
+                }
+            }
+
+        }
+
 
         private int AsyncImageCallback(LU_DEVICE device, byte[] pImgData, int nDataBuf, string pFile)
         {
-            if(!string.IsNullOrEmpty(pFile))
+            if (!string.IsNullOrEmpty(pFile)) {
+
+                // 显示
                 this.pictureBoxImage.Load(pFile);
+
+                // 处理
+                ProcessImage(pFile.Replace("bmp", "jpg"));
+            }
+
             return 0;
         }
 
@@ -768,6 +823,14 @@ namespace LionSDKDotDemo
                     labelPLCStatus.ForeColor = Color.Green;
                     buttonConnectPLC.Text = "已连接";
                     IsConnectedPLC = true;
+
+                   monitorPlcCommandThread = new Thread(new ThreadStart(delegate {
+                         MonitorPLC();
+                    }));
+
+                    monitorPlcCommandThread.Start();
+
+
                 }
                 catch
                 {
