@@ -39,7 +39,6 @@ namespace LionSDKDotDemo
         List<string> uvcMode = new List<string> {"AC", "VTC" };
         List<string> uvcBinning = new List<string> { "No", "Binning"};
         List<string> uvcFPGA = new List<string> {"Raw", "FPGA" };
-        List<string> uvcXrayType = new List<string> { "VTC-D", "VTC-A"};
 
         // 读取PLC状态的线程`
         private Thread monitorPlcCommandThread; 
@@ -164,17 +163,14 @@ namespace LionSDKDotDemo
 
             LoadConfig();
 
-            // 设置高压状态
+            // 高压初始化
             this.labelHVPortLED.Text = "●";
-            // 高压未连接的话，无法设置电压电流
             TriggerHVPortStatus(false);
-
-
             this.labelXrayStatus.Text = "●";
             this.labelXrayStatus.ForeColor = Color.Red;
             
 
-            // PLC  状态设置
+            // PLC初始化
             this.labelPLCStatus.Text = "●";
             labelPLCStatus.ForeColor = Color.Red;
             buttonConnectPLC.Text = "连接";
@@ -183,10 +179,17 @@ namespace LionSDKDotDemo
             this.textBoxCheckTime.Enabled = false;
 
 
+            // 清空显示
             buttonClearImage_Click(null, null);
+
+            // 启动线程刷新状态栏
+            new Thread(()=> { UpdateStatusBar(); }).Start();
 
         }
 
+        private void UpdateStatusBar() {
+
+        }
         private void TriggerHVPortStatus(bool open) {
             if (open)
             {
@@ -543,6 +546,9 @@ namespace LionSDKDotDemo
             //    return;
             //}
 
+            this.labelStateInfo.Text = "正在采集图像";
+            this.labelStateInfo.ForeColor = Color.Green;
+
             for (int d = 0; d < listDev.Count; d++)
             {
                 {
@@ -570,15 +576,9 @@ namespace LionSDKDotDemo
         private void buttonSynchronous_Click(object sender, EventArgs e)
         {
 
-            Console.WriteLine("同步获取图像开始...");
-            //if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null)
-            //{
-            //    MessageBox.Show("请先选择设备");
-            //    return;
-            //}
-            //同步获取图像
+            this.labelStateInfo.Text = "正在采集图像";
+            this.labelStateInfo.ForeColor = Color.Green;
 
-            //
             for (int d = 0; d < listDev.Count; d++)
             {
                // Console.WriteLine("listDev[d].uvcIdentity.Id  {0}", listDev[d].uvcIdentity.Id);
@@ -631,36 +631,37 @@ namespace LionSDKDotDemo
                     //break;
                 }
             }
+
+            this.labelStateInfo.Text = "图像采集完成";
+            this.labelStateInfo.ForeColor = Color.Green;
         }
 
 
         private void ProcessImage(string imageFile) {
+            // 原始文件名为 luvc_camera_7416.jpg
+            // 拷贝文件名： datetime_positon_cameraid.jpg;
 
+            this.labelStateInfo.Text = "正在处理图像";
+            this.labelStateInfo.ForeColor = Color.Green;
 
-            string copyFileName = "D:\\temp\\";
+            string timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
+            string plcPostion = "32768"; // Int16 最大值
 
-            copyFileName += DateTime.Now.ToString("yyyyMMddhhmmss");
-            copyFileName += "_";
+            string newImageFileName = imageFile.Replace("luvc", timestamp);
 
             // 如果PLC已经连接，则读取地址，命名图片
-            //  202121222020_999.jpg
             if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
             {
-
                 Int16 pos = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
                 Console.WriteLine("D999 " + pos.ToString());
-                copyFileName += pos.ToString();
+                plcPostion = pos.ToString();
             }
-            else
-            {
-                copyFileName += "x";
 
-            }
-            copyFileName += ".jpg";
+            newImageFileName = newImageFileName.Replace("camera", plcPostion);
 
 
+            string copyFileName = "D:\\temp\\" + newImageFileName;
             File.Copy(imageFile, copyFileName, true);
-
             Console.WriteLine("文件已拷贝到 " + copyFileName);
 
             // 如果图片处理服务已经连接 就分析图像
@@ -685,14 +686,17 @@ namespace LionSDKDotDemo
                 }
             }
 
+            this.labelStateInfo.Text = "图像处理完成";
+            this.labelStateInfo.ForeColor = Color.Black;
+
         }
 
 
         private int AsyncImageCallback(LU_DEVICE device, byte[] pImgData, int nDataBuf, string pFile)
         {
+
             if (!string.IsNullOrEmpty(pFile)) {
 
-                // 显示
 
                 if (device.uvcIdentity.Id == ImageIds[0])
                 {
@@ -706,9 +710,13 @@ namespace LionSDKDotDemo
                     MessageBox.Show("请重新枚举设备!");
                     return 0 ;
                 }
-                
+
                 // 处理
-                ProcessImage(pFile.Replace("bmp", "jpg"));
+                this.BeginInvoke(new Action(() =>
+                {
+                    ProcessImage(pFile.Replace("bmp", "jpg"));
+                }));
+               
             }
 
             return 0;
@@ -771,22 +779,6 @@ namespace LionSDKDotDemo
            
         }
 
-        private void buttonAnalyse_Click(object sender, EventArgs e)
-        {
-            // 分析图像
-            TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage("D://temp//001.jpg");
-            if ((int)ret >= 0)
-            {
-                this.pictureBoxImage.Load("D://temp//001_OK.jpg");
-            }
-            else
-            {
-                MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
-            }
-
-        }
-
-
 
         /// <summary>
         /// 连接高压串口
@@ -835,9 +827,6 @@ namespace LionSDKDotDemo
         static bool IsConnectedPLC = false;
         private void buttonConnectPLC_Click(object sender, EventArgs e)
         {
-
-            
-
             if (!IsConnectedPLC)
             {
                 try
@@ -854,6 +843,7 @@ namespace LionSDKDotDemo
 
                     labelPLCStatus.ForeColor = Color.Green;
                     buttonConnectPLC.Text = "已连接";
+                    labelStatusBarPLC.Text = "PLC-已连接";
                     IsConnectedPLC = true;
 
                    monitorPlcCommandThread = new Thread(new ThreadStart(delegate {
@@ -1007,5 +997,104 @@ namespace LionSDKDotDemo
             pictureBoxImage1.Invalidate();
 
         }
+
+        /// <summary>
+        /// 高压温度监控
+        /// </summary>
+        /// <param name="arg"></param>
+        void ControlSystem_TemperatureChanged(double arg)
+        {
+
+            this.BeginInvoke(new Action(() =>
+            {
+                labelHV_Temp.Text = arg.ToString("f2") + "℃";
+                //this.Log("高压温度: " + lblHV_Temperature.Content.ToString());
+            }));
+        }
+
+        /// <summary>
+        /// 电流监控
+        /// </summary>
+        /// <param name="arg"></param>
+        void ControlSystem_CurrentChanged(uint arg)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                labelHV_Current.Text = arg + "uA";
+            }));
+        }
+        /// <summary>
+        /// 电压监控
+        /// </summary>
+        /// <param name="arg"></param>
+        void ControlSystem_VoltageChanged(double arg)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                labelHV_KV.Text = arg + "kV";
+            }));
+        }
+        /// <summary>
+        /// Xray曝光监控
+        /// </summary>
+        /// <param name="arg"></param>
+        void ControlSystem_XRayOnChanged(bool arg)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                if (arg)
+                {
+                    labelXrayOnOff.Text = "XRay ON";
+                    labelXrayOnOff.ForeColor = Color.Yellow;
+                }
+                else
+                {
+                    labelXrayOnOff.Text = "XRay OFF";
+                    labelXrayOnOff.ForeColor = Color.Black;
+
+                }
+            }));
+
+        }
+        void ControlSystem_Connected() {
+            labelHVConn.Text = "高压-已连接";
+            labelHVConn.ForeColor = Color.Black;
+        }
+
+        /// <summary>
+        /// 高压出错信息监控
+        /// </summary>
+        /// <param name="report"></param>
+        void ControlSystem_StateReported(string report)
+        {
+            this.BeginInvoke(new Action(() =>
+            {
+                labelHVError.Text = report;
+                labelHVError.ForeColor = Color.Red;
+            }));
+        }
+        /// <summary>
+        /// 初始化串口控制器
+        /// </summary>
+        private void InitilizeControlSystem()
+        {
+            try
+            {
+
+                HVSerialPortControler.Instance.XRayOnChanged += ControlSystem_XRayOnChanged;
+                HVSerialPortControler.Instance.VoltageChanged += ControlSystem_VoltageChanged;
+                HVSerialPortControler.Instance.CurrentChanged += ControlSystem_CurrentChanged;
+                HVSerialPortControler.Instance.TemperatureChanged += ControlSystem_TemperatureChanged;
+                HVSerialPortControler.Instance.StateReported += ControlSystem_StateReported;
+                HVSerialPortControler.Instance.Connected += ControlSystem_Connected;
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("高压通讯串口初始化失败，请检查串口设置\nInitialization of high voltage communication serial port failed. Please check the serial port settings.");
+                labelHVConn.Text = "高压-已连接";
+            }
+        }
+
     }
 }

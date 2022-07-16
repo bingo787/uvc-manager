@@ -51,12 +51,10 @@
             this.label13 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.buttonEnumDev = new System.Windows.Forms.Button();
-            this.buttonGetDevState = new System.Windows.Forms.Button();
             this.buttonAbandon = new System.Windows.Forms.Button();
             this.buttonSynchronous = new System.Windows.Forms.Button();
             this.buttonExit = new System.Windows.Forms.Button();
             this.buttonConnectServer = new System.Windows.Forms.Button();
-            this.buttonAnalyse = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.labelXrayStatus = new System.Windows.Forms.Label();
             this.buttonXrayOnOff = new System.Windows.Forms.Button();
@@ -84,7 +82,15 @@
             this.buttonM1601 = new System.Windows.Forms.Button();
             this.buttonAsynchronous = new System.Windows.Forms.Button();
             this.groupBoxStatusBar = new System.Windows.Forms.GroupBox();
+            this.labelDatetime = new System.Windows.Forms.Label();
+            this.labelStatusBarPLC = new System.Windows.Forms.Label();
+            this.labelXrayOnOff = new System.Windows.Forms.Label();
             this.labelStateInfo = new System.Windows.Forms.Label();
+            this.labelHV_KV = new System.Windows.Forms.Label();
+            this.labelHV_Current = new System.Windows.Forms.Label();
+            this.labelHV_Temp = new System.Windows.Forms.Label();
+            this.labelHVError = new System.Windows.Forms.Label();
+            this.labelHVConn = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -336,7 +342,7 @@
             // 
             // buttonEnumDev
             // 
-            this.buttonEnumDev.Location = new System.Drawing.Point(60, 19);
+            this.buttonEnumDev.Location = new System.Drawing.Point(49, 34);
             this.buttonEnumDev.Margin = new System.Windows.Forms.Padding(2);
             this.buttonEnumDev.Name = "buttonEnumDev";
             this.buttonEnumDev.Size = new System.Drawing.Size(86, 23);
@@ -345,20 +351,9 @@
             this.buttonEnumDev.UseVisualStyleBackColor = true;
             this.buttonEnumDev.Click += new System.EventHandler(this.buttonEnumDev_Click);
             // 
-            // buttonGetDevState
-            // 
-            this.buttonGetDevState.Location = new System.Drawing.Point(60, 66);
-            this.buttonGetDevState.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonGetDevState.Name = "buttonGetDevState";
-            this.buttonGetDevState.Size = new System.Drawing.Size(86, 23);
-            this.buttonGetDevState.TabIndex = 18;
-            this.buttonGetDevState.Text = "获取设备状态";
-            this.buttonGetDevState.UseVisualStyleBackColor = true;
-            this.buttonGetDevState.Click += new System.EventHandler(this.buttonGetDevState_Click);
-            // 
             // buttonAbandon
             // 
-            this.buttonAbandon.Location = new System.Drawing.Point(60, 254);
+            this.buttonAbandon.Location = new System.Drawing.Point(49, 294);
             this.buttonAbandon.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAbandon.Name = "buttonAbandon";
             this.buttonAbandon.Size = new System.Drawing.Size(86, 23);
@@ -369,7 +364,7 @@
             // 
             // buttonSynchronous
             // 
-            this.buttonSynchronous.Location = new System.Drawing.Point(60, 160);
+            this.buttonSynchronous.Location = new System.Drawing.Point(49, 190);
             this.buttonSynchronous.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSynchronous.Name = "buttonSynchronous";
             this.buttonSynchronous.Size = new System.Drawing.Size(86, 23);
@@ -380,7 +375,7 @@
             // 
             // buttonExit
             // 
-            this.buttonExit.Location = new System.Drawing.Point(60, 438);
+            this.buttonExit.Location = new System.Drawing.Point(49, 446);
             this.buttonExit.Margin = new System.Windows.Forms.Padding(2);
             this.buttonExit.Name = "buttonExit";
             this.buttonExit.Size = new System.Drawing.Size(86, 23);
@@ -391,23 +386,13 @@
             // 
             // buttonConnectServer
             // 
-            this.buttonConnectServer.Location = new System.Drawing.Point(60, 113);
+            this.buttonConnectServer.Location = new System.Drawing.Point(49, 138);
             this.buttonConnectServer.Name = "buttonConnectServer";
             this.buttonConnectServer.Size = new System.Drawing.Size(86, 23);
             this.buttonConnectServer.TabIndex = 23;
             this.buttonConnectServer.Text = "连接分析服务";
             this.buttonConnectServer.UseVisualStyleBackColor = true;
             this.buttonConnectServer.Click += new System.EventHandler(this.buttonConnectServer_Click);
-            // 
-            // buttonAnalyse
-            // 
-            this.buttonAnalyse.Location = new System.Drawing.Point(60, 301);
-            this.buttonAnalyse.Name = "buttonAnalyse";
-            this.buttonAnalyse.Size = new System.Drawing.Size(86, 23);
-            this.buttonAnalyse.TabIndex = 24;
-            this.buttonAnalyse.Text = "分析图像";
-            this.buttonAnalyse.UseVisualStyleBackColor = true;
-            this.buttonAnalyse.Click += new System.EventHandler(this.buttonAnalyse_Click);
             // 
             // groupBox5
             // 
@@ -633,11 +618,9 @@
             this.groupBox7.Controls.Add(this.buttonM1601);
             this.groupBox7.Controls.Add(this.buttonSynchronous);
             this.groupBox7.Controls.Add(this.buttonEnumDev);
-            this.groupBox7.Controls.Add(this.buttonGetDevState);
             this.groupBox7.Controls.Add(this.buttonAbandon);
             this.groupBox7.Controls.Add(this.buttonAsynchronous);
             this.groupBox7.Controls.Add(this.buttonExit);
-            this.groupBox7.Controls.Add(this.buttonAnalyse);
             this.groupBox7.Controls.Add(this.buttonConnectServer);
             this.groupBox7.Location = new System.Drawing.Point(363, 146);
             this.groupBox7.Name = "groupBox7";
@@ -648,7 +631,7 @@
             // 
             // buttonClearImage
             // 
-            this.buttonClearImage.Location = new System.Drawing.Point(61, 393);
+            this.buttonClearImage.Location = new System.Drawing.Point(50, 396);
             this.buttonClearImage.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClearImage.Name = "buttonClearImage";
             this.buttonClearImage.Size = new System.Drawing.Size(85, 21);
@@ -659,18 +642,18 @@
             // 
             // buttonM1601
             // 
-            this.buttonM1601.Location = new System.Drawing.Point(61, 348);
+            this.buttonM1601.Location = new System.Drawing.Point(50, 346);
             this.buttonM1601.Margin = new System.Windows.Forms.Padding(2);
             this.buttonM1601.Name = "buttonM1601";
             this.buttonM1601.Size = new System.Drawing.Size(85, 21);
             this.buttonM1601.TabIndex = 25;
-            this.buttonM1601.Text = "触发采图";
+            this.buttonM1601.Text = "PLC触发采图";
             this.buttonM1601.UseVisualStyleBackColor = true;
             this.buttonM1601.Click += new System.EventHandler(this.buttonM1601_Click);
             // 
             // buttonAsynchronous
             // 
-            this.buttonAsynchronous.Location = new System.Drawing.Point(60, 207);
+            this.buttonAsynchronous.Location = new System.Drawing.Point(49, 242);
             this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAsynchronous.Name = "buttonAsynchronous";
             this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
@@ -681,6 +664,14 @@
             // 
             // groupBoxStatusBar
             // 
+            this.groupBoxStatusBar.Controls.Add(this.labelDatetime);
+            this.groupBoxStatusBar.Controls.Add(this.labelHVConn);
+            this.groupBoxStatusBar.Controls.Add(this.labelStatusBarPLC);
+            this.groupBoxStatusBar.Controls.Add(this.labelHV_Temp);
+            this.groupBoxStatusBar.Controls.Add(this.labelHV_Current);
+            this.groupBoxStatusBar.Controls.Add(this.labelHV_KV);
+            this.groupBoxStatusBar.Controls.Add(this.labelHVError);
+            this.groupBoxStatusBar.Controls.Add(this.labelXrayOnOff);
             this.groupBoxStatusBar.Controls.Add(this.labelStateInfo);
             this.groupBoxStatusBar.Location = new System.Drawing.Point(559, 679);
             this.groupBoxStatusBar.Name = "groupBoxStatusBar";
@@ -689,14 +680,87 @@
             this.groupBoxStatusBar.TabStop = false;
             this.groupBoxStatusBar.Text = "系统状态";
             // 
+            // labelDatetime
+            // 
+            this.labelDatetime.AutoSize = true;
+            this.labelDatetime.Location = new System.Drawing.Point(754, 17);
+            this.labelDatetime.Name = "labelDatetime";
+            this.labelDatetime.Size = new System.Drawing.Size(119, 12);
+            this.labelDatetime.TabIndex = 3;
+            this.labelDatetime.Text = "2022.10.10 21:59:59";
+            // 
+            // labelStatusBarPLC
+            // 
+            this.labelStatusBarPLC.AutoSize = true;
+            this.labelStatusBarPLC.ForeColor = System.Drawing.Color.Red;
+            this.labelStatusBarPLC.Location = new System.Drawing.Point(163, 17);
+            this.labelStatusBarPLC.Name = "labelStatusBarPLC";
+            this.labelStatusBarPLC.Size = new System.Drawing.Size(65, 12);
+            this.labelStatusBarPLC.TabIndex = 2;
+            this.labelStatusBarPLC.Text = "PLC-未连接";
+            // 
+            // labelXrayOnOff
+            // 
+            this.labelXrayOnOff.AutoSize = true;
+            this.labelXrayOnOff.Location = new System.Drawing.Point(367, 17);
+            this.labelXrayOnOff.Name = "labelXrayOnOff";
+            this.labelXrayOnOff.Size = new System.Drawing.Size(53, 12);
+            this.labelXrayOnOff.TabIndex = 1;
+            this.labelXrayOnOff.Text = "Xray OFF";
+            // 
             // labelStateInfo
             // 
             this.labelStateInfo.AutoSize = true;
-            this.labelStateInfo.Location = new System.Drawing.Point(67, 17);
+            this.labelStateInfo.Location = new System.Drawing.Point(64, 17);
             this.labelStateInfo.Name = "labelStateInfo";
             this.labelStateInfo.Size = new System.Drawing.Size(65, 12);
             this.labelStateInfo.TabIndex = 0;
             this.labelStateInfo.Text = "设备未打开";
+            // 
+            // labelHV_KV
+            // 
+            this.labelHV_KV.AutoSize = true;
+            this.labelHV_KV.Location = new System.Drawing.Point(454, 17);
+            this.labelHV_KV.Name = "labelHV_KV";
+            this.labelHV_KV.Size = new System.Drawing.Size(35, 12);
+            this.labelHV_KV.TabIndex = 1;
+            this.labelHV_KV.Text = "100KV";
+            // 
+            // labelHV_Current
+            // 
+            this.labelHV_Current.AutoSize = true;
+            this.labelHV_Current.Location = new System.Drawing.Point(523, 17);
+            this.labelHV_Current.Name = "labelHV_Current";
+            this.labelHV_Current.Size = new System.Drawing.Size(35, 12);
+            this.labelHV_Current.TabIndex = 1;
+            this.labelHV_Current.Text = "200mA";
+            // 
+            // labelHV_Temp
+            // 
+            this.labelHV_Temp.AutoSize = true;
+            this.labelHV_Temp.Location = new System.Drawing.Point(592, 17);
+            this.labelHV_Temp.Name = "labelHV_Temp";
+            this.labelHV_Temp.Size = new System.Drawing.Size(23, 12);
+            this.labelHV_Temp.TabIndex = 1;
+            this.labelHV_Temp.Text = "30C";
+            // 
+            // labelHVError
+            // 
+            this.labelHVError.AutoSize = true;
+            this.labelHVError.Location = new System.Drawing.Point(649, 17);
+            this.labelHVError.Name = "labelHVError";
+            this.labelHVError.Size = new System.Drawing.Size(0, 12);
+            this.labelHVError.TabIndex = 1;
+            // 
+            // labelHVConn
+            // 
+            this.labelHVConn.AutoSize = true;
+            this.labelHVConn.ForeColor = System.Drawing.Color.Red;
+            this.labelHVConn.Location = new System.Drawing.Point(262, 17);
+            this.labelHVConn.Name = "labelHVConn";
+            this.labelHVConn.Size = new System.Drawing.Size(71, 12);
+            this.labelHVConn.TabIndex = 2;
+            this.labelHVConn.Text = "高压-未连接";
             // 
             // Demo
             // 
@@ -757,13 +821,11 @@
         private System.Windows.Forms.Button buttonSetParameter;
         private System.Windows.Forms.Button buttonModifySerial;
         private System.Windows.Forms.TextBox textBoxSerial;
-        private System.Windows.Forms.Button buttonGetDevState;
         private System.Windows.Forms.Button buttonAbandon;
         private System.Windows.Forms.Button buttonSynchronous;
         private System.Windows.Forms.Button buttonExit;
         private System.Windows.Forms.PictureBox pictureBoxImage;
         private System.Windows.Forms.Button buttonConnectServer;
-        private System.Windows.Forms.Button buttonAnalyse;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.ComboBox comboBoxHVStopBit;
         private System.Windows.Forms.Label label23;
@@ -796,6 +858,14 @@
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.GroupBox groupBoxStatusBar;
         private System.Windows.Forms.Label labelStateInfo;
+        private System.Windows.Forms.Label labelDatetime;
+        private System.Windows.Forms.Label labelStatusBarPLC;
+        private System.Windows.Forms.Label labelXrayOnOff;
+        private System.Windows.Forms.Label labelHV_Temp;
+        private System.Windows.Forms.Label labelHV_Current;
+        private System.Windows.Forms.Label labelHV_KV;
+        private System.Windows.Forms.Label labelHVError;
+        private System.Windows.Forms.Label labelHVConn;
     }
 }
 
