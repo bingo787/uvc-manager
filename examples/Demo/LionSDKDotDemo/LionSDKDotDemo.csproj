@@ -107,6 +107,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -178,6 +179,15 @@
       <Project>{a7bada4f-d672-4dc9-a075-434b4c2a15f5}</Project>
       <Name>SerialPortController</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\fushe_black.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\fushe_red.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\no_image.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

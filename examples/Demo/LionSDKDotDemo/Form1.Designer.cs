@@ -28,13 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Demo));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.treeViewDevice = new System.Windows.Forms.TreeView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.textBoxDevInfo = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.pictureBoxImage1 = new System.Windows.Forms.PictureBox();
-            this.pictureBoxImage = new System.Windows.Forms.PictureBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.comboBoxFilter = new System.Windows.Forms.ComboBox();
             this.comboBoxModel = new System.Windows.Forms.ComboBox();
@@ -52,11 +52,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.buttonEnumDev = new System.Windows.Forms.Button();
             this.buttonAbandon = new System.Windows.Forms.Button();
-            this.buttonSynchronous = new System.Windows.Forms.Button();
-            this.buttonExit = new System.Windows.Forms.Button();
-            this.buttonConnectServer = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.labelXrayStatus = new System.Windows.Forms.Label();
             this.buttonXrayOnOff = new System.Windows.Forms.Button();
             this.labelHVPortLED = new System.Windows.Forms.Label();
             this.buttonConnectHVPort = new System.Windows.Forms.Button();
@@ -81,26 +77,38 @@
             this.buttonClearImage = new System.Windows.Forms.Button();
             this.buttonM1601 = new System.Windows.Forms.Button();
             this.buttonAsynchronous = new System.Windows.Forms.Button();
-            this.groupBoxStatusBar = new System.Windows.Forms.GroupBox();
-            this.labelDatetime = new System.Windows.Forms.Label();
-            this.labelStatusBarPLC = new System.Windows.Forms.Label();
-            this.labelXrayOnOff = new System.Windows.Forms.Label();
-            this.labelStateInfo = new System.Windows.Forms.Label();
-            this.labelHV_KV = new System.Windows.Forms.Label();
-            this.labelHV_Current = new System.Windows.Forms.Label();
-            this.labelHV_Temp = new System.Windows.Forms.Label();
-            this.labelHVError = new System.Windows.Forms.Label();
-            this.labelHVConn = new System.Windows.Forms.Label();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.timerDateTime = new System.Windows.Forms.Timer(this.components);
+            this.toolStripStatusLabel_PLCConn = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_HVConn = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_HV_KV = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_HV_Cur = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_HV_Temp = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_XrayOnOff = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_Time = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabel_Sensor1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_Sensor2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_HVError = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timerSensorState = new System.Windows.Forms.Timer(this.components);
+            this.radioButtonAutoMode = new System.Windows.Forms.RadioButton();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.radioButtonManualMode = new System.Windows.Forms.RadioButton();
+            this.pictureBoxXrayOnOff = new System.Windows.Forms.PictureBox();
+            this.pictureBoxImage1 = new System.Windows.Forms.PictureBox();
+            this.pictureBoxImage = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            this.groupBoxStatusBar.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxXrayOnOff)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -130,7 +138,7 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.textBoxDevInfo);
-            this.groupBox2.Location = new System.Drawing.Point(293, 14);
+            this.groupBox2.Location = new System.Drawing.Point(279, 14);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -158,30 +166,10 @@
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox3.Size = new System.Drawing.Size(914, 660);
+            this.groupBox3.Size = new System.Drawing.Size(914, 601);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "图像";
-            // 
-            // pictureBoxImage1
-            // 
-            this.pictureBoxImage1.Location = new System.Drawing.Point(452, 16);
-            this.pictureBoxImage1.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureBoxImage1.Name = "pictureBoxImage1";
-            this.pictureBoxImage1.Size = new System.Drawing.Size(421, 624);
-            this.pictureBoxImage1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxImage1.TabIndex = 1;
-            this.pictureBoxImage1.TabStop = false;
-            // 
-            // pictureBoxImage
-            // 
-            this.pictureBoxImage.Location = new System.Drawing.Point(4, 16);
-            this.pictureBoxImage.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureBoxImage.Name = "pictureBoxImage";
-            this.pictureBoxImage.Size = new System.Drawing.Size(420, 624);
-            this.pictureBoxImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxImage.TabIndex = 0;
-            this.pictureBoxImage.TabStop = false;
             // 
             // groupBox4
             // 
@@ -302,7 +290,7 @@
             // 
             // textBoxCurrent
             // 
-            this.textBoxCurrent.Location = new System.Drawing.Point(224, 60);
+            this.textBoxCurrent.Location = new System.Drawing.Point(65, 237);
             this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxCurrent.Name = "textBoxCurrent";
             this.textBoxCurrent.Size = new System.Drawing.Size(61, 21);
@@ -312,7 +300,7 @@
             // 
             // textBoxKV
             // 
-            this.textBoxKV.Location = new System.Drawing.Point(224, 32);
+            this.textBoxKV.Location = new System.Drawing.Point(65, 211);
             this.textBoxKV.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxKV.Name = "textBoxKV";
             this.textBoxKV.Size = new System.Drawing.Size(61, 21);
@@ -323,7 +311,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(158, 64);
+            this.label13.Location = new System.Drawing.Point(2, 245);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(59, 12);
@@ -333,7 +321,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(158, 36);
+            this.label2.Location = new System.Drawing.Point(2, 219);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 12);
@@ -342,7 +330,7 @@
             // 
             // buttonEnumDev
             // 
-            this.buttonEnumDev.Location = new System.Drawing.Point(49, 34);
+            this.buttonEnumDev.Location = new System.Drawing.Point(49, 29);
             this.buttonEnumDev.Margin = new System.Windows.Forms.Padding(2);
             this.buttonEnumDev.Name = "buttonEnumDev";
             this.buttonEnumDev.Size = new System.Drawing.Size(86, 23);
@@ -353,7 +341,7 @@
             // 
             // buttonAbandon
             // 
-            this.buttonAbandon.Location = new System.Drawing.Point(49, 294);
+            this.buttonAbandon.Location = new System.Drawing.Point(50, 115);
             this.buttonAbandon.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAbandon.Name = "buttonAbandon";
             this.buttonAbandon.Size = new System.Drawing.Size(86, 23);
@@ -362,41 +350,9 @@
             this.buttonAbandon.UseVisualStyleBackColor = true;
             this.buttonAbandon.Click += new System.EventHandler(this.buttonAbandon_Click);
             // 
-            // buttonSynchronous
-            // 
-            this.buttonSynchronous.Location = new System.Drawing.Point(49, 190);
-            this.buttonSynchronous.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonSynchronous.Name = "buttonSynchronous";
-            this.buttonSynchronous.Size = new System.Drawing.Size(86, 23);
-            this.buttonSynchronous.TabIndex = 21;
-            this.buttonSynchronous.Text = "同步获取图像";
-            this.buttonSynchronous.UseVisualStyleBackColor = true;
-            this.buttonSynchronous.Click += new System.EventHandler(this.buttonSynchronous_Click);
-            // 
-            // buttonExit
-            // 
-            this.buttonExit.Location = new System.Drawing.Point(49, 446);
-            this.buttonExit.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonExit.Name = "buttonExit";
-            this.buttonExit.Size = new System.Drawing.Size(86, 23);
-            this.buttonExit.TabIndex = 22;
-            this.buttonExit.Text = "退出软件";
-            this.buttonExit.UseVisualStyleBackColor = true;
-            this.buttonExit.Click += new System.EventHandler(this.buttonExit_Click);
-            // 
-            // buttonConnectServer
-            // 
-            this.buttonConnectServer.Location = new System.Drawing.Point(49, 138);
-            this.buttonConnectServer.Name = "buttonConnectServer";
-            this.buttonConnectServer.Size = new System.Drawing.Size(86, 23);
-            this.buttonConnectServer.TabIndex = 23;
-            this.buttonConnectServer.Text = "连接分析服务";
-            this.buttonConnectServer.UseVisualStyleBackColor = true;
-            this.buttonConnectServer.Click += new System.EventHandler(this.buttonConnectServer_Click);
-            // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.labelXrayStatus);
+            this.groupBox5.Controls.Add(this.pictureBoxXrayOnOff);
             this.groupBox5.Controls.Add(this.buttonXrayOnOff);
             this.groupBox5.Controls.Add(this.labelHVPortLED);
             this.groupBox5.Controls.Add(this.buttonConnectHVPort);
@@ -416,23 +372,14 @@
             this.groupBox5.Controls.Add(this.textBoxKV);
             this.groupBox5.Location = new System.Drawing.Point(13, 321);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(319, 217);
+            this.groupBox5.Size = new System.Drawing.Size(319, 294);
             this.groupBox5.TabIndex = 25;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "高压参数设置";
             // 
-            // labelXrayStatus
-            // 
-            this.labelXrayStatus.AutoSize = true;
-            this.labelXrayStatus.Location = new System.Drawing.Point(192, 94);
-            this.labelXrayStatus.Name = "labelXrayStatus";
-            this.labelXrayStatus.Size = new System.Drawing.Size(11, 12);
-            this.labelXrayStatus.TabIndex = 48;
-            this.labelXrayStatus.Text = "O";
-            // 
             // buttonXrayOnOff
             // 
-            this.buttonXrayOnOff.Location = new System.Drawing.Point(222, 89);
+            this.buttonXrayOnOff.Location = new System.Drawing.Point(63, 267);
             this.buttonXrayOnOff.Name = "buttonXrayOnOff";
             this.buttonXrayOnOff.Size = new System.Drawing.Size(63, 23);
             this.buttonXrayOnOff.TabIndex = 47;
@@ -443,9 +390,10 @@
             // labelHVPortLED
             // 
             this.labelHVPortLED.AutoSize = true;
-            this.labelHVPortLED.Location = new System.Drawing.Point(29, 180);
+            this.labelHVPortLED.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.labelHVPortLED.Location = new System.Drawing.Point(25, 179);
             this.labelHVPortLED.Name = "labelHVPortLED";
-            this.labelHVPortLED.Size = new System.Drawing.Size(11, 12);
+            this.labelHVPortLED.Size = new System.Drawing.Size(14, 14);
             this.labelHVPortLED.TabIndex = 46;
             this.labelHVPortLED.Text = "O";
             // 
@@ -552,9 +500,9 @@
             this.groupBox6.Controls.Add(this.buttonConnectPLC);
             this.groupBox6.Controls.Add(this.label27);
             this.groupBox6.Controls.Add(this.label28);
-            this.groupBox6.Location = new System.Drawing.Point(12, 544);
+            this.groupBox6.Location = new System.Drawing.Point(357, 390);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(320, 130);
+            this.groupBox6.Size = new System.Drawing.Size(184, 130);
             this.groupBox6.TabIndex = 26;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "PLC端口参数";
@@ -562,9 +510,10 @@
             // labelPLCStatus
             // 
             this.labelPLCStatus.AutoSize = true;
-            this.labelPLCStatus.Location = new System.Drawing.Point(33, 93);
+            this.labelPLCStatus.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.labelPLCStatus.Location = new System.Drawing.Point(26, 92);
             this.labelPLCStatus.Name = "labelPLCStatus";
-            this.labelPLCStatus.Size = new System.Drawing.Size(11, 12);
+            this.labelPLCStatus.Size = new System.Drawing.Size(14, 14);
             this.labelPLCStatus.TabIndex = 49;
             this.labelPLCStatus.Text = "O";
             // 
@@ -616,22 +565,19 @@
             // 
             this.groupBox7.Controls.Add(this.buttonClearImage);
             this.groupBox7.Controls.Add(this.buttonM1601);
-            this.groupBox7.Controls.Add(this.buttonSynchronous);
             this.groupBox7.Controls.Add(this.buttonEnumDev);
             this.groupBox7.Controls.Add(this.buttonAbandon);
             this.groupBox7.Controls.Add(this.buttonAsynchronous);
-            this.groupBox7.Controls.Add(this.buttonExit);
-            this.groupBox7.Controls.Add(this.buttonConnectServer);
-            this.groupBox7.Location = new System.Drawing.Point(363, 146);
+            this.groupBox7.Location = new System.Drawing.Point(357, 146);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(184, 528);
+            this.groupBox7.Size = new System.Drawing.Size(184, 238);
             this.groupBox7.TabIndex = 27;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "控制区域";
             // 
             // buttonClearImage
             // 
-            this.buttonClearImage.Location = new System.Drawing.Point(50, 396);
+            this.buttonClearImage.Location = new System.Drawing.Point(50, 199);
             this.buttonClearImage.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClearImage.Name = "buttonClearImage";
             this.buttonClearImage.Size = new System.Drawing.Size(85, 21);
@@ -642,7 +588,7 @@
             // 
             // buttonM1601
             // 
-            this.buttonM1601.Location = new System.Drawing.Point(50, 346);
+            this.buttonM1601.Location = new System.Drawing.Point(51, 158);
             this.buttonM1601.Margin = new System.Windows.Forms.Padding(2);
             this.buttonM1601.Name = "buttonM1601";
             this.buttonM1601.Size = new System.Drawing.Size(85, 21);
@@ -653,7 +599,7 @@
             // 
             // buttonAsynchronous
             // 
-            this.buttonAsynchronous.Location = new System.Drawing.Point(49, 242);
+            this.buttonAsynchronous.Location = new System.Drawing.Point(50, 72);
             this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAsynchronous.Name = "buttonAsynchronous";
             this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
@@ -662,112 +608,175 @@
             this.buttonAsynchronous.UseVisualStyleBackColor = true;
             this.buttonAsynchronous.Click += new System.EventHandler(this.buttonAsynchronous_Click);
             // 
-            // groupBoxStatusBar
+            // statusStrip1
             // 
-            this.groupBoxStatusBar.Controls.Add(this.labelDatetime);
-            this.groupBoxStatusBar.Controls.Add(this.labelHVConn);
-            this.groupBoxStatusBar.Controls.Add(this.labelStatusBarPLC);
-            this.groupBoxStatusBar.Controls.Add(this.labelHV_Temp);
-            this.groupBoxStatusBar.Controls.Add(this.labelHV_Current);
-            this.groupBoxStatusBar.Controls.Add(this.labelHV_KV);
-            this.groupBoxStatusBar.Controls.Add(this.labelHVError);
-            this.groupBoxStatusBar.Controls.Add(this.labelXrayOnOff);
-            this.groupBoxStatusBar.Controls.Add(this.labelStateInfo);
-            this.groupBoxStatusBar.Location = new System.Drawing.Point(559, 679);
-            this.groupBoxStatusBar.Name = "groupBoxStatusBar";
-            this.groupBoxStatusBar.Size = new System.Drawing.Size(914, 42);
-            this.groupBoxStatusBar.TabIndex = 28;
-            this.groupBoxStatusBar.TabStop = false;
-            this.groupBoxStatusBar.Text = "系统状态";
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel_PLCConn,
+            this.toolStripStatusLabel_HVConn,
+            this.toolStripStatusLabel_XrayOnOff,
+            this.toolStripStatusLabel_HV_KV,
+            this.toolStripStatusLabel_HV_Cur,
+            this.toolStripStatusLabel_HV_Temp,
+            this.toolStripProgressBar,
+            this.toolStripStatusLabel_Time,
+            this.toolStripStatusLabel_HVError,
+            this.toolStripStatusLabel_Sensor1,
+            this.toolStripStatusLabel_Sensor2});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 639);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1484, 22);
+            this.statusStrip1.TabIndex = 29;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // labelDatetime
+            // timerDateTime
             // 
-            this.labelDatetime.AutoSize = true;
-            this.labelDatetime.Location = new System.Drawing.Point(754, 17);
-            this.labelDatetime.Name = "labelDatetime";
-            this.labelDatetime.Size = new System.Drawing.Size(119, 12);
-            this.labelDatetime.TabIndex = 3;
-            this.labelDatetime.Text = "2022.10.10 21:59:59";
+            this.timerDateTime.Enabled = true;
+            this.timerDateTime.Interval = 1000;
+            this.timerDateTime.Tick += new System.EventHandler(this.timerDateTime_Tick);
             // 
-            // labelStatusBarPLC
+            // toolStripStatusLabel_PLCConn
             // 
-            this.labelStatusBarPLC.AutoSize = true;
-            this.labelStatusBarPLC.ForeColor = System.Drawing.Color.Red;
-            this.labelStatusBarPLC.Location = new System.Drawing.Point(163, 17);
-            this.labelStatusBarPLC.Name = "labelStatusBarPLC";
-            this.labelStatusBarPLC.Size = new System.Drawing.Size(65, 12);
-            this.labelStatusBarPLC.TabIndex = 2;
-            this.labelStatusBarPLC.Text = "PLC-未连接";
+            this.toolStripStatusLabel_PLCConn.Name = "toolStripStatusLabel_PLCConn";
+            this.toolStripStatusLabel_PLCConn.Size = new System.Drawing.Size(70, 17);
+            this.toolStripStatusLabel_PLCConn.Text = "PLC-未连接";
             // 
-            // labelXrayOnOff
+            // toolStripStatusLabel_HVConn
             // 
-            this.labelXrayOnOff.AutoSize = true;
-            this.labelXrayOnOff.Location = new System.Drawing.Point(367, 17);
-            this.labelXrayOnOff.Name = "labelXrayOnOff";
-            this.labelXrayOnOff.Size = new System.Drawing.Size(53, 12);
-            this.labelXrayOnOff.TabIndex = 1;
-            this.labelXrayOnOff.Text = "Xray OFF";
+            this.toolStripStatusLabel_HVConn.Name = "toolStripStatusLabel_HVConn";
+            this.toolStripStatusLabel_HVConn.Size = new System.Drawing.Size(73, 17);
+            this.toolStripStatusLabel_HVConn.Text = "高压-未连接";
             // 
-            // labelStateInfo
+            // toolStripStatusLabel_HV_KV
             // 
-            this.labelStateInfo.AutoSize = true;
-            this.labelStateInfo.Location = new System.Drawing.Point(64, 17);
-            this.labelStateInfo.Name = "labelStateInfo";
-            this.labelStateInfo.Size = new System.Drawing.Size(65, 12);
-            this.labelStateInfo.TabIndex = 0;
-            this.labelStateInfo.Text = "设备未打开";
+            this.toolStripStatusLabel_HV_KV.Name = "toolStripStatusLabel_HV_KV";
+            this.toolStripStatusLabel_HV_KV.Size = new System.Drawing.Size(30, 17);
+            this.toolStripStatusLabel_HV_KV.Text = "0kV";
             // 
-            // labelHV_KV
+            // toolStripStatusLabel_HV_Cur
             // 
-            this.labelHV_KV.AutoSize = true;
-            this.labelHV_KV.Location = new System.Drawing.Point(454, 17);
-            this.labelHV_KV.Name = "labelHV_KV";
-            this.labelHV_KV.Size = new System.Drawing.Size(35, 12);
-            this.labelHV_KV.TabIndex = 1;
-            this.labelHV_KV.Text = "100KV";
+            this.toolStripStatusLabel_HV_Cur.Name = "toolStripStatusLabel_HV_Cur";
+            this.toolStripStatusLabel_HV_Cur.Size = new System.Drawing.Size(30, 17);
+            this.toolStripStatusLabel_HV_Cur.Text = "0uA";
             // 
-            // labelHV_Current
+            // toolStripStatusLabel_HV_Temp
             // 
-            this.labelHV_Current.AutoSize = true;
-            this.labelHV_Current.Location = new System.Drawing.Point(523, 17);
-            this.labelHV_Current.Name = "labelHV_Current";
-            this.labelHV_Current.Size = new System.Drawing.Size(35, 12);
-            this.labelHV_Current.TabIndex = 1;
-            this.labelHV_Current.Text = "200mA";
+            this.toolStripStatusLabel_HV_Temp.Name = "toolStripStatusLabel_HV_Temp";
+            this.toolStripStatusLabel_HV_Temp.Size = new System.Drawing.Size(23, 17);
+            this.toolStripStatusLabel_HV_Temp.Text = "0C";
             // 
-            // labelHV_Temp
+            // toolStripStatusLabel_XrayOnOff
             // 
-            this.labelHV_Temp.AutoSize = true;
-            this.labelHV_Temp.Location = new System.Drawing.Point(592, 17);
-            this.labelHV_Temp.Name = "labelHV_Temp";
-            this.labelHV_Temp.Size = new System.Drawing.Size(23, 12);
-            this.labelHV_Temp.TabIndex = 1;
-            this.labelHV_Temp.Text = "30C";
+            this.toolStripStatusLabel_XrayOnOff.Name = "toolStripStatusLabel_XrayOnOff";
+            this.toolStripStatusLabel_XrayOnOff.Size = new System.Drawing.Size(61, 17);
+            this.toolStripStatusLabel_XrayOnOff.Text = "Xray-OFF";
             // 
-            // labelHVError
+            // toolStripStatusLabel_Time
             // 
-            this.labelHVError.AutoSize = true;
-            this.labelHVError.Location = new System.Drawing.Point(649, 17);
-            this.labelHVError.Name = "labelHVError";
-            this.labelHVError.Size = new System.Drawing.Size(0, 12);
-            this.labelHVError.TabIndex = 1;
+            this.toolStripStatusLabel_Time.Name = "toolStripStatusLabel_Time";
+            this.toolStripStatusLabel_Time.Size = new System.Drawing.Size(122, 17);
+            this.toolStripStatusLabel_Time.Text = "2022.11.11 12:25:59";
             // 
-            // labelHVConn
+            // toolStripProgressBar
             // 
-            this.labelHVConn.AutoSize = true;
-            this.labelHVConn.ForeColor = System.Drawing.Color.Red;
-            this.labelHVConn.Location = new System.Drawing.Point(262, 17);
-            this.labelHVConn.Name = "labelHVConn";
-            this.labelHVConn.Size = new System.Drawing.Size(71, 12);
-            this.labelHVConn.TabIndex = 2;
-            this.labelHVConn.Text = "高压-未连接";
+            this.toolStripProgressBar.Name = "toolStripProgressBar";
+            this.toolStripProgressBar.Size = new System.Drawing.Size(100, 16);
+            // 
+            // toolStripStatusLabel_Sensor1
+            // 
+            this.toolStripStatusLabel_Sensor1.Name = "toolStripStatusLabel_Sensor1";
+            this.toolStripStatusLabel_Sensor1.Size = new System.Drawing.Size(18, 17);
+            this.toolStripStatusLabel_Sensor1.Text = "--";
+            // 
+            // toolStripStatusLabel_Sensor2
+            // 
+            this.toolStripStatusLabel_Sensor2.Name = "toolStripStatusLabel_Sensor2";
+            this.toolStripStatusLabel_Sensor2.Size = new System.Drawing.Size(18, 17);
+            this.toolStripStatusLabel_Sensor2.Text = "--";
+            // 
+            // toolStripStatusLabel_HVError
+            // 
+            this.toolStripStatusLabel_HVError.Name = "toolStripStatusLabel_HVError";
+            this.toolStripStatusLabel_HVError.Size = new System.Drawing.Size(18, 17);
+            this.toolStripStatusLabel_HVError.Text = "--";
+            // 
+            // timerSensorState
+            // 
+            this.timerSensorState.Enabled = true;
+            this.timerSensorState.Interval = 1000;
+            this.timerSensorState.Tick += new System.EventHandler(this.timerSensorState_Tick);
+            // 
+            // radioButtonAutoMode
+            // 
+            this.radioButtonAutoMode.AutoSize = true;
+            this.radioButtonAutoMode.Location = new System.Drawing.Point(49, 29);
+            this.radioButtonAutoMode.Name = "radioButtonAutoMode";
+            this.radioButtonAutoMode.Size = new System.Drawing.Size(71, 16);
+            this.radioButtonAutoMode.TabIndex = 27;
+            this.radioButtonAutoMode.TabStop = true;
+            this.radioButtonAutoMode.Text = "自动模式";
+            this.radioButtonAutoMode.UseVisualStyleBackColor = true;
+            this.radioButtonAutoMode.CheckedChanged += new System.EventHandler(this.radioButtonLock_CheckedChanged);
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.radioButtonManualMode);
+            this.groupBox8.Controls.Add(this.radioButtonAutoMode);
+            this.groupBox8.Location = new System.Drawing.Point(358, 526);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(183, 89);
+            this.groupBox8.TabIndex = 30;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "模式选择";
+            // 
+            // radioButtonManualMode
+            // 
+            this.radioButtonManualMode.AutoSize = true;
+            this.radioButtonManualMode.Location = new System.Drawing.Point(49, 62);
+            this.radioButtonManualMode.Name = "radioButtonManualMode";
+            this.radioButtonManualMode.Size = new System.Drawing.Size(71, 16);
+            this.radioButtonManualMode.TabIndex = 27;
+            this.radioButtonManualMode.TabStop = true;
+            this.radioButtonManualMode.Text = "手动模式";
+            this.radioButtonManualMode.UseVisualStyleBackColor = true;
+            this.radioButtonManualMode.CheckedChanged += new System.EventHandler(this.radioButtonLock_CheckedChanged);
+            // 
+            // pictureBoxXrayOnOff
+            // 
+            this.pictureBoxXrayOnOff.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBoxXrayOnOff.InitialImage")));
+            this.pictureBoxXrayOnOff.Location = new System.Drawing.Point(202, 190);
+            this.pictureBoxXrayOnOff.Name = "pictureBoxXrayOnOff";
+            this.pictureBoxXrayOnOff.Size = new System.Drawing.Size(100, 100);
+            this.pictureBoxXrayOnOff.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxXrayOnOff.TabIndex = 48;
+            this.pictureBoxXrayOnOff.TabStop = false;
+            // 
+            // pictureBoxImage1
+            // 
+            this.pictureBoxImage1.Location = new System.Drawing.Point(452, 16);
+            this.pictureBoxImage1.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBoxImage1.Name = "pictureBoxImage1";
+            this.pictureBoxImage1.Size = new System.Drawing.Size(415, 570);
+            this.pictureBoxImage1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxImage1.TabIndex = 1;
+            this.pictureBoxImage1.TabStop = false;
+            // 
+            // pictureBoxImage
+            // 
+            this.pictureBoxImage.Location = new System.Drawing.Point(4, 16);
+            this.pictureBoxImage.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBoxImage.Name = "pictureBoxImage";
+            this.pictureBoxImage.Size = new System.Drawing.Size(415, 570);
+            this.pictureBoxImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxImage.TabIndex = 0;
+            this.pictureBoxImage.TabStop = false;
             // 
             // Demo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1484, 761);
-            this.Controls.Add(this.groupBoxStatusBar);
+            this.ClientSize = new System.Drawing.Size(1484, 661);
+            this.Controls.Add(this.groupBox8);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
@@ -778,16 +787,14 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1500, 1000);
-            this.MinimumSize = new System.Drawing.Size(1500, 705);
+            this.MinimumSize = new System.Drawing.Size(1500, 700);
             this.Name = "Demo";
-            this.Text = "睿奥自动化检测控制软件";
+            this.Text = "睿奥自动化检测控制软件(v20220716)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Demo_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
@@ -795,9 +802,15 @@
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox7.ResumeLayout(false);
-            this.groupBoxStatusBar.ResumeLayout(false);
-            this.groupBoxStatusBar.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxXrayOnOff)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -822,10 +835,7 @@
         private System.Windows.Forms.Button buttonModifySerial;
         private System.Windows.Forms.TextBox textBoxSerial;
         private System.Windows.Forms.Button buttonAbandon;
-        private System.Windows.Forms.Button buttonSynchronous;
-        private System.Windows.Forms.Button buttonExit;
         private System.Windows.Forms.PictureBox pictureBoxImage;
-        private System.Windows.Forms.Button buttonConnectServer;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.ComboBox comboBoxHVStopBit;
         private System.Windows.Forms.Label label23;
@@ -843,7 +853,6 @@
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Label labelHVPortLED;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Label labelXrayStatus;
         private System.Windows.Forms.Button buttonXrayOnOff;
         private System.Windows.Forms.Button buttonAsynchronous;
         private System.Windows.Forms.Button buttonM1601;
@@ -856,16 +865,24 @@
         private System.Windows.Forms.TextBox textBoxPort;
         private System.Windows.Forms.TextBox textBoxIpAddress;
         private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.GroupBox groupBoxStatusBar;
-        private System.Windows.Forms.Label labelStateInfo;
-        private System.Windows.Forms.Label labelDatetime;
-        private System.Windows.Forms.Label labelStatusBarPLC;
-        private System.Windows.Forms.Label labelXrayOnOff;
-        private System.Windows.Forms.Label labelHV_Temp;
-        private System.Windows.Forms.Label labelHV_Current;
-        private System.Windows.Forms.Label labelHV_KV;
-        private System.Windows.Forms.Label labelHVError;
-        private System.Windows.Forms.Label labelHVConn;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_PLCConn;
+        private System.Windows.Forms.Timer timerDateTime;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_HVConn;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_HV_KV;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_HV_Cur;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_HV_Temp;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_XrayOnOff;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_Time;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_Sensor2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_Sensor1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_HVError;
+        private System.Windows.Forms.Timer timerSensorState;
+        private System.Windows.Forms.RadioButton radioButtonAutoMode;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.RadioButton radioButtonManualMode;
+        private System.Windows.Forms.PictureBox pictureBoxXrayOnOff;
     }
 }
 

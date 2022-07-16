@@ -80,6 +80,14 @@ namespace LionSDKDotDemo
             this.textBoxIpAddress.Text = Config.Instance.ReadString("PLCPara", "IP");
             this.textBoxPort.Text = Config.Instance.ReadString("PLCPara", "Port");
 
+            if (Config.Instance.ReadString("ModeSelect", "Auto") == "True")
+            {
+                this.radioButtonAutoMode.Checked = true;
+            }
+            else {
+                this.radioButtonManualMode.Checked = true;
+            }
+            
 
         }
 
@@ -99,6 +107,9 @@ namespace LionSDKDotDemo
 
             Config.Instance.WriteString("PLCPara", "IP", this.textBoxIpAddress.Text);
             Config.Instance.WriteString("PLCPara", "Port", this.textBoxPort.Text);
+
+            Config.Instance.WriteString("ModeSelect", "Auto", this.radioButtonAutoMode.Checked.ToString());
+            Config.Instance.WriteString("ModeSelect", "Manual", this.radioButtonManualMode.Checked.ToString());
 
         }
 
@@ -166,9 +177,8 @@ namespace LionSDKDotDemo
             // 高压初始化
             this.labelHVPortLED.Text = "●";
             TriggerHVPortStatus(false);
-            this.labelXrayStatus.Text = "●";
-            this.labelXrayStatus.ForeColor = Color.Red;
-            
+            this.pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
+            this.pictureBoxXrayOnOff.Invalidate();
 
             // PLC初始化
             this.labelPLCStatus.Text = "●";
@@ -459,6 +469,44 @@ namespace LionSDKDotDemo
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+
+        private string GetDeviceState(LU_DEVICE luDev) {
+
+            string stateText = "";
+            unsafe
+            {
+                //获取设备状态
+                LUDEV_STATE state = LUDEV_STATE.LUDEVSTATE_UNOPNE;
+
+                if (LionCom.LU_SUCCESS == LionSDK.LionSDK.GetDeviceState(ref luDev, ref state))
+                {
+                    //更亲状态信息
+                    switch (state)
+                    {
+                        case LUDEV_STATE.LUDEVSTATE_UNOPNE:				//设备未打开
+                            stateText = ": 设备未打开!";
+                            break;
+                        case LUDEV_STATE.LUDEVSTATE_OPEN:					//设备打开
+                            stateText = ": 设备打开!";
+                            break;
+                        case LUDEV_STATE.LUDEVSTATE_WAITTRIGGER:					//等待触发
+                            stateText = ": 等待触发!";
+                            break;
+                        case LUDEV_STATE.LUDEVSTATE_TRIGGERIMAGE:					//触发获取图像数据
+                            stateText = ": 触发获取图像数据!";
+                            break;
+                        case LUDEV_STATE.LUDEVSTATE_IMAGESAVE:					//图像保存
+                            stateText = ": 图像保存!";
+                            break;
+                        case LUDEV_STATE.LUDEVSTATE_OVERTIME:					//超时
+                            stateText = ": 获取图像超时";
+                            break;
+                    }
+                }
+            }
+            Console.WriteLine("");
+            return "Sensor " + luDev.uvcIdentity.Id.ToString() + stateText;
+        }
         private void buttonGetDevState_Click(object sender, EventArgs e)
         {
             UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
@@ -479,24 +527,24 @@ namespace LionSDKDotDemo
                             //更亲状态信息
                             switch (state)
                             {
-                                case LUDEV_STATE.LUDEVSTATE_UNOPNE:				//设备未打开
-                                    this.labelStateInfo.Text =  "设备状态: 设备未打开!";
-                                    break;
-                                case LUDEV_STATE.LUDEVSTATE_OPEN:					//设备打开
-                                    this.labelStateInfo.Text = "设备状态: 设备打开!";
-                                    break;
-                                case LUDEV_STATE.LUDEVSTATE_WAITTRIGGER:					//等待触发
-                                    this.labelStateInfo.Text = "设备状态: 等待触发!";
-                                    break;
-                                case LUDEV_STATE.LUDEVSTATE_TRIGGERIMAGE:					//触发获取图像数据
-                                    this.labelStateInfo.Text = "设备状态: 触发获取图像数据!";
-                                    break;
-                                case LUDEV_STATE.LUDEVSTATE_IMAGESAVE:					//图像保存
-                                    this.labelStateInfo.Text = "设备状态: 图像保存!";
-                                    break;
-                                case LUDEV_STATE.LUDEVSTATE_OVERTIME:					//超时
-                                    this.labelStateInfo.Text = "设备状态: 获取图像超时";
-                                    break;
+                                //case LUDEV_STATE.LUDEVSTATE_UNOPNE:				//设备未打开
+                                //    this.labelStateInfo.Text =  "设备状态: 设备未打开!";
+                                //    break;
+                                //case LUDEV_STATE.LUDEVSTATE_OPEN:					//设备打开
+                                //    this.labelStateInfo.Text = "设备状态: 设备打开!";
+                                //    break;
+                                //case LUDEV_STATE.LUDEVSTATE_WAITTRIGGER:					//等待触发
+                                //    this.labelStateInfo.Text = "设备状态: 等待触发!";
+                                //    break;
+                                //case LUDEV_STATE.LUDEVSTATE_TRIGGERIMAGE:					//触发获取图像数据
+                                //    this.labelStateInfo.Text = "设备状态: 触发获取图像数据!";
+                                //    break;
+                                //case LUDEV_STATE.LUDEVSTATE_IMAGESAVE:					//图像保存
+                                //    this.labelStateInfo.Text = "设备状态: 图像保存!";
+                                //    break;
+                                //case LUDEV_STATE.LUDEVSTATE_OVERTIME:					//超时
+                                //    this.labelStateInfo.Text = "设备状态: 获取图像超时";
+                                //    break;
                             }
                         }
                     }
@@ -512,20 +560,25 @@ namespace LionSDKDotDemo
         /// <param name="e"></param>
         private void buttonAbandon_Click(object sender, EventArgs e)
         {
-            UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
+
+            toolStripProgressBar.Value = 0;
+          //  UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
             for (int d = 0; d < listDev.Count; d++)
             {
-                if (listDev[d].uvcIdentity.Id == id)
+               // if (listDev[d].uvcIdentity.Id == id)
                 {
                     LU_DEVICE luDev = listDev[d];
                     //
                     unsafe
                     {
                         //中断获取图像
-                        if (LionCom.LU_SUCCESS == LionSDK.LionSDK.AbandonGetImage(ref luDev))
+                        try
                         {
-                            
+                            LionSDK.LionSDK.AbandonGetImage(ref luDev);
+                        }
+                        catch {
+
                         }
                     }
                     break;
@@ -541,14 +594,7 @@ namespace LionSDKDotDemo
         /// <param name="e"></param>
         private void buttonAsynchronous_Click(object sender, EventArgs e)
         {
-            //if (this.treeViewDevice.SelectedNode == null || this.treeViewDevice.SelectedNode.Parent == null) {
-            //    MessageBox.Show("请先选择设备");
-            //    return;
-            //}
-
-            this.labelStateInfo.Text = "正在采集图像";
-            this.labelStateInfo.ForeColor = Color.Green;
-
+            toolStripProgressBar.Value = 0;
             for (int d = 0; d < listDev.Count; d++)
             {
                 {
@@ -565,6 +611,7 @@ namespace LionSDKDotDemo
 
                     }
                 }
+                toolStripProgressBar.Value += 10;
             }
         }
 
@@ -575,9 +622,6 @@ namespace LionSDKDotDemo
         /// <param name="e"></param>
         private void buttonSynchronous_Click(object sender, EventArgs e)
         {
-
-            this.labelStateInfo.Text = "正在采集图像";
-            this.labelStateInfo.ForeColor = Color.Green;
 
             for (int d = 0; d < listDev.Count; d++)
             {
@@ -631,18 +675,12 @@ namespace LionSDKDotDemo
                     //break;
                 }
             }
-
-            this.labelStateInfo.Text = "图像采集完成";
-            this.labelStateInfo.ForeColor = Color.Green;
         }
 
 
         private void ProcessImage(string imageFile) {
             // 原始文件名为 luvc_camera_7416.jpg
             // 拷贝文件名： datetime_positon_cameraid.jpg;
-
-            this.labelStateInfo.Text = "正在处理图像";
-            this.labelStateInfo.ForeColor = Color.Green;
 
             string timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
             string plcPostion = "32768"; // Int16 最大值
@@ -686,15 +724,15 @@ namespace LionSDKDotDemo
                 }
             }
 
-            this.labelStateInfo.Text = "图像处理完成";
-            this.labelStateInfo.ForeColor = Color.Black;
-
         }
 
 
         private int AsyncImageCallback(LU_DEVICE device, byte[] pImgData, int nDataBuf, string pFile)
         {
-
+            this.BeginInvoke(new Action(() =>
+            {
+                toolStripProgressBar.Value = 50;
+            }));
             if (!string.IsNullOrEmpty(pFile)) {
 
 
@@ -715,6 +753,7 @@ namespace LionSDKDotDemo
                 this.BeginInvoke(new Action(() =>
                 {
                     ProcessImage(pFile.Replace("bmp", "jpg"));
+                    toolStripProgressBar.Value = 100;
                 }));
                
             }
@@ -768,13 +807,10 @@ namespace LionSDKDotDemo
             if (tcpClient.IsConnected())
             {
                 tcpClient.Disconnect();
-                buttonConnectServer.Text = "连接检测服务";
-                buttonConnectServer.ForeColor = Color.Red;
+
             }
             else {
                 tcpClient.Connect();
-                buttonConnectServer.Text = "断开检测服务";
-                buttonConnectServer.ForeColor = Color.Green;
             }
            
         }
@@ -843,7 +879,6 @@ namespace LionSDKDotDemo
 
                     labelPLCStatus.ForeColor = Color.Green;
                     buttonConnectPLC.Text = "已连接";
-                    labelStatusBarPLC.Text = "PLC-已连接";
                     IsConnectedPLC = true;
 
                    monitorPlcCommandThread = new Thread(new ThreadStart(delegate {
@@ -925,19 +960,16 @@ namespace LionSDKDotDemo
                 return;
             }
 
-            if (labelXrayStatus.ForeColor == Color.Red)
+            if (buttonXrayOnOff.Text == "打开光源")
             {
                 // 打开光源
                 HVSerialPortControler.Instance.XRayOn();
-                labelXrayStatus.ForeColor = Color.Green;
                 buttonXrayOnOff.Text = "关闭光源";
-
             }
             else {
                 // 关闭
 
                 HVSerialPortControler.Instance.XRayOff();
-                labelXrayStatus.ForeColor = Color.Red;
                 buttonXrayOnOff.Text = "打开光源";
             }
         }
@@ -991,9 +1023,9 @@ namespace LionSDKDotDemo
         {
 
             /// 清空图像可以加载一张提前准备好的图像。
-            pictureBoxImage.Load("no_image.png");
+            pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
-            pictureBoxImage1.Load("no_image.png");
+            pictureBoxImage1.Image = Properties.Resources.no_image; 
             pictureBoxImage1.Invalidate();
 
         }
@@ -1007,7 +1039,7 @@ namespace LionSDKDotDemo
 
             this.BeginInvoke(new Action(() =>
             {
-                labelHV_Temp.Text = arg.ToString("f2") + "℃";
+                toolStripStatusLabel_HV_Temp.Text = arg.ToString("f2") + "℃";
                 //this.Log("高压温度: " + lblHV_Temperature.Content.ToString());
             }));
         }
@@ -1020,7 +1052,7 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                labelHV_Current.Text = arg + "uA";
+                toolStripStatusLabel_HV_Cur.Text = arg + "uA";
             }));
         }
         /// <summary>
@@ -1031,7 +1063,7 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                labelHV_KV.Text = arg + "kV";
+                toolStripStatusLabel_HV_KV.Text = arg + "kV";
             }));
         }
         /// <summary>
@@ -1044,21 +1076,21 @@ namespace LionSDKDotDemo
             {
                 if (arg)
                 {
-                    labelXrayOnOff.Text = "XRay ON";
-                    labelXrayOnOff.ForeColor = Color.Yellow;
+                    toolStripStatusLabel_XrayOnOff.Text = "XRay ON";
+                    pictureBoxXrayOnOff.Image = Properties.Resources.fushe_red;
                 }
                 else
                 {
-                    labelXrayOnOff.Text = "XRay OFF";
-                    labelXrayOnOff.ForeColor = Color.Black;
+                    toolStripStatusLabel_XrayOnOff.Text = "Xray OFF";
+                    pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
 
                 }
+                pictureBoxXrayOnOff.Invalidate();
             }));
 
         }
         void ControlSystem_Connected() {
-            labelHVConn.Text = "高压-已连接";
-            labelHVConn.ForeColor = Color.Black;
+            toolStripStatusLabel_HVConn.Text = "高压-已连接";
         }
 
         /// <summary>
@@ -1069,8 +1101,7 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                labelHVError.Text = report;
-                labelHVError.ForeColor = Color.Red;
+                toolStripStatusLabel_HVError.Text = report;
             }));
         }
         /// <summary>
@@ -1092,9 +1123,70 @@ namespace LionSDKDotDemo
             catch (Exception)
             {
                 MessageBox.Show("高压通讯串口初始化失败，请检查串口设置\nInitialization of high voltage communication serial port failed. Please check the serial port settings.");
-                labelHVConn.Text = "高压-已连接";
+                toolStripStatusLabel_HVConn.Text = "高压-未连接";
             }
         }
 
+        private void timerDateTime_Tick(object sender, EventArgs e)
+        {
+            this.toolStripStatusLabel_Time.Text = System.DateTime.Now.ToString();
+        }
+
+        private void timerSensorState_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                this.toolStripStatusLabel_Sensor1.Text = GetDeviceState(listDev[0]);
+                this.toolStripStatusLabel_Sensor2.Text = GetDeviceState(listDev[1]);
+            }
+            catch {
+
+            }
+
+
+
+        }
+
+        private void radioButtonLock_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonAutoMode.Checked)
+            {
+
+                groupBox4.Enabled = false;
+                groupBox7.Enabled = false;
+                   
+                for (int i = 0; i < groupBox5.Controls.Count; i++) {
+
+                    if (groupBox5.Controls[i].Text != "●") {
+                        groupBox5.Controls[i].Enabled = false;
+                    }
+                    
+                }
+                for (int i = 0; i < groupBox6.Controls.Count; i++)
+                {
+
+                    if (groupBox6.Controls[i].Text != "●")
+                    {
+                        groupBox6.Controls[i].Enabled = false;
+                    }
+
+                }
+                
+
+            }
+            else {
+                groupBox4.Enabled = true;
+                groupBox7.Enabled = true;
+
+                for (int i = 0; i < groupBox5.Controls.Count; i++)
+                {
+                        groupBox5.Controls[i].Enabled = true;
+                }
+                for (int i = 0; i < groupBox6.Controls.Count; i++)
+                {
+                        groupBox6.Controls[i].Enabled = true;
+                }
+            }
+        }
     }
 }
