@@ -622,22 +622,24 @@ namespace LionSDKDotDemo
             /// before acq delete image
             /// luvc_camera_964.jpg luvc_camera_964.bmp luvc_camera_964.raw
             /// 
-            buttonClearImage_Click(null,null);
+
+         //   buttonClearImage_Click(null,null);
 
             try
             {
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < 2; i++)
+                {
 
                     string bmp_file = "luvc_camera_" + ImageIds[i].ToString() + ".bmp";
                     string jpg_file = "luvc_camera_" + ImageIds[i].ToString() + ".jpg";
-                    string  raw_file = "luvc_camera_" + ImageIds[i].ToString() + ".raw";
+                    string raw_file = "luvc_camera_" + ImageIds[i].ToString() + ".raw";
 
                     Console.WriteLine("delete {0}, {1}, {2}", bmp_file, jpg_file, raw_file);
                     File.Delete(bmp_file);
                     File.Delete(jpg_file);
                     File.Delete(raw_file);
                 }
-               
+
             }
             catch {
 
@@ -812,14 +814,23 @@ namespace LionSDKDotDemo
                     
                 if (device.uvcIdentity.Id == ImageIds[0])
                 {
-                       this.pictureBoxImage.Load(pFile);
+                       // 二：从流中读取
+                        FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
+                        this.pictureBoxImage.Image = Image.FromStream(fileStream);
+                        fileStream.Close();
+                        fileStream.Dispose();
+
                     }
                 else if (device.uvcIdentity.Id == ImageIds[1])
                 {
-                       this.pictureBoxImage1.Load(pFile);
+                        FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
+                        this.pictureBoxImage1.Image = Image.FromStream(fileStream);
+                        fileStream.Close();
+                        fileStream.Dispose();
 
                     }
-                else {
+                else
+                {
                     MessageBox.Show("请重新枚举设备!");
                 }
 
@@ -1132,10 +1143,13 @@ namespace LionSDKDotDemo
         {
 
             /// 清空图像可以加载一张提前准备好的图像。
+            /// 
+
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
             pictureBoxImage1.Image = Properties.Resources.no_image; 
             pictureBoxImage1.Invalidate();
+
 
 
 
