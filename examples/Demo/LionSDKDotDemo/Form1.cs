@@ -907,13 +907,13 @@ namespace LionSDKDotDemo
             if (tcpClient.IsConnected())
             {
                 tcpClient.Disconnect();
-                buttonConnectServer.Text = "连接检测服务";
+                buttonConnectServer.Text = "连接智能分析";
 
             }
             else
             {
                 tcpClient.Connect();
-                buttonConnectServer.Text = "断开检测服务";
+                buttonConnectServer.Text = "断开智能分析";
             }
 
         }
