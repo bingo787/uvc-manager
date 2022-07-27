@@ -18,7 +18,7 @@ namespace SerialPortController
         Char StartTag = (Char)(STX);
         Char EndTag = (Char)(0x0D);
 
-        private bool _running = false;
+        private bool _running = true;
 
         private static HVSerialPortControler _instance;
         public static HVSerialPortControler Instance
@@ -48,6 +48,8 @@ namespace SerialPortController
                 {
                     try
                     {
+
+                    
                         if (_serialPort == null)
                             continue;
 
@@ -74,6 +76,8 @@ namespace SerialPortController
                             Thread.Sleep(150 * 1);
                             SendCommand("FLT");
                         }
+
+
                     }
                     catch { }
                 }
@@ -119,6 +123,7 @@ namespace SerialPortController
                 byte[] buffer = new byte[1024];
                 int len = port.Read(buffer, 0, buffer.Length);
                 string message = ASCIIEncoding.ASCII.GetString(buffer, 0, len);
+               
 #if DEBUG
                // Console.WriteLine("Receive-" + DateTime.Now.ToString("HH:mm:ss.ffff") + "=" + message);
 #endif
@@ -401,6 +406,7 @@ namespace SerialPortController
                 _serialPort.Write(command.ToArray(), 0, command.Count);
             }
             _isNeedFeeddingDog = false;
+
 #if DEBUG
          //   Console.WriteLine("Send-" + DateTime.Now.ToString("HH:mm:ss.ffff") + "=" + message);
 #endif
