@@ -27,8 +27,8 @@ namespace LionSDKDotDemo
 
         double HV_MaxKV = 80.0f; // 80kv
         int HV_MaxCurrent = 1000; //1000mA
-        UInt32 SensorCheckTime = 5000;
-        UInt32 SensorGetImageTime = 100000;
+        UInt32 SensorCheckTimeOut = 5000;
+        UInt32 SensorGetImageTimeOut = 100000;
 
         List<string> rate = new List<string> { "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200" };
         List<string> databit = new List<string> { "8", "7", "6" };
@@ -57,7 +57,7 @@ namespace LionSDKDotDemo
             this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
 
 
-            this.textBoxCheckTime.Text = Config.Instance.ReadString("UVCSetting", "CheckTimeout");
+            this.textBoxActTime.Text = Config.Instance.ReadString("UVCSetting", "ActTime");
 
             // HV port
             PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
@@ -103,7 +103,7 @@ namespace LionSDKDotDemo
 
             Config.Instance.WriteString("UVCSetting", "Mode", this.comboBoxModel.Text);
             Config.Instance.WriteString("UVCSetting", "FPGA", this.comboBoxFilter.Text);
-            Config.Instance.WriteString("UVCSetting", "CheckTimeout", this.textBoxCheckTime.Text);
+            Config.Instance.WriteString("UVCSetting", "ActTime", this.textBoxActTime.Text);
 
             Config.Instance.WriteString("PLCPara", "IP", this.textBoxIpAddress.Text);
             Config.Instance.WriteString("PLCPara", "Port", this.textBoxPort.Text);
@@ -113,10 +113,11 @@ namespace LionSDKDotDemo
 
         }
 
-        int  IsSensorBusy = 0;
+        int  BusySensorCount = 0;
         private void MonitorPLC() {
 
-            while (IsConnectedPLC){
+            while (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+            {
 
                 Thread.Sleep(100);
                 try
@@ -125,10 +126,10 @@ namespace LionSDKDotDemo
                     bool ret = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
                   //  Console.WriteLine("M2010 " + ret.ToString() + " Busy Count " + IsSensorBusy.ToString());
 
-                    if (ret == true && IsSensorBusy == 0)
+                    if (ret == true && BusySensorCount == 0)
                     {
                         // 拍照
-                        IsSensorBusy = 2;
+                        BusySensorCount = 2;
 
                         this.BeginInvoke(new Action(() =>
                         {
@@ -183,6 +184,9 @@ namespace LionSDKDotDemo
 
             LoadConfig();
 
+            // 加载完配置后要设置一遍
+           // buttonSetParameter_Click(null, null);
+
             // 高压初始化
             this.labelHVPortLED.Text = "●";
             TriggerHVPortStatus(false);
@@ -195,10 +199,6 @@ namespace LionSDKDotDemo
             this.labelPLCStatus.Text = "●";
             labelPLCStatus.ForeColor = Color.Red;
             buttonConnectPLC.Text = "连接";
-
-            // 曝光时间设置暂时不支持
-            this.textBoxCheckTime.Enabled = false;
-
 
             // 清空显示
             buttonClearImage_Click(null, null);
@@ -354,17 +354,22 @@ namespace LionSDKDotDemo
             //X-RAY类型
             int nRay = 0;// this.comboBoxRay.SelectedIndex;
                          //检测图像时间
-                        
-            UInt32 nCheckTime = SensorCheckTime; 
+
+
+            UInt32 nGetTime = SensorGetImageTimeOut;
+            UInt32 nCheckTime = SensorCheckTimeOut;
             //获取图像时间
- 
-            UInt32 nGetTime = SensorGetImageTime;
+
+            string strActTime = this.textBoxActTime.Text;
+            UInt32 nActTime = Convert.ToUInt32(strActTime);
+
+
             //////
-            UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
+            //  UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
             for (int d = 0; d < listDev.Count; d++)
             {
-                if (listDev[d].uvcIdentity.Id == id)
+             //   if (listDev[d].uvcIdentity.Id == id)
                 {
                     LU_DEVICE luDev = listDev[d];
                     //
@@ -424,7 +429,15 @@ namespace LionSDKDotDemo
                         //
                         LionSDK.LionSDK.SetDeviceParam(ref luDev, ref param);
                     }
-
+                    unsafe
+                    {
+                        //ACT 1.6版本 曝光时间
+                        param.param = (UInt16)LUDEV_PARAM.LUDEVPARAM_ACT;
+                        param.size = sizeof(UInt32);
+                        param.data = &nActTime;
+                        //
+                        LionSDK.LionSDK.SetDeviceParam(ref luDev, ref param);
+                    }
 
                     //获取设置
                     unsafe
@@ -597,7 +610,7 @@ namespace LionSDKDotDemo
             }
         }
 
-        
+
         /// <summary>
         /// 异步获取图像
         /// </summary>
@@ -609,7 +622,8 @@ namespace LionSDKDotDemo
             /// before acq delete image
             /// luvc_camera_964.jpg luvc_camera_964.bmp luvc_camera_964.raw
             /// 
-            buttonClearImage_Click(null,null); ;
+            buttonClearImage_Click(null,null);
+
             try
             {
                 for (int i = 0; i < 2; i++) {
@@ -630,7 +644,6 @@ namespace LionSDKDotDemo
                 Console.WriteLine("delete file failed......");
 
             }
-
 
 
             toolStripProgressBar.Value = 0;
@@ -773,9 +786,12 @@ namespace LionSDKDotDemo
             }
 
             // send result to plc 
+            if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+            {
+                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
+                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
+            }
 
-            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
-            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
 
         }
 
@@ -796,11 +812,11 @@ namespace LionSDKDotDemo
                     
                 if (device.uvcIdentity.Id == ImageIds[0])
                 {
-                     //   this.pictureBoxImage.Load(pFile);
+                       this.pictureBoxImage.Load(pFile);
                     }
                 else if (device.uvcIdentity.Id == ImageIds[1])
                 {
-                    //    this.pictureBoxImage1.Load(pFile);
+                       this.pictureBoxImage1.Load(pFile);
 
                     }
                 else {
@@ -811,7 +827,7 @@ namespace LionSDKDotDemo
 
                     ProcessImage(pFile.Replace("bmp", "jpg"));
                     toolStripProgressBar.Value = 100;
-                    IsSensorBusy -= 1;
+                    BusySensorCount -= 1;
 
                
             }
@@ -921,10 +937,9 @@ namespace LionSDKDotDemo
         /// <param name="sender"></param>
         /// <param name="e"></param>
 
-        static bool IsConnectedPLC = false;
         private void buttonConnectPLC_Click(object sender, EventArgs e)
         {
-            if (!IsConnectedPLC)
+            if (!PLCHelperModbusTCP.fnGetInstance().IsConnected)
             {
                 try
                 {
@@ -940,7 +955,7 @@ namespace LionSDKDotDemo
 
                     labelPLCStatus.ForeColor = Color.Green;
                     buttonConnectPLC.Text = "已连接";
-                    IsConnectedPLC = true;
+
 
                     monitorPlcCommandThread = new Thread(new ThreadStart(delegate
                     {
@@ -963,9 +978,6 @@ namespace LionSDKDotDemo
 
                 // 断开PLC　
                 PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
-
-            IsConnectedPLC　=　false;
-
                 labelPLCStatus.ForeColor = Color.Red;
                 buttonConnectPLC.Text = "连接";
             }

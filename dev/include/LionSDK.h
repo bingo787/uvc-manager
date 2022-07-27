@@ -158,6 +158,7 @@ enum LUDEV_PARAM{
 	LUDEVPARAM_FFCLIGHTENABLE,			    //明场FFC校准使能          //暂不支持
 	LUDEVPARAM_FCCDARK,						//暗场FFC校准     文件路径   //暂不支持
 	LUDEVPARAM_FCCLIGHT,					//明场FFC校准		文件路径  //暂不支持
+	LUDEVPARAM_ACT,							//ACT  1.6版本新添加
 };
 
 //TWPARAMETER  //暂不支持
@@ -497,5 +498,5 @@ LIONSDK_API LU_RESULT GetImage(PLU_DEVICE pDevice, LU_UINT32 showUi, PLionImageC
 LIONSDK_API LU_RESULT AbandonGetImage(PLU_DEVICE pDevice);
 
 
-
+	
 
