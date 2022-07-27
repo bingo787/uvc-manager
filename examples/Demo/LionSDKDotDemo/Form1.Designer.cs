@@ -97,6 +97,7 @@
             this.radioButtonAutoMode = new System.Windows.Forms.RadioButton();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.radioButtonManualMode = new System.Windows.Forms.RadioButton();
+            this.buttonConnectServer = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -361,7 +362,7 @@
             // 
             // buttonAbandon
             // 
-            this.buttonAbandon.Location = new System.Drawing.Point(50, 115);
+            this.buttonAbandon.Location = new System.Drawing.Point(49, 97);
             this.buttonAbandon.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonAbandon.Name = "buttonAbandon";
             this.buttonAbandon.Size = new System.Drawing.Size(86, 23);
@@ -594,6 +595,7 @@
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.buttonClearImage);
+            this.groupBox7.Controls.Add(this.buttonConnectServer);
             this.groupBox7.Controls.Add(this.buttonM1601);
             this.groupBox7.Controls.Add(this.buttonEnumDev);
             this.groupBox7.Controls.Add(this.buttonAbandon);
@@ -607,7 +609,7 @@
             // 
             // buttonClearImage
             // 
-            this.buttonClearImage.Location = new System.Drawing.Point(50, 199);
+            this.buttonClearImage.Location = new System.Drawing.Point(50, 195);
             this.buttonClearImage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonClearImage.Name = "buttonClearImage";
             this.buttonClearImage.Size = new System.Drawing.Size(85, 21);
@@ -618,7 +620,7 @@
             // 
             // buttonM1601
             // 
-            this.buttonM1601.Location = new System.Drawing.Point(51, 158);
+            this.buttonM1601.Location = new System.Drawing.Point(50, 131);
             this.buttonM1601.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonM1601.Name = "buttonM1601";
             this.buttonM1601.Size = new System.Drawing.Size(85, 21);
@@ -629,7 +631,7 @@
             // 
             // buttonAsynchronous
             // 
-            this.buttonAsynchronous.Location = new System.Drawing.Point(50, 72);
+            this.buttonAsynchronous.Location = new System.Drawing.Point(49, 63);
             this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonAsynchronous.Name = "buttonAsynchronous";
             this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
@@ -771,6 +773,17 @@
             this.radioButtonManualMode.UseVisualStyleBackColor = true;
             this.radioButtonManualMode.CheckedChanged += new System.EventHandler(this.radioButtonLock_CheckedChanged);
             // 
+            // buttonConnectServer
+            // 
+            this.buttonConnectServer.Location = new System.Drawing.Point(50, 163);
+            this.buttonConnectServer.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonConnectServer.Name = "buttonConnectServer";
+            this.buttonConnectServer.Size = new System.Drawing.Size(85, 21);
+            this.buttonConnectServer.TabIndex = 25;
+            this.buttonConnectServer.Text = "连接检测服务";
+            this.buttonConnectServer.UseVisualStyleBackColor = true;
+            this.buttonConnectServer.Click += new System.EventHandler(this.buttonConnectServer_Click);
+            // 
             // Demo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -884,6 +897,7 @@
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.RadioButton radioButtonManualMode;
         private System.Windows.Forms.PictureBox pictureBoxXrayOnOff;
+        private System.Windows.Forms.Button buttonConnectServer;
     }
 }
 

@@ -36,12 +36,12 @@ namespace LionSDKDotDemo
         List<string> stopbit = new List<string> { "1", "2" };
         List<string> port = SerialPort.GetPortNames().ToList();
 
-        List<string> uvcMode = new List<string> {"AC", "VTC" };
-        List<string> uvcBinning = new List<string> { "No", "Binning"};
-        List<string> uvcFPGA = new List<string> {"Raw", "FPGA" };
+        List<string> uvcMode = new List<string> { "AC", "VTC" };
+        List<string> uvcBinning = new List<string> { "No", "Binning" };
+        List<string> uvcFPGA = new List<string> { "Raw", "FPGA" };
 
         // 读取PLC状态的线程`
-        private Thread monitorPlcCommandThread; 
+        private Thread monitorPlcCommandThread;
         // 控制器对象
         private static TcpClient tcpClient = new TcpClient();
 
@@ -49,7 +49,8 @@ namespace LionSDKDotDemo
         //当前的设备对象
         private List<LU_DEVICE> listDev = new List<LU_DEVICE>();
 
-        private void LoadConfig() {
+        private void LoadConfig()
+        {
 
 
             // UVC
@@ -84,14 +85,16 @@ namespace LionSDKDotDemo
             {
                 this.radioButtonAutoMode.Checked = true;
             }
-            else {
+            else
+            {
                 this.radioButtonManualMode.Checked = true;
             }
-            
+
 
         }
 
-        void SaveConfig() {
+        void SaveConfig()
+        {
             Config.Instance.WriteString("HVPortPara", "PortName", this.comboBoxHVPort.Text);
             Config.Instance.WriteString("HVPortPara", "BaudRate", this.comboBoxHVBaudRate.Text);
             Config.Instance.WriteString("HVPortPara", "Parity", this.comBoxHVCheckBit.Text);
@@ -112,9 +115,10 @@ namespace LionSDKDotDemo
             Config.Instance.WriteString("ModeSelect", "Manual", this.radioButtonManualMode.Checked.ToString());
 
         }
-
-        int  BusySensorCount = 0;
-        private void MonitorPLC() {
+        string plcPostion = "0000";
+        int BusySensorCount = 0;
+        private void MonitorPLC()
+        {
 
             while (PLCHelperModbusTCP.fnGetInstance().IsConnected)
             {
@@ -122,9 +126,15 @@ namespace LionSDKDotDemo
                 Thread.Sleep(100);
                 try
                 {
-                  
+
                     bool ret = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
-                  //  Console.WriteLine("M2010 " + ret.ToString() + " Busy Count " + IsSensorBusy.ToString());
+                    //  Console.WriteLine("M2010 " + ret.ToString() + " Busy Count " + IsSensorBusy.ToString());
+
+                    // 读取运动装置的位置
+                    Int16 pos = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
+                    //  Console.WriteLine("D999 " + pos.ToString());
+                    plcPostion = pos.ToString();
+
 
                     if (ret == true && BusySensorCount == 0)
                     {
@@ -133,10 +143,13 @@ namespace LionSDKDotDemo
 
                         this.BeginInvoke(new Action(() =>
                         {
+
+
+
                             Console.WriteLine("开始异步采图 ");
                             buttonAsynchronous_Click(null, null);
                         }));
-                        
+
                     }
                     else
                     {
@@ -144,16 +157,17 @@ namespace LionSDKDotDemo
                         // 不拍照
                     }
                 }
-                catch (Exception ex){
-                   // MessageBox.Show("PLC M2010读取异常, 请重新连接PLC");
+                catch (Exception ex)
+                {
+                    // MessageBox.Show("PLC M2010读取异常, 请重新连接PLC");
                     Console.WriteLine(ex.ToString());
                     //break;
                 }
 
-             
+
             }
 
-          
+
 
         }
 
@@ -185,7 +199,7 @@ namespace LionSDKDotDemo
             LoadConfig();
 
             // 加载完配置后要设置一遍
-           // buttonSetParameter_Click(null, null);
+            // buttonSetParameter_Click(null, null);
 
             // 高压初始化
             this.labelHVPortLED.Text = "●";
@@ -204,20 +218,23 @@ namespace LionSDKDotDemo
             buttonClearImage_Click(null, null);
 
             // 启动线程刷新状态栏
-            new Thread(()=> { UpdateStatusBar(); }).Start();
+            new Thread(() => { UpdateStatusBar(); }).Start();
 
         }
 
-        private void UpdateStatusBar() {
+        private void UpdateStatusBar()
+        {
 
         }
-        private void TriggerHVPortStatus(bool open) {
+        private void TriggerHVPortStatus(bool open)
+        {
             if (open)
             {
                 this.labelHVPortLED.ForeColor = Color.Green;
                 this.buttonConnectHVPort.Text = "关闭串口";
             }
-            else {
+            else
+            {
                 this.labelHVPortLED.ForeColor = Color.Red;
                 this.buttonConnectHVPort.Text = "打开串口";
             }
@@ -227,7 +244,7 @@ namespace LionSDKDotDemo
 
         }
 
-        private uint[] ImageIds = {0,0};
+        private uint[] ImageIds = { 0, 0 };
 
         private void buttonEnumDev_Click(object sender, EventArgs e)
         {
@@ -235,12 +252,12 @@ namespace LionSDKDotDemo
             listDev.Clear();
             int nCount = LionSDK.LionSDK.GetDeviceCount();
             //加入根文件
-            TreeNode root = this.treeViewDevice.Nodes.Add("LIONUVC设备("+nCount+")");
+            TreeNode root = this.treeViewDevice.Nodes.Add("LIONUVC设备(" + nCount + ")");
             root.Name = "LionUVC_root";
             for (int d = 0; d < nCount; d++)
             {
                 LU_DEVICE luDev = new LU_DEVICE();
-                if(LionCom.LU_SUCCESS == LionSDK.LionSDK.GetDevice(d, ref luDev))
+                if (LionCom.LU_SUCCESS == LionSDK.LionSDK.GetDevice(d, ref luDev))
                 {
                     listDev.Add(luDev);
                     string strText = System.Text.Encoding.ASCII.GetString(luDev.uvcIdentity.Name);
@@ -281,9 +298,9 @@ namespace LionSDKDotDemo
             else
             {
                 this.textBoxDevInfo.Text = "设备名称: " +
-                            "\n设备ID: " + 
-                            "\n设备版本: " + 
-                            "\n设备序列号:" +  "\n";
+                            "\n设备ID: " +
+                            "\n设备版本: " +
+                            "\n设备序列号:" + "\n";
             }
         }
 
@@ -334,7 +351,7 @@ namespace LionSDKDotDemo
                     break;
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -369,7 +386,7 @@ namespace LionSDKDotDemo
             //
             for (int d = 0; d < listDev.Count; d++)
             {
-             //   if (listDev[d].uvcIdentity.Id == id)
+                //   if (listDev[d].uvcIdentity.Id == id)
                 {
                     LU_DEVICE luDev = listDev[d];
                     //
@@ -494,7 +511,8 @@ namespace LionSDKDotDemo
         /// <param name="sender"></param>
         /// <param name="e"></param>
 
-        private string GetDeviceState(LU_DEVICE luDev) {
+        private string GetDeviceState(LU_DEVICE luDev)
+        {
 
             string stateText = "";
             unsafe
@@ -540,7 +558,7 @@ namespace LionSDKDotDemo
                 if (listDev[d].uvcIdentity.Id == id)
                 {
                     LU_DEVICE luDev = listDev[d];
-                    
+
                     unsafe
                     {
                         //获取设备状态
@@ -586,11 +604,11 @@ namespace LionSDKDotDemo
         {
 
             toolStripProgressBar.Value = 0;
-          //  UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
+            //  UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
             for (int d = 0; d < listDev.Count; d++)
             {
-               // if (listDev[d].uvcIdentity.Id == id)
+                // if (listDev[d].uvcIdentity.Id == id)
                 {
                     LU_DEVICE luDev = listDev[d];
                     //
@@ -601,7 +619,8 @@ namespace LionSDKDotDemo
                         {
                             LionSDK.LionSDK.AbandonGetImage(ref luDev);
                         }
-                        catch {
+                        catch
+                        {
 
                         }
                     }
@@ -623,7 +642,7 @@ namespace LionSDKDotDemo
             /// luvc_camera_964.jpg luvc_camera_964.bmp luvc_camera_964.raw
             /// 
 
-         //   buttonClearImage_Click(null,null);
+            //   buttonClearImage_Click(null,null);
 
             try
             {
@@ -641,7 +660,8 @@ namespace LionSDKDotDemo
                 }
 
             }
-            catch {
+            catch
+            {
 
                 Console.WriteLine("delete file failed......");
 
@@ -679,12 +699,12 @@ namespace LionSDKDotDemo
 
             for (int d = 0; d < listDev.Count; d++)
             {
-               // Console.WriteLine("listDev[d].uvcIdentity.Id  {0}", listDev[d].uvcIdentity.Id);
+                // Console.WriteLine("listDev[d].uvcIdentity.Id  {0}", listDev[d].uvcIdentity.Id);
                 {
                     LU_DEVICE luDev = listDev[d];
                     unsafe
                     {
-                        string strFile="";
+                        string strFile = "";
 
                         int nBuf = 0;
                         byte[] data = null;
@@ -713,7 +733,7 @@ namespace LionSDKDotDemo
 
 
                                 // 处理图像
-                                ProcessImage(strFile.Replace("bmp", "jpg"));    
+                                ProcessImage(strFile.Replace("bmp", "jpg"));
                             }
                             else
                             {
@@ -721,8 +741,9 @@ namespace LionSDKDotDemo
                             }
 
                         }
-                        else {
-                            MessageBox.Show("图像获取失败!  " +  ret_image.ToString());
+                        else
+                        {
+                            MessageBox.Show("图像获取失败!  " + ret_image.ToString());
                         }
 
                     }
@@ -732,22 +753,15 @@ namespace LionSDKDotDemo
         }
 
 
-        private void ProcessImage(string imageFile) {
+        private void ProcessImage(string imageFile)
+        {
             // 原始文件名为 luvc_camera_7416.jpg
             // 拷贝文件名： datetime_positon_cameraid.jpg;
 
             string timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
-            string plcPostion = "32768"; // Int16 最大值
 
             string newImageFileName = imageFile.Replace("luvc", timestamp);
 
-            // 如果PLC已经连接，则读取地址，命名图片
-            if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
-            {
-                Int16 pos = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(999);
-                Console.WriteLine("D999 " + pos.ToString());
-                plcPostion = pos.ToString();
-            }
 
             newImageFileName = newImageFileName.Replace("camera", plcPostion);
 
@@ -755,7 +769,6 @@ namespace LionSDKDotDemo
             string copyFileName = "D:\\temp\\" + newImageFileName;
             Console.WriteLine("Copy {0} to {1} ", imageFile, copyFileName);
             File.Copy(imageFile, copyFileName, true);
-
 
 
             // 如果图片处理服务已经连接 就分析图像
@@ -809,39 +822,40 @@ namespace LionSDKDotDemo
                 toolStripProgressBar.Value = 50;
                 Console.WriteLine("  ImageIds[0] ={0}, ImageIds[1]={1} , pFile ={2}", ImageIds[0], ImageIds[1], pFile);
 
-                if (!string.IsNullOrEmpty(pFile)) {
-
-                    
-                if (device.uvcIdentity.Id == ImageIds[0])
+                if (!string.IsNullOrEmpty(pFile))
                 {
-                       // 二：从流中读取
+
+
+                    if (device.uvcIdentity.Id == ImageIds[0])
+                    {
+                        // 二：从流中读取
                         FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
                         this.pictureBoxImage.Image = Image.FromStream(fileStream);
                         fileStream.Close();
                         fileStream.Dispose();
 
                     }
-                else if (device.uvcIdentity.Id == ImageIds[1])
-                {
+                    else if (device.uvcIdentity.Id == ImageIds[1])
+                    {
                         FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
                         this.pictureBoxImage1.Image = Image.FromStream(fileStream);
                         fileStream.Close();
                         fileStream.Dispose();
 
                     }
-                else
-                {
-                    MessageBox.Show("请重新枚举设备!");
-                }
+                    else
+                    {
+                        MessageBox.Show("请重新枚举设备!");
+                    }
 
-                // 处理
+                    // 处理
 
                     ProcessImage(pFile.Replace("bmp", "jpg"));
                     toolStripProgressBar.Value = 100;
                     BusySensorCount -= 1;
 
-               
-            }
+
+                }
             }));
             return 0;
         }
@@ -873,7 +887,8 @@ namespace LionSDKDotDemo
                 HVSerialPortControler.Instance.CloseControlSystem();
 
             }
-            catch {
+            catch
+            {
 
             }
 
@@ -892,12 +907,15 @@ namespace LionSDKDotDemo
             if (tcpClient.IsConnected())
             {
                 tcpClient.Disconnect();
+                buttonConnectServer.Text = "连接检测服务";
 
             }
-            else {
+            else
+            {
                 tcpClient.Connect();
+                buttonConnectServer.Text = "断开检测服务";
             }
-           
+
         }
 
 
@@ -917,7 +935,8 @@ namespace LionSDKDotDemo
                 TriggerHVPortStatus(false);
                 IsXrayPortConnected = false;
             }
-            else {
+            else
+            {
                 try
                 {
                     HVSerialPortControler.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
@@ -938,7 +957,7 @@ namespace LionSDKDotDemo
 
             }
 
-          
+
 
         }
 
@@ -985,7 +1004,8 @@ namespace LionSDKDotDemo
                 }
 
             }
-            else {
+            else
+            {
 
                 // 断开PLC　
                 PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
@@ -1000,7 +1020,8 @@ namespace LionSDKDotDemo
 
             double kv = 0;
 
-            if (!double.TryParse(textBoxKV.Text.ToString(), out kv)) {
+            if (!double.TryParse(textBoxKV.Text.ToString(), out kv))
+            {
 
                 MessageBox.Show("输入的参数非法");
                 return;
@@ -1012,7 +1033,7 @@ namespace LionSDKDotDemo
             }
 
 
-          //  HVSerialPortControler.Instance.SetKV(kv);
+            //  HVSerialPortControler.Instance.SetKV(kv);
 
         }
 
@@ -1037,13 +1058,14 @@ namespace LionSDKDotDemo
             }
 
 
-          //  HVSerialPortControler.Instance.SetCurrent(current);
+            //  HVSerialPortControler.Instance.SetCurrent(current);
         }
 
         private void buttonXrayOnOff_Click(object sender, EventArgs e)
         {
 
-            if (!HVSerialPortControler.Instance.IsOpen()) {
+            if (!HVSerialPortControler.Instance.IsOpen())
+            {
 
                 MessageBox.Show("请先打开高压串口！");
                 return;
@@ -1080,13 +1102,14 @@ namespace LionSDKDotDemo
                 }
 
                 Console.WriteLine("KV {0}, Current {0}", kv, current);
-                HVSerialPortControler.Instance.Preheat(kv, current) ;
+                HVSerialPortControler.Instance.Preheat(kv, current);
 
 
 
                 buttonXrayOnOff.Text = "关闭光源";
             }
-            else {
+            else
+            {
                 // 关闭
 
                 HVSerialPortControler.Instance.XRayOff();
@@ -1095,7 +1118,7 @@ namespace LionSDKDotDemo
         }
 
 
-     
+
 
         private void Demo_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -1133,7 +1156,7 @@ namespace LionSDKDotDemo
 
             /// 往M1610 写值可以触发 M2010
             PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1601, true);
-            bool ret =  PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
+            bool ret = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
             Console.WriteLine("M2010 " + ret.ToString());
 
 
@@ -1147,7 +1170,7 @@ namespace LionSDKDotDemo
 
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
-            pictureBoxImage1.Image = Properties.Resources.no_image; 
+            pictureBoxImage1.Image = Properties.Resources.no_image;
             pictureBoxImage1.Invalidate();
 
 
@@ -1214,7 +1237,8 @@ namespace LionSDKDotDemo
             }));
 
         }
-        void ControlSystem_Connected() {
+        void ControlSystem_Connected()
+        {
             toolStripStatusLabel_HVConn.Text = "高压-已连接";
         }
 
@@ -1264,7 +1288,8 @@ namespace LionSDKDotDemo
                 this.toolStripStatusLabel_Sensor1.Text = GetDeviceState(listDev[0]);
                 this.toolStripStatusLabel_Sensor2.Text = GetDeviceState(listDev[1]);
             }
-            catch {
+            catch
+            {
 
             }
 
@@ -1279,13 +1304,15 @@ namespace LionSDKDotDemo
 
                 groupBox4.Enabled = false;
                 groupBox7.Enabled = false;
-                   
-                for (int i = 0; i < groupBox5.Controls.Count; i++) {
 
-                    if (groupBox5.Controls[i].Text != "●") {
+                for (int i = 0; i < groupBox5.Controls.Count; i++)
+                {
+
+                    if (groupBox5.Controls[i].Text != "●")
+                    {
                         groupBox5.Controls[i].Enabled = false;
                     }
-                    
+
                 }
                 for (int i = 0; i < groupBox6.Controls.Count; i++)
                 {
@@ -1296,20 +1323,21 @@ namespace LionSDKDotDemo
                     }
 
                 }
-                
+
 
             }
-            else {
+            else
+            {
                 groupBox4.Enabled = true;
                 groupBox7.Enabled = true;
 
                 for (int i = 0; i < groupBox5.Controls.Count; i++)
                 {
-                        groupBox5.Controls[i].Enabled = true;
+                    groupBox5.Controls[i].Enabled = true;
                 }
                 for (int i = 0; i < groupBox6.Controls.Count; i++)
                 {
-                        groupBox6.Controls[i].Enabled = true;
+                    groupBox6.Controls[i].Enabled = true;
                 }
             }
         }
