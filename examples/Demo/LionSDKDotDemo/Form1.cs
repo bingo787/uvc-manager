@@ -217,15 +217,8 @@ namespace LionSDKDotDemo
             // 清空显示
             buttonClearImage_Click(null, null);
 
-            // 启动线程刷新状态栏
-            new Thread(() => { UpdateStatusBar(); }).Start();
-
         }
 
-        private void UpdateStatusBar()
-        {
-
-        }
         private void TriggerHVPortStatus(bool open)
         {
             if (open)
@@ -925,15 +918,16 @@ namespace LionSDKDotDemo
         /// <param name="sender"></param>
         /// <param name="e"></param>
 
-        static bool IsXrayPortConnected = false;
+        static bool IsHVPortConnected = false;
         private void buttonConnectHVPort_Click(object sender, EventArgs e)
         {
 
-            if (IsXrayPortConnected)
+            if (IsHVPortConnected)
             {
                 HVSerialPortControler.Instance.CloseControlSystem();
                 TriggerHVPortStatus(false);
-                IsXrayPortConnected = false;
+                IsHVPortConnected = false;
+                toolStripStatusLabel_HVConn.Text = "高压-已断开";
             }
             else
             {
@@ -947,7 +941,7 @@ namespace LionSDKDotDemo
 
                     HVSerialPortControler.Instance.Connect();
                     TriggerHVPortStatus(true);
-                    IsXrayPortConnected = true;
+                    IsHVPortConnected = true;
                 }
                 catch
                 {
@@ -1225,11 +1219,13 @@ namespace LionSDKDotDemo
                 if (arg)
                 {
                     toolStripStatusLabel_XrayOnOff.Text = "XRay ON";
+                    toolStripStatusLabel_XrayOnOff.ForeColor = Color.Red;
                     pictureBoxXrayOnOff.Image = Properties.Resources.fushe_red;
                 }
                 else
                 {
                     toolStripStatusLabel_XrayOnOff.Text = "Xray OFF";
+                    toolStripStatusLabel_XrayOnOff.ForeColor = Color.Black;
                     pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
 
                 }
@@ -1339,6 +1335,19 @@ namespace LionSDKDotDemo
                 {
                     groupBox6.Controls[i].Enabled = true;
                 }
+            }
+        }
+
+        private void textBoxActTime_TextChanged(object sender, EventArgs e)
+        {
+            int actTime = 100;
+            if (!int.TryParse(textBoxActTime.Text, out actTime)) {
+                MessageBox.Show("无效的参数，格式不正确，必须是整数");
+                return;
+            }
+            if (actTime > SensorGetImageTimeOut) {
+                MessageBox.Show("无效的参数，ACT时间最大为 " + SensorGetImageTimeOut.ToString() +" ms");
+                return;
             }
         }
     }

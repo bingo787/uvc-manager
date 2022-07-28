@@ -78,6 +78,7 @@
             this.label28 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.buttonClearImage = new System.Windows.Forms.Button();
+            this.buttonConnectServer = new System.Windows.Forms.Button();
             this.buttonM1601 = new System.Windows.Forms.Button();
             this.buttonAsynchronous = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -97,7 +98,6 @@
             this.radioButtonAutoMode = new System.Windows.Forms.RadioButton();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.radioButtonManualMode = new System.Windows.Forms.RadioButton();
-            this.buttonConnectServer = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -116,9 +116,9 @@
             // 
             this.groupBox1.Controls.Add(this.treeViewDevice);
             this.groupBox1.Location = new System.Drawing.Point(13, 14);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(262, 125);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
@@ -129,7 +129,7 @@
             this.treeViewDevice.CheckBoxes = true;
             this.treeViewDevice.FullRowSelect = true;
             this.treeViewDevice.Location = new System.Drawing.Point(4, 16);
-            this.treeViewDevice.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.treeViewDevice.Margin = new System.Windows.Forms.Padding(2);
             this.treeViewDevice.Name = "treeViewDevice";
             this.treeViewDevice.Size = new System.Drawing.Size(250, 100);
             this.treeViewDevice.TabIndex = 0;
@@ -140,9 +140,9 @@
             // 
             this.groupBox2.Controls.Add(this.textBoxDevInfo);
             this.groupBox2.Location = new System.Drawing.Point(279, 14);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(262, 125);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
@@ -151,7 +151,7 @@
             // textBoxDevInfo
             // 
             this.textBoxDevInfo.Location = new System.Drawing.Point(4, 16);
-            this.textBoxDevInfo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxDevInfo.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxDevInfo.Multiline = true;
             this.textBoxDevInfo.Name = "textBoxDevInfo";
             this.textBoxDevInfo.ReadOnly = true;
@@ -164,9 +164,9 @@
             this.groupBox3.Controls.Add(this.pictureBoxImage1);
             this.groupBox3.Controls.Add(this.pictureBoxImage);
             this.groupBox3.Location = new System.Drawing.Point(559, 14);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox3.Size = new System.Drawing.Size(914, 601);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
@@ -175,7 +175,7 @@
             // pictureBoxImage1
             // 
             this.pictureBoxImage1.Location = new System.Drawing.Point(452, 16);
-            this.pictureBoxImage1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBoxImage1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxImage1.Name = "pictureBoxImage1";
             this.pictureBoxImage1.Size = new System.Drawing.Size(415, 570);
             this.pictureBoxImage1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -185,7 +185,7 @@
             // pictureBoxImage
             // 
             this.pictureBoxImage.Location = new System.Drawing.Point(4, 16);
-            this.pictureBoxImage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBoxImage.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxImage.Name = "pictureBoxImage";
             this.pictureBoxImage.Size = new System.Drawing.Size(415, 570);
             this.pictureBoxImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -205,9 +205,9 @@
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Location = new System.Drawing.Point(13, 145);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox4.Size = new System.Drawing.Size(319, 161);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
@@ -217,7 +217,7 @@
             // 
             this.comboBoxFilter.FormattingEnabled = true;
             this.comboBoxFilter.Location = new System.Drawing.Point(89, 90);
-            this.comboBoxFilter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBoxFilter.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxFilter.Name = "comboBoxFilter";
             this.comboBoxFilter.Size = new System.Drawing.Size(132, 20);
             this.comboBoxFilter.TabIndex = 41;
@@ -226,7 +226,7 @@
             // 
             this.comboBoxModel.FormattingEnabled = true;
             this.comboBoxModel.Location = new System.Drawing.Point(89, 59);
-            this.comboBoxModel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBoxModel.Margin = new System.Windows.Forms.Padding(2);
             this.comboBoxModel.Name = "comboBoxModel";
             this.comboBoxModel.Size = new System.Drawing.Size(132, 20);
             this.comboBoxModel.TabIndex = 39;
@@ -234,15 +234,16 @@
             // textBoxActTime
             // 
             this.textBoxActTime.Location = new System.Drawing.Point(89, 118);
-            this.textBoxActTime.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxActTime.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxActTime.Name = "textBoxActTime";
             this.textBoxActTime.Size = new System.Drawing.Size(132, 21);
             this.textBoxActTime.TabIndex = 36;
+            this.textBoxActTime.TextChanged += new System.EventHandler(this.textBoxActTime_TextChanged);
             // 
             // buttonSetParameter
             // 
             this.buttonSetParameter.Location = new System.Drawing.Point(227, 118);
-            this.buttonSetParameter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonSetParameter.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSetParameter.Name = "buttonSetParameter";
             this.buttonSetParameter.Size = new System.Drawing.Size(75, 23);
             this.buttonSetParameter.TabIndex = 23;
@@ -253,7 +254,7 @@
             // buttonModifySerial
             // 
             this.buttonModifySerial.Location = new System.Drawing.Point(227, 27);
-            this.buttonModifySerial.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonModifySerial.Margin = new System.Windows.Forms.Padding(2);
             this.buttonModifySerial.Name = "buttonModifySerial";
             this.buttonModifySerial.Size = new System.Drawing.Size(75, 23);
             this.buttonModifySerial.TabIndex = 17;
@@ -264,7 +265,7 @@
             // textBoxSerial
             // 
             this.textBoxSerial.Location = new System.Drawing.Point(89, 29);
-            this.textBoxSerial.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxSerial.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxSerial.Name = "textBoxSerial";
             this.textBoxSerial.Size = new System.Drawing.Size(132, 21);
             this.textBoxSerial.TabIndex = 16;
@@ -312,7 +313,7 @@
             // textBoxCurrent
             // 
             this.textBoxCurrent.Location = new System.Drawing.Point(65, 237);
-            this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxCurrent.Name = "textBoxCurrent";
             this.textBoxCurrent.Size = new System.Drawing.Size(61, 21);
             this.textBoxCurrent.TabIndex = 27;
@@ -322,7 +323,7 @@
             // textBoxKV
             // 
             this.textBoxKV.Location = new System.Drawing.Point(65, 211);
-            this.textBoxKV.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxKV.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxKV.Name = "textBoxKV";
             this.textBoxKV.Size = new System.Drawing.Size(61, 21);
             this.textBoxKV.TabIndex = 26;
@@ -352,7 +353,7 @@
             // buttonEnumDev
             // 
             this.buttonEnumDev.Location = new System.Drawing.Point(49, 29);
-            this.buttonEnumDev.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonEnumDev.Margin = new System.Windows.Forms.Padding(2);
             this.buttonEnumDev.Name = "buttonEnumDev";
             this.buttonEnumDev.Size = new System.Drawing.Size(86, 23);
             this.buttonEnumDev.TabIndex = 4;
@@ -363,7 +364,7 @@
             // buttonAbandon
             // 
             this.buttonAbandon.Location = new System.Drawing.Point(49, 97);
-            this.buttonAbandon.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonAbandon.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAbandon.Name = "buttonAbandon";
             this.buttonAbandon.Size = new System.Drawing.Size(86, 23);
             this.buttonAbandon.TabIndex = 19;
@@ -610,7 +611,7 @@
             // buttonClearImage
             // 
             this.buttonClearImage.Location = new System.Drawing.Point(50, 195);
-            this.buttonClearImage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonClearImage.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClearImage.Name = "buttonClearImage";
             this.buttonClearImage.Size = new System.Drawing.Size(85, 21);
             this.buttonClearImage.TabIndex = 26;
@@ -618,10 +619,21 @@
             this.buttonClearImage.UseVisualStyleBackColor = true;
             this.buttonClearImage.Click += new System.EventHandler(this.buttonClearImage_Click);
             // 
+            // buttonConnectServer
+            // 
+            this.buttonConnectServer.Location = new System.Drawing.Point(50, 163);
+            this.buttonConnectServer.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonConnectServer.Name = "buttonConnectServer";
+            this.buttonConnectServer.Size = new System.Drawing.Size(85, 21);
+            this.buttonConnectServer.TabIndex = 25;
+            this.buttonConnectServer.Text = "连接检测服务";
+            this.buttonConnectServer.UseVisualStyleBackColor = true;
+            this.buttonConnectServer.Click += new System.EventHandler(this.buttonConnectServer_Click);
+            // 
             // buttonM1601
             // 
             this.buttonM1601.Location = new System.Drawing.Point(50, 131);
-            this.buttonM1601.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonM1601.Margin = new System.Windows.Forms.Padding(2);
             this.buttonM1601.Name = "buttonM1601";
             this.buttonM1601.Size = new System.Drawing.Size(85, 21);
             this.buttonM1601.TabIndex = 25;
@@ -632,7 +644,7 @@
             // buttonAsynchronous
             // 
             this.buttonAsynchronous.Location = new System.Drawing.Point(49, 63);
-            this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAsynchronous.Name = "buttonAsynchronous";
             this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
             this.buttonAsynchronous.TabIndex = 20;
@@ -773,17 +785,6 @@
             this.radioButtonManualMode.UseVisualStyleBackColor = true;
             this.radioButtonManualMode.CheckedChanged += new System.EventHandler(this.radioButtonLock_CheckedChanged);
             // 
-            // buttonConnectServer
-            // 
-            this.buttonConnectServer.Location = new System.Drawing.Point(50, 163);
-            this.buttonConnectServer.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonConnectServer.Name = "buttonConnectServer";
-            this.buttonConnectServer.Size = new System.Drawing.Size(85, 21);
-            this.buttonConnectServer.TabIndex = 25;
-            this.buttonConnectServer.Text = "连接检测服务";
-            this.buttonConnectServer.UseVisualStyleBackColor = true;
-            this.buttonConnectServer.Click += new System.EventHandler(this.buttonConnectServer_Click);
-            // 
             // Demo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -798,12 +799,12 @@
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1498, 994);
             this.MinimumSize = new System.Drawing.Size(1284, 694);
             this.Name = "Demo";
-            this.Text = "睿奥自动化检测控制软件(v20220727)";
+            this.Text = "睿奥自动化检测控制软件(v20220728)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Demo_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);

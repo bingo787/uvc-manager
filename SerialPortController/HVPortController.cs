@@ -372,7 +372,7 @@ namespace SerialPortController
             if (message.StartsWith("2000"))
             {
 
-              //  Connected.Invoke();
+                Connected.Invoke();
                 return;
             }
 
