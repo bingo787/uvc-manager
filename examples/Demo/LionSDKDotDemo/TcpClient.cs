@@ -18,7 +18,9 @@ namespace LionSDKDotDemo
         private Socket clientSocket_;
         private Socket heartBeatSocket_;
         private Thread heartBeatThread_;
+
         private byte[] receiveBuffer = new byte[32];
+
 
         const byte CR = 0x0D;
         const byte LF = 0x0A;
@@ -47,7 +49,7 @@ namespace LionSDKDotDemo
                 heartBeatThread_ = new Thread(new ThreadStart(delegate { SendHeartBeat(); }));
                 heartBeatThread_.Start();
 
-                // 创建数据通道
+                // 创建数据通道`
                 const int dataPort = 12342;
                 clientSocket_ = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 clientSocket_.Connect(new IPEndPoint(serverIp, dataPort));
@@ -62,7 +64,7 @@ namespace LionSDKDotDemo
 
 
         }
-
+ 
         private void SendHeartBeat() {
             while (running_) {
                 try
@@ -83,22 +85,7 @@ namespace LionSDKDotDemo
             }
         }
 
-        /// <summary>
-        /// 分析图像
-        /// </summary>
-        /// <returns> 返回0表示OK，返回1表示NG， 返回-1表示错误</returns>
-        public enum ANALYSIS_RESULT {
-
-            OK = 0,
-            NG = 1,
-            E_INVALID_CMD = -1,
-            E_NO_SPACE = -2,
-            E_NO_FILE = -3,
-            E_UNKNOWN = -99
-
-
-        };
-        public ANALYSIS_RESULT ProcessImage(string path)
+        public string ProcessImage(string path)
         {
             try
             {
@@ -118,37 +105,14 @@ namespace LionSDKDotDemo
                 byte[] recvMsg = new byte[64];
                 int len = clientSocket_.Receive(recvMsg);
 
-                String s = Encoding.Default.GetString(recvMsg, 0, len);
+                string s = Encoding.Default.GetString(recvMsg, 0, len);
                 Console.WriteLine("recv: " + s);
 
-                if (s.Contains("OK"))
-                {
-                    return ANALYSIS_RESULT.OK;
-                }
-                else if (s.Contains("NG"))
-                {
-                    return ANALYSIS_RESULT.NG;
-                }
-                else if (s.Contains("E_INVALID_CMD"))
-                {
-                    return ANALYSIS_RESULT.E_INVALID_CMD;
-                }
-                else if (s.Contains("E_NO_FILE"))
-                {
-                    return ANALYSIS_RESULT.E_NO_FILE;
-                }
-                else if (s.Contains("E_NO_SPACE"))
-                {
-                    return ANALYSIS_RESULT.E_NO_SPACE;
-                }
-                else
-                {
-                    return ANALYSIS_RESULT.E_UNKNOWN;
-                }
+                return s;
 
             }
             catch {
-                return ANALYSIS_RESULT.E_UNKNOWN;
+                return "";
             }
  
         }

@@ -14,7 +14,7 @@ using LionSDK;
 
 using SerialPortController;
 using DAL;
-
+using System.Collections;
 
 namespace LionSDKDotDemo
 {
@@ -40,6 +40,9 @@ namespace LionSDKDotDemo
         List<string> uvcBinning = new List<string> { "No", "Binning" };
         List<string> uvcFPGA = new List<string> { "Raw", "FPGA" };
 
+        // 处理图像的线程
+        private Thread processImageThread_;
+        Queue<string> ImageQueueBuffer = new Queue<string>();
         // 读取PLC状态的线程`
         private Thread monitorPlcCommandThread;
         // 控制器对象
@@ -143,10 +146,8 @@ namespace LionSDKDotDemo
 
                         this.BeginInvoke(new Action(() =>
                         {
-
-
-
                             Console.WriteLine("开始异步采图 ");
+                            ImageQueueBuffer.Clear();
                             buttonAsynchronous_Click(null, null);
                         }));
 
@@ -263,6 +264,7 @@ namespace LionSDKDotDemo
                 }
             }
             root.ExpandAll();
+            Console.WriteLine("buttonEnumDev_Click listDev.Count {0}", listDev.Count);
         }
 
         private void treeViewDevice_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -377,6 +379,7 @@ namespace LionSDKDotDemo
             //////
             //  UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
+
             for (int d = 0; d < listDev.Count; d++)
             {
                 //   if (listDev[d].uvcIdentity.Id == id)
@@ -446,9 +449,11 @@ namespace LionSDKDotDemo
                         param.size = sizeof(UInt32);
                         param.data = &nActTime;
                         //
-                        LionSDK.LionSDK.SetDeviceParam(ref luDev, ref param);
-                    }
+                        int ret = LionSDK.LionSDK.SetDeviceParam(ref luDev, ref param);
 
+                        Console.WriteLine(" LionSDK.LionSDK.SetDeviceParam {0}, return {1} listDev.Count {2}", luDev.uvcIdentity.Id.ToString(), ret, listDev.Count);
+                    }
+/***
                     //获取设置
                     unsafe
                     {
@@ -491,7 +496,7 @@ namespace LionSDKDotDemo
                         //
                         LionSDK.LionSDK.GetDeviceParam(ref luDev, ref param);
                     }
-                    break;
+                    */
                 }
             }
 
@@ -726,7 +731,7 @@ namespace LionSDKDotDemo
 
 
                                 // 处理图像
-                                ProcessImage(strFile.Replace("bmp", "jpg"));
+                                EnqueueImage(strFile.Replace("bmp", "jpg"));
                             }
                             else
                             {
@@ -745,62 +750,77 @@ namespace LionSDKDotDemo
             }
         }
 
+        private void ProcessImage()
+        {
+            // 如果图片处理服务已经连接 就分析图像
+            while (tcpClient.IsConnected())
+            {
 
-        private void ProcessImage(string imageFile)
+                string copyFileName = ImageQueueBuffer.Dequeue();
+
+                // 分析图像
+                string res = tcpClient.ProcessImage(copyFileName);
+
+                // "NG,D:\temp\202223232121_0000_1965_NG.jpg"
+                UInt32 deviceID = 0;
+                string processedFile = "";
+                processedFile = res.Split(',').ElementAt(1);
+                deviceID = Convert.ToUInt32(res.Split('_').ElementAt(2));
+                // 处理结果
+                // 图1： OK->1210写True, NG->1211写False
+                // 图2： OK->1211写True, NG->1221写False
+
+                if (deviceID == ImageIds[0])
+                {
+                    this.pictureBoxImage.Load(processedFile);
+                    if (res.Contains("OK"))
+                    {
+                        PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
+                    }
+                    else {
+                        PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1211, false);
+                    }
+                   
+                }
+                else if (deviceID == ImageIds[1])
+                {
+                    this.pictureBoxImage1.Load(processedFile);
+                    if (res.Contains("OK"))
+                    {
+                        PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
+                    }
+                    else
+                    {
+                        PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1221, false);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请重新枚举设备!");
+                    return;
+                }
+
+ 
+
+            }
+
+ 
+
+        }
+
+
+        private void EnqueueImage(string imageFile)
         {
             // 原始文件名为 luvc_camera_7416.jpg
             // 拷贝文件名： datetime_positon_cameraid.jpg;
-
             string timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
-
             string newImageFileName = imageFile.Replace("luvc", timestamp);
-
-
             newImageFileName = newImageFileName.Replace("camera", plcPostion);
-
 
             string copyFileName = "D:\\temp\\" + newImageFileName;
             Console.WriteLine("Copy {0} to {1} ", imageFile, copyFileName);
             File.Copy(imageFile, copyFileName, true);
-
-
-            // 如果图片处理服务已经连接 就分析图像
-            if (tcpClient.IsConnected())
-            {
-
-                // 分析图像
-                TcpClient.ANALYSIS_RESULT ret = tcpClient.ProcessImage(copyFileName);
-                if (ret == TcpClient.ANALYSIS_RESULT.OK)
-                {
-                    string image = copyFileName.Replace(".jpg", "_OK.jpg");
-                    this.pictureBoxImage.Load(image);
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
-                    Console.WriteLine("WriteSingleMReg(1210, true) ");
-                }
-                else if (ret == TcpClient.ANALYSIS_RESULT.NG)
-                {
-                    string image = copyFileName.Replace(".jpg", "_NG.jpg");
-                    this.pictureBoxImage.Load(image);
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1211, false);
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1221, false);
-                    Console.WriteLine("WriteSingleMReg(1210, true) ");
-                }
-                else
-                {
-                    MessageBox.Show("发送分析图像指令失败！错误代码：" + ret.ToString());
-                }
-
-            }
-
-            // send result to plc 
-            if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
-            {
-                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
-                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
-            }
-
-
+            ImageQueueBuffer.Enqueue(copyFileName);
         }
 
 
@@ -843,7 +863,7 @@ namespace LionSDKDotDemo
 
                     // 处理
 
-                    ProcessImage(pFile.Replace("bmp", "jpg"));
+                    EnqueueImage(pFile.Replace("bmp", "jpg"));
                     toolStripProgressBar.Value = 100;
                     BusySensorCount -= 1;
 
@@ -907,6 +927,16 @@ namespace LionSDKDotDemo
             {
                 tcpClient.Connect();
                 buttonConnectServer.Text = "断开智能分析";
+
+                if (tcpClient.IsConnected()) {
+
+                    processImageThread_ = new Thread(new ThreadStart(delegate
+                    {
+                        ProcessImage();
+                    }));
+
+                    processImageThread_.Start();
+                }
             }
 
         }
@@ -1161,7 +1191,7 @@ namespace LionSDKDotDemo
 
             /// 清空图像可以加载一张提前准备好的图像。
             /// 
-
+            ImageQueueBuffer.Clear();
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
             pictureBoxImage1.Image = Properties.Resources.no_image;
