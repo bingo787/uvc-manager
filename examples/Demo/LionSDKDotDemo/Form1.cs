@@ -820,7 +820,7 @@ namespace LionSDKDotDemo
                     // 图1： OK->1210写True, NG->1211写False
                     // 图2： OK->1211写True, NG->1221写False
 
-                    if (deviceID == ImageIds[0])
+                    if (deviceID == ImageIds[1])
                     {
                         this.pictureBoxImage.Load(processedFile);
 
@@ -837,7 +837,7 @@ namespace LionSDKDotDemo
 
 
                     }
-                    else if (deviceID == ImageIds[1])
+                    else if (deviceID == ImageIds[0])
                     {
                         this.pictureBoxImage1.Load(processedFile);
 
@@ -916,7 +916,7 @@ namespace LionSDKDotDemo
                     EnqueueImage(pFile.Replace("bmp", "jpg"));
                     toolStripProgressBar.Value += 10;
 
-                    if (device.uvcIdentity.Id == ImageIds[0])
+                    if (device.uvcIdentity.Id == ImageIds[1])
                     {
                         // 二：从流中读取
                         FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
@@ -925,7 +925,7 @@ namespace LionSDKDotDemo
                         fileStream.Dispose();
 
                     }
-                    else if (device.uvcIdentity.Id == ImageIds[1])
+                    else if (device.uvcIdentity.Id == ImageIds[0])
                     {
                         FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
                         this.pictureBoxImage1.Image = Image.FromStream(fileStream);
