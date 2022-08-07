@@ -74,7 +74,7 @@ namespace LionSDKDotDemo
                     heartBeatSocket_.Send(msg);
                     int len = heartBeatSocket_.Receive(receiveBuffer);
 
-                    Console.WriteLine("beat...");
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " heart beat...");
                 }
                 catch {
                     MessageBox.Show("图像检测服务或已断开连接，心跳检测异常");

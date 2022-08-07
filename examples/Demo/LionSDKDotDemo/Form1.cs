@@ -19,6 +19,16 @@ using System.Collections;
 namespace LionSDKDotDemo
 {
 
+    /******  流程梳理       
+     * 0.等待PLC采集命令
+     * 1.采集图像1、2
+     * 2.拷贝图像1、2
+     * 3.发送处理图像命令1、2
+     * 4.接收处理结果1、2
+     * 5.给PLC写入处理结果1、2
+     * ***/
+
+
 
     public partial class Demo : Form
     {
@@ -65,7 +75,7 @@ namespace LionSDKDotDemo
 
             // HV port
             PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
-            this.comboBoxHVPort.SelectedIndex = port.IndexOf(HVPortPara.PortName.ToString());
+            this.comboBoxHVPort.SelectedIndex = port.IndexOf(HVPortPara.PortName);
             this.comboBoxHVBaudRate.SelectedIndex = rate.IndexOf(HVPortPara.BaudRate.ToString());
             this.comBoxHVDataBit.SelectedIndex = databit.IndexOf(HVPortPara.DataBits.ToString());
             this.comBoxHVCheckBit.SelectedIndex = checkbit.IndexOf(HVPortPara.Parity.ToString());
@@ -186,6 +196,43 @@ namespace LionSDKDotDemo
 
         }
 
+
+        void InitAllDevice() {
+
+
+            try
+            {
+                // 1. 枚举设备
+
+                buttonEnumDev_Click(null, null);
+
+                // 2. 设置Sensor参数
+                buttonSetParameter_Click(null, null);
+
+                // 3. 打开高压串口
+                buttonConnectHVPort_Click(null, null);
+
+                // 4. 启动图像处理服务
+
+                // 4. 连接图像处理服务
+
+                buttonConnectServer_Click(null, null);
+
+                // 5. 连接PLC
+
+                buttonConnectPLC_Click(null, null);
+
+                // 7. 初始化成功，等待指令
+
+            }
+            catch {
+                MessageBox.Show("系统初始化失败！请手动检查连接");
+            }
+           
+
+
+        }
+
         public Demo()
         {
             InitializeComponent();
@@ -214,8 +261,7 @@ namespace LionSDKDotDemo
             LoadConfig();
 
             // 加载完配置后要设置一遍
-            // buttonSetParameter_Click(null, null);
-
+ 
             // 高压初始化
             this.labelHVPortLED.Text = "●";
             TriggerHVPortStatus(false);
@@ -236,6 +282,9 @@ namespace LionSDKDotDemo
             }));
 
             processImageThread_.Start();
+
+
+            InitAllDevice();
 
             // 清空显示
             buttonClearImage_Click(null, null);
@@ -287,6 +336,10 @@ namespace LionSDKDotDemo
             }
             root.ExpandAll();
             Console.WriteLine("buttonEnumDev_Click listDev.Count {0}", listDev.Count);
+
+            if (nCount != 2) {
+                MessageBox.Show("Sensor数量不是 2 个，请检查Sensor是否插好,然后手动枚举设备");
+            }
         }
 
         private void treeViewDevice_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -857,16 +910,23 @@ namespace LionSDKDotDemo
                     else
                     {
                         MessageBox.Show("请重新枚举设备!");
-                        return;
+                        continue;
                     }
 
+                    try
+                    {
+                        toolStripProgressBar.Value += 20;
+                    }
+                    catch {
+                        toolStripProgressBar.Value = 100;
+                    }
 
-                    toolStripProgressBar.Value += 20;
+                    
                     Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 处理结束  " );
                 }
                 catch (Exception ex){
                     MessageBox.Show(ex.ToString());
-                    return;
+                    continue;
                 }
 
                
@@ -995,17 +1055,11 @@ namespace LionSDKDotDemo
             else
             {
                 tcpClient.Connect();
-                buttonConnectServer.Text = "断开智能分析";
-
                 if (tcpClient.IsConnected()) {
-
-                    processImageThread_ = new Thread(new ThreadStart(delegate
-                    {
-                        ProcessImage();
-                    }));
-
-                    processImageThread_.Start();
+                    buttonConnectServer.Text = "断开智能分析";
                 }
+              
+
             }
 
         }
