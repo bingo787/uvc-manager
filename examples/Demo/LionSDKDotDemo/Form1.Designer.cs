@@ -90,10 +90,8 @@
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel_Time = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel_HVError = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel_Sensor1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel_Sensor2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel_ProgressInfo = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerDateTime = new System.Windows.Forms.Timer(this.components);
-            this.timerSensorState = new System.Windows.Forms.Timer(this.components);
             this.radioButtonAutoMode = new System.Windows.Forms.RadioButton();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.radioButtonManualMode = new System.Windows.Forms.RadioButton();
@@ -649,11 +647,10 @@
             this.toolStripStatusLabel_HV_KV,
             this.toolStripStatusLabel_HV_Cur,
             this.toolStripStatusLabel_HV_Temp,
+            this.toolStripStatusLabel_HVError,
             this.toolStripProgressBar,
             this.toolStripStatusLabel_Time,
-            this.toolStripStatusLabel_HVError,
-            this.toolStripStatusLabel_Sensor1,
-            this.toolStripStatusLabel_Sensor2});
+            this.toolStripStatusLabel_ProgressInfo});
             this.statusStrip1.Location = new System.Drawing.Point(0, 639);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1476, 22);
@@ -699,7 +696,7 @@
             // toolStripProgressBar
             // 
             this.toolStripProgressBar.Name = "toolStripProgressBar";
-            this.toolStripProgressBar.Size = new System.Drawing.Size(100, 16);
+            this.toolStripProgressBar.Size = new System.Drawing.Size(200, 16);
             // 
             // toolStripStatusLabel_Time
             // 
@@ -713,29 +710,17 @@
             this.toolStripStatusLabel_HVError.Size = new System.Drawing.Size(18, 17);
             this.toolStripStatusLabel_HVError.Text = "--";
             // 
-            // toolStripStatusLabel_Sensor1
+            // toolStripStatusLabel_ProgressInfo
             // 
-            this.toolStripStatusLabel_Sensor1.Name = "toolStripStatusLabel_Sensor1";
-            this.toolStripStatusLabel_Sensor1.Size = new System.Drawing.Size(18, 17);
-            this.toolStripStatusLabel_Sensor1.Text = "--";
-            // 
-            // toolStripStatusLabel_Sensor2
-            // 
-            this.toolStripStatusLabel_Sensor2.Name = "toolStripStatusLabel_Sensor2";
-            this.toolStripStatusLabel_Sensor2.Size = new System.Drawing.Size(18, 17);
-            this.toolStripStatusLabel_Sensor2.Text = "--";
+            this.toolStripStatusLabel_ProgressInfo.Name = "toolStripStatusLabel_ProgressInfo";
+            this.toolStripStatusLabel_ProgressInfo.Size = new System.Drawing.Size(18, 17);
+            this.toolStripStatusLabel_ProgressInfo.Text = "--";
             // 
             // timerDateTime
             // 
             this.timerDateTime.Enabled = true;
             this.timerDateTime.Interval = 1000;
             this.timerDateTime.Tick += new System.EventHandler(this.timerDateTime_Tick);
-            // 
-            // timerSensorState
-            // 
-            this.timerSensorState.Enabled = true;
-            this.timerSensorState.Interval = 1000;
-            this.timerSensorState.Tick += new System.EventHandler(this.timerSensorState_Tick);
             // 
             // radioButtonAutoMode
             // 
@@ -876,10 +861,8 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_XrayOnOff;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_Time;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_Sensor2;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_Sensor1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_ProgressInfo;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_HVError;
-        private System.Windows.Forms.Timer timerSensorState;
         private System.Windows.Forms.RadioButton radioButtonAutoMode;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.RadioButton radioButtonManualMode;

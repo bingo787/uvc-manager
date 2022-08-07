@@ -15,19 +15,11 @@ using LionSDK;
 using SerialPortController;
 using DAL;
 using System.Collections;
+using System.Diagnostics;
+
 
 namespace LionSDKDotDemo
 {
-
-    /******  流程梳理       
-     * 0.等待PLC采集命令
-     * 1.采集图像1、2
-     * 2.拷贝图像1、2
-     * 3.发送处理图像命令1、2
-     * 4.接收处理结果1、2
-     * 5.给PLC写入处理结果1、2
-     * ***/
-
 
 
     public partial class Demo : Form
@@ -39,6 +31,9 @@ namespace LionSDKDotDemo
         int HV_MaxCurrent = 1000; //1000mA
         UInt32 SensorCheckTimeOut = 5000;
         UInt32 SensorGetImageTimeOut = 100000;
+
+        string ViFilePath = "";
+        string NiLabviewExePath = "";
 
         List<string> rate = new List<string> { "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200" };
         List<string> databit = new List<string> { "8", "7", "6" };
@@ -52,7 +47,7 @@ namespace LionSDKDotDemo
 
         // 处理图像的线程
         private Thread processImageThread_;
-        Queue<string> ImageQueueBuffer = new Queue<string>();
+        BlockingQueue<string> ImageQueueBuffer = new BlockingQueue<string>();
         // 读取PLC状态的线程`
         private Thread monitorPlcCommandThread;
         // 控制器对象
@@ -94,14 +89,11 @@ namespace LionSDKDotDemo
             this.textBoxIpAddress.Text = Config.Instance.ReadString("PLCPara", "IP");
             this.textBoxPort.Text = Config.Instance.ReadString("PLCPara", "Port");
 
-            if (Config.Instance.ReadString("ModeSelect", "Auto") == "True")
-            {
-                this.radioButtonAutoMode.Checked = true;
-            }
-            else
-            {
-                this.radioButtonManualMode.Checked = true;
-            }
+
+
+            NiLabviewExePath = Config.Instance.ReadString("ImageProcessService", "Path");
+            ViFilePath = Config.Instance.ReadString("ImageProcessService", "Arguments");
+           
 
 
         }
@@ -171,7 +163,6 @@ namespace LionSDKDotDemo
                         this.BeginInvoke(new Action(() =>
                         {
                             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 开始异步采图 ");
-                            ImageQueueBuffer.Clear();
                             buttonAsynchronous_Click(null, null);
                         }));
 
@@ -196,12 +187,45 @@ namespace LionSDKDotDemo
 
         }
 
+        void runImageProcessServices() {
+
+            try
+            {
+                Process p = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = NiLabviewExePath,
+                        Arguments = ViFilePath,
+                        UseShellExecute = false,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                p.Start();
+              
+            }
+            catch (Exception ex){
+                MessageBox.Show("图像处理服务打开失败！ " + ViFilePath + ex.ToString());
+            }
+
+          
+        }
 
         void InitAllDevice() {
 
 
             try
             {
+                // 0. 加载配置
+
+                LoadConfig();
+
+                // 4. 启动图像处理服务
+
+                runImageProcessServices();
+
                 // 1. 枚举设备
 
                 buttonEnumDev_Click(null, null);
@@ -212,13 +236,11 @@ namespace LionSDKDotDemo
                 // 3. 打开高压串口
                 buttonConnectHVPort_Click(null, null);
 
-                // 4. 启动图像处理服务
-
-                // 4. 连接图像处理服务
+                // 5. 连接图像处理服务
 
                 buttonConnectServer_Click(null, null);
 
-                // 5. 连接PLC
+                // 6. 连接PLC
 
                 buttonConnectPLC_Click(null, null);
 
@@ -227,8 +249,13 @@ namespace LionSDKDotDemo
             }
             catch {
                 MessageBox.Show("系统初始化失败！请手动检查连接");
+                return;
             }
-           
+
+            MessageBox.Show("系统初始化成功！");
+
+            UPDATE_PROGRESS(STEP.Idle);
+
 
 
         }
@@ -258,10 +285,6 @@ namespace LionSDKDotDemo
             this.comboBoxHVStopBit.Items.AddRange(stopbit.ToArray());
 
 
-            LoadConfig();
-
-            // 加载完配置后要设置一遍
- 
             // 高压初始化
             this.labelHVPortLED.Text = "●";
             TriggerHVPortStatus(false);
@@ -288,6 +311,17 @@ namespace LionSDKDotDemo
 
             // 清空显示
             buttonClearImage_Click(null, null);
+
+            // 自动显示
+            if (Config.Instance.ReadString("ModeSelect", "Auto") == "True")
+            {
+                this.radioButtonAutoMode.Checked = true;
+            }
+            else
+            {
+                this.radioButtonManualMode.Checked = true;
+            }
+
 
         }
 
@@ -676,7 +710,7 @@ namespace LionSDKDotDemo
         private void buttonAbandon_Click(object sender, EventArgs e)
         {
 
-            toolStripProgressBar.Value = 0;
+            UPDATE_PROGRESS(STEP.Idle);
             //  UInt32 id = Convert.ToUInt32(this.treeViewDevice.SelectedNode.Name);
             //
             for (int d = 0; d < listDev.Count; d++)
@@ -711,39 +745,12 @@ namespace LionSDKDotDemo
         private void buttonAsynchronous_Click(object sender, EventArgs e)
         {
 
-            /// before acq delete image
-            /// luvc_camera_964.jpg luvc_camera_964.bmp luvc_camera_964.raw
-            /// 
+            UPDATE_PROGRESS(STEP.Start_Acq);
 
-            //   buttonClearImage_Click(null,null);
-
-            try
-            {
-                for (int i = 0; i < 2; i++)
-                {
-
-                    string bmp_file = "luvc_camera_" + ImageIds[i].ToString() + ".bmp";
-                    string jpg_file = "luvc_camera_" + ImageIds[i].ToString() + ".jpg";
-                    string raw_file = "luvc_camera_" + ImageIds[i].ToString() + ".raw";
-
-                    Console.WriteLine("delete {0}, {1}, {2}", bmp_file, jpg_file, raw_file);
-                    File.Delete(bmp_file);
-                    File.Delete(jpg_file);
-                    File.Delete(raw_file);
-                }
-
-            }
-            catch
-            {
-
-                Console.WriteLine("delete file failed......");
-
-            }
-
-
-            toolStripProgressBar.Value = 0;
             for (int d = 0; d < listDev.Count; d++)
             {
+
+                UPDATE_PROGRESS(STEP.Start_Acq);
                 {
                     LU_DEVICE luDev = listDev[d];
                     //
@@ -758,7 +765,7 @@ namespace LionSDKDotDemo
 
                     }
                 }
-                toolStripProgressBar.Value += 10;
+               
             }
         }
 
@@ -825,104 +832,108 @@ namespace LionSDKDotDemo
             }
         }
 
-        void WriteReslutToPLC(int reg, bool value) {
-            if (PLCHelperModbusTCP.fnGetInstance().IsConnected) {
+        void DisplayImageByFileName(string file) {
 
+            // "D:\temp\202223232121_0000_1965_NG.jpg"
+            // "D:\temp\202223232121_0000_1965.jpg"
+            try
+            {
+                UInt32 deviceID = Convert.ToUInt32(file.Replace(".jpg", "").Split('_').ElementAt(2));
+                if (deviceID == ImageIds[1])
+                {
+                    this.pictureBoxImage.Load(file);
+                }
+                else if (deviceID == ImageIds[0])
+                {
+                    this.pictureBoxImage1.Load(file);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
 
         }
+
+        void WriteResultToPlcByFileName(string file) {
+            try
+            {
+
+                // 更新状态
+
+                UPDATE_PROGRESS(STEP.Write_Result);
+
+
+                // 处理结果
+                // 图1： OK->1210写True, NG->1211写False
+                // 图2： OK->1211写True, NG->1221写False
+
+                UInt32 deviceID = Convert.ToUInt32(file.Replace(".jpg", "").Split('_').ElementAt(2));
+                if (deviceID == ImageIds[1])
+                {
+                    if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+                    {
+                        if (file.Contains("OK"))
+                        {
+                            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
+                        }
+                        else
+                        {
+                            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1211, true);
+                        }
+                    }
+
+
+                }
+                else if (deviceID == ImageIds[0])
+                {
+                    if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+                    {
+                        if (file.Contains("OK"))
+                        {
+                            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
+                        }
+                        else
+                        {
+                            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1221, true);
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex){
+                MessageBox.Show(ex.ToString());
+            }
+         
+        }
+
         private void ProcessImage()
         {
             // 如果图片处理服务已经连接 就分析图像
             while (true)
             {
-
-                if (ImageQueueBuffer.Count == 0) {
-                    Thread.Sleep(100);
-                    continue;
-                }
-                string copyFileName = ImageQueueBuffer.Dequeue();
-                string res = "OK," + copyFileName;
-
-               
-                if (tcpClient.IsConnected())
-                {
-                    // 分析图像
-                     res = tcpClient.ProcessImage(copyFileName);
-
-                    if (!res.Contains("OK") && !res.Contains("NG")) {
-
-                        MessageBox.Show(res);
-                        continue;
-                    }
-                }
-
                 try
                 {
-                    // "NG,D:\temp\202223232121_0000_1965_NG.jpg"
-                    UInt32 deviceID = 0;
-                    string processedFile = "";
-                    processedFile = res.Split(',').ElementAt(1);
+                    string fileName = ImageQueueBuffer.Pull();
 
-                    
-                    deviceID = Convert.ToUInt32(res.Split('_').ElementAt(2).Replace(".jpg",""));
+                    UPDATE_PROGRESS(STEP.Process_Image);
 
-                    Console.WriteLine("Processed deviceID {0}, {1}", deviceID, res);
-                    Console.WriteLine("PLCHelperModbusTCP.fnGetInstance().IsConnected {0} ", PLCHelperModbusTCP.fnGetInstance().IsConnected);
-                    // 处理结果
-                    // 图1： OK->1210写True, NG->1211写False
-                    // 图2： OK->1211写True, NG->1221写False
-
-                    if (deviceID == ImageIds[1])
+                    if (tcpClient.IsConnected())
                     {
-                        this.pictureBoxImage.Load(processedFile);
+                        string res = tcpClient.ProcessImage(fileName);
 
-                        if (PLCHelperModbusTCP.fnGetInstance().IsConnected) {
-                            if (res.Contains("OK"))
-                            {
-                                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
-                            }
-                            else
-                            {
-                                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1211, true);
-                            }
-                        }
-
-
-                    }
-                    else if (deviceID == ImageIds[0])
-                    {
-                        this.pictureBoxImage1.Load(processedFile);
-
-                        if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+                        if (!res.Contains("OK") && !res.Contains("NG"))
                         {
-                            if (res.Contains("OK"))
-                            {
-                                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
-                            }
-                            else
-                            {
-                                PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1221, true);
-                            }
+
+                            MessageBox.Show(res);
+                            continue;
                         }
-
-                    }
-                    else
-                    {
-                        MessageBox.Show("请重新枚举设备!");
-                        continue;
+                        fileName = res.Split(',').ElementAt(1);
                     }
 
-                    try
-                    {
-                        toolStripProgressBar.Value += 20;
-                    }
-                    catch {
-                        toolStripProgressBar.Value = 100;
-                    }
+                    DisplayImageByFileName(fileName);
+                    WriteResultToPlcByFileName(fileName);
 
-                    
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 处理结束  " );
                 }
                 catch (Exception ex){
                     MessageBox.Show(ex.ToString());
@@ -930,10 +941,6 @@ namespace LionSDKDotDemo
                 }
 
                
-
-
-
-
             }
 
  
@@ -941,62 +948,115 @@ namespace LionSDKDotDemo
         }
 
 
-        private void EnqueueImage(string imageFile)
+        private string EnqueueImage(string imageFile)
         {
+
+            // 更新状态
+
+            UPDATE_PROGRESS(STEP.Copy_Image);
+
+
             // 原始文件名为 luvc_camera_7416.jpg
             // 拷贝文件名： datetime_positon_cameraid.jpg;
             string timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
             string newImageFileName = imageFile.Replace("luvc", timestamp);
             newImageFileName = newImageFileName.Replace("camera", plcPostion);
 
-            string copyFileName = "D:\\temp\\" + newImageFileName;
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " Copy {0} to {1} ", imageFile, copyFileName);
-            File.Copy(imageFile, copyFileName, true);
-            ImageQueueBuffer.Enqueue(copyFileName);
-            Console.WriteLine("ImageQueueBuffer.Count {0}", ImageQueueBuffer.Count);
+            string newFileName = "D:\\temp\\" + newImageFileName;
+
+           // File.Copy(imageFile, newFileName, true);
+            File.Move(imageFile, newFileName);
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " Move {0} to {1} ", imageFile, newFileName);
+
+            ImageQueueBuffer.Push(newFileName);
+            Console.WriteLine("ImageQueueBuffer.Count {0}", ImageQueueBuffer.Count());
+
+            return newFileName;
         }
 
 
+        public enum STEP//IO端口状态
+        {
+            /******  流程梳理       
+             * 0.等待PLC采集命令
+             * 1.采集图像1、2
+             * 2.拷贝图像1、2
+             * 3.发送处理图像命令1、2
+             * 4.接收处理结果1、2
+             * 5.给PLC写入处理结果1、2
+             * ***/
+            Start_Acq = 0, // AsyncGetImage 2次
+            Copy_Image,   // Equeue 2次
+            Process_Image, // Process 2次
+            Write_Result, // Write 2次数
+            Idle,
+        }
+
+        int progressValue = 0;        
+        void UPDATE_PROGRESS(STEP step) {
+
+            switch (step)
+            {
+                case STEP.Start_Acq:
+                    toolStripStatusLabel_ProgressInfo.Text = "采集图像";
+                    progressValue += 10;
+                   
+                    break;
+                case STEP.Copy_Image:
+                    toolStripStatusLabel_ProgressInfo.Text = "保存图像";
+                    progressValue += 10;
+                    
+                    break;
+                case STEP.Process_Image:
+                    toolStripStatusLabel_ProgressInfo.Text = "分析图像";
+                    progressValue += 20;
+                    break;
+                case STEP.Write_Result:
+                    toolStripStatusLabel_ProgressInfo.Text = "发送结果";
+                    progressValue += 10;
+                    break;
+                case STEP.Idle:
+                    toolStripStatusLabel_ProgressInfo.Text = "等待采集指令";
+                    progressValue = 0 ;
+                    break;
+
+            }
+
+            if (progressValue > 100) progressValue = 100;
+
+            toolStripProgressBar.Value = progressValue;
+
+
+        }
         private int AsyncImageCallback(LU_DEVICE device, byte[] pImgData, int nDataBuf, string pFile)
         {
 
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " AsyncImageCallback come " + device.uvcIdentity.Id.ToString());
 
-
             this.BeginInvoke(new Action(() =>
             {
-                toolStripProgressBar.Value +=10;
-                Console.WriteLine("  ImageIds[0] ={0}, ImageIds[1]={1} , pFile ={2}", ImageIds[0], ImageIds[1], pFile);
 
-
-                // 不显示原始图片
                 if (!string.IsNullOrEmpty(pFile))
                 {
-                    // 将采集到的图像放进Buffer里面
-                    EnqueueImage(pFile.Replace("bmp", "jpg"));
-                    toolStripProgressBar.Value += 10;
 
-                    if (device.uvcIdentity.Id == ImageIds[1])
-                    {
-                        // 二：从流中读取
-                        FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
-                        this.pictureBoxImage.Image = Image.FromStream(fileStream);
-                        fileStream.Close();
-                        fileStream.Dispose();
+                    // 删除不要的图像 bmp , raw
 
-                    }
-                    else if (device.uvcIdentity.Id == ImageIds[0])
+                    try
                     {
-                        FileStream fileStream = new FileStream(pFile, FileMode.Open, FileAccess.Read);
-                        this.pictureBoxImage1.Image = Image.FromStream(fileStream);
-                        fileStream.Close();
-                        fileStream.Dispose();
+                        File.Delete(pFile.Replace("bmp", "raw"));
+                        File.Delete(pFile);
+                    }
+                    catch (Exception ex){
+                        MessageBox.Show(ex.ToString());
+                    }
 
-                    }
-                    else
-                    {
-                        MessageBox.Show("请重新枚举设备!");
-                    }
+
+                    // 拷贝图像
+                    string newFile = EnqueueImage(pFile.Replace("bmp", "jpg"));
+
+                    // 显示图像
+                   // DisplayImageByFileName(newFile);
+
                 }
             }));
             return 0;
@@ -1298,23 +1358,11 @@ namespace LionSDKDotDemo
             }
         }
 
-        private void buttonM1601_Click(object sender, EventArgs e)
-        {
-
-            /// 往M1610 写值可以触发 M2010
-            PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1601, true);
-            bool ret = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
-            Console.WriteLine("M2010 " + ret.ToString());
-
-
-        }
 
         private void buttonClearImage_Click(object sender, EventArgs e)
         {
 
             /// 清空图像可以加载一张提前准备好的图像。
-            /// 
-            ImageQueueBuffer.Clear();
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
             pictureBoxImage1.Image = Properties.Resources.no_image;
@@ -1400,6 +1448,7 @@ namespace LionSDKDotDemo
             this.BeginInvoke(new Action(() =>
             {
                 toolStripStatusLabel_HVError.Text = report;
+                toolStripStatusLabel_HVError.ForeColor = Color.Red;
             }));
         }
         /// <summary>
@@ -1430,21 +1479,7 @@ namespace LionSDKDotDemo
             this.toolStripStatusLabel_Time.Text = System.DateTime.Now.ToString();
         }
 
-        private void timerSensorState_Tick(object sender, EventArgs e)
-        {
-            try
-            {
-                this.toolStripStatusLabel_Sensor1.Text = GetDeviceState(listDev[0]);
-                this.toolStripStatusLabel_Sensor2.Text = GetDeviceState(listDev[1]);
-            }
-            catch
-            {
 
-            }
-
-
-
-        }
 
         private void radioButtonLock_CheckedChanged(object sender, EventArgs e)
         {
