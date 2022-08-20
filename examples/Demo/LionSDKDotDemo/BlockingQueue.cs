@@ -9,51 +9,91 @@ namespace LionSDKDotDemo
 {
     public class BlockingQueue<T>
     {
-        private readonly AutoResetEvent _waiter = new AutoResetEvent(false);
+        private readonly Queue<T> queue = new Queue<T>();
+        private readonly int maxSize;
+        bool closing;
 
-        private readonly object _locker = new object();
-
-        private readonly Queue<T> _internalQueue = new Queue<T>();
-
-        public void Push(T item)
+        /// <summary>
+        /// CBlockQueue init
+        /// </summary>
+        /// <param >maxSize</param>
+        public BlockingQueue(int maxSize)
         {
-            lock (_locker)
+            this.maxSize = maxSize;
+        }
+
+        /// <summary>
+        /// Enqueue
+        /// </summary>
+        /// <param >item</param>
+        public void Enqueue(T item)
+        {
+            lock (queue)
             {
-                _internalQueue.Enqueue(item);
-                _waiter.Set();
+                while (queue.Count >= maxSize)
+                {
+                    Monitor.Wait(queue);
+                }
+                queue.Enqueue(item);
+                if (queue.Count == 1)
+                {
+                    // wake up any blocked dequeue
+                    Monitor.PulseAll(queue);
+                }
             }
         }
 
-        public T Pull()
+        /// <summary>
+        /// TryDequeue 
+        /// </summary>
+        /// <param >value</param>
+        public bool TryDequeue(out T value)
         {
-            var isEmpty = true;
-
-            lock (_locker)
+            lock (queue)
             {
-                isEmpty = _internalQueue.Count == 0;
-            }
-
-            if (isEmpty)
-            {
-                _waiter.WaitOne();
-            }
-
-            lock (_locker)
-            {
-                return _internalQueue.Dequeue();
+                while (queue.Count == 0)
+                {
+                    if (closing)
+                    {
+                        value = default(T);
+                        return false;
+                    }
+                    Monitor.Wait(queue);
+                }
+                value = queue.Dequeue();
+                if (queue.Count == maxSize - 1)
+                {
+                    // wake up any blocked enqueue
+                    Monitor.PulseAll(queue);
+                }
+                return true;
             }
         }
 
+        /// <summary>
+        /// Get Queue Count 
+        /// </summary>
+        /// <param ></param>
         public int Count()
         {
-            var count = 0;
-
-            lock (_locker)
+            lock (queue)
             {
-                count = _internalQueue.Count;
+                return queue.Count;
             }
-
-            return count;
         }
+
+        /// <summary>
+        /// Close Queue 
+        /// </summary>
+        /// <param ></param>
+        public void Close()
+        {
+            lock (queue)
+            {
+                closing = true;
+                Monitor.PulseAll(queue);
+            }
+        }
+
     }
 }

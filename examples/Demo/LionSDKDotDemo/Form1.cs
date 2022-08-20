@@ -47,7 +47,7 @@ namespace LionSDKDotDemo
 
         // 处理图像的线程
         private Thread processImageThread_;
-        BlockingQueue<string> ImageQueueBuffer = new BlockingQueue<string>();
+        BlockingQueue<string> ImageQueueBuffer = new BlockingQueue<string>(2);
         // 读取PLC状态的线程`
         private Thread monitorPlcCommandThread;
         // 控制器对象
@@ -128,7 +128,7 @@ namespace LionSDKDotDemo
             while (PLCHelperModbusTCP.fnGetInstance().IsConnected)
             {
 
-                Thread.Sleep(100);
+               
                 try
                 {
                     // 2011 Xray On Off
@@ -146,7 +146,7 @@ namespace LionSDKDotDemo
                         buttonXrayOnOff_Click(null, null);
                     }
 
-
+                    Thread.Sleep(500);
                     bool acqImage = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(2010);
                     //  Console.WriteLine("M2010 " + ret.ToString() + " Busy Count " + IsSensorBusy.ToString());
 
@@ -213,7 +213,7 @@ namespace LionSDKDotDemo
           
         }
 
-        void InitAllDevice() {
+        public void InitAllDevice() {
 
 
             try
@@ -224,7 +224,7 @@ namespace LionSDKDotDemo
 
                 // 4. 启动图像处理服务
 
-                runImageProcessServices();
+              //  runImageProcessServices();
 
                 // 1. 枚举设备
 
@@ -234,7 +234,7 @@ namespace LionSDKDotDemo
                 buttonSetParameter_Click(null, null);
 
                 // 3. 打开高压串口
-                buttonConnectHVPort_Click(null, null);
+             //   buttonConnectHVPort_Click(null, null);
 
                 // 5. 连接图像处理服务
 
@@ -242,7 +242,7 @@ namespace LionSDKDotDemo
 
                 // 6. 连接PLC
 
-                buttonConnectPLC_Click(null, null);
+             //   buttonConnectPLC_Click(null, null);
 
                 // 7. 初始化成功，等待指令
 
@@ -252,11 +252,8 @@ namespace LionSDKDotDemo
                 return;
             }
 
-            MessageBox.Show("系统初始化成功！");
 
             UPDATE_PROGRESS(STEP.Idle);
-
-
 
         }
 
@@ -298,13 +295,6 @@ namespace LionSDKDotDemo
             labelPLCStatus.ForeColor = Color.Red;
             buttonConnectPLC.Text = "连接";
 
-            // 创建图像处理线程
-            processImageThread_ = new Thread(new ThreadStart(delegate
-            {
-                ProcessImage();
-            }));
-
-            processImageThread_.Start();
 
 
             InitAllDevice();
@@ -321,6 +311,14 @@ namespace LionSDKDotDemo
             {
                 this.radioButtonManualMode.Checked = true;
             }
+
+            // 创建图像处理线程
+            processImageThread_ = new Thread(new ThreadStart(delegate
+            {
+                ProcessImage();
+            }));
+
+            processImageThread_.Start();
 
 
         }
@@ -871,8 +869,6 @@ namespace LionSDKDotDemo
                 UInt32 deviceID = Convert.ToUInt32(file.Replace(".jpg", "").Split('_').ElementAt(2));
                 if (deviceID == ImageIds[1])
                 {
-                    if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
-                    {
                         if (file.Contains("OK"))
                         {
                             PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1210, true);
@@ -881,14 +877,10 @@ namespace LionSDKDotDemo
                         {
                             PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1211, true);
                         }
-                    }
-
 
                 }
                 else if (deviceID == ImageIds[0])
                 {
-                    if (PLCHelperModbusTCP.fnGetInstance().IsConnected)
-                    {
                         if (file.Contains("OK"))
                         {
                             PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1220, true);
@@ -897,7 +889,6 @@ namespace LionSDKDotDemo
                         {
                             PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(1221, true);
                         }
-                    }
 
                 }
             }
@@ -909,12 +900,16 @@ namespace LionSDKDotDemo
 
         private void ProcessImage()
         {
-            // 如果图片处理服务已经连接 就分析图像
             while (true)
             {
                 try
                 {
-                    string fileName = ImageQueueBuffer.Pull();
+                   
+
+                    string fileName = "";
+                    bool ret = ImageQueueBuffer.TryDequeue(out fileName);
+                    Console.WriteLine("pull ImageQueueBuffer.Count {0}, ret {1}", ImageQueueBuffer.Count(), ret);
+
 
                     UPDATE_PROGRESS(STEP.Process_Image);
 
@@ -930,9 +925,13 @@ namespace LionSDKDotDemo
                         }
                         fileName = res.Split(',').ElementAt(1);
                     }
-
+                    Console.WriteLine("thread run display fileName {0}", fileName);
                     DisplayImageByFileName(fileName);
-                    WriteResultToPlcByFileName(fileName);
+
+                    if (PLCHelperModbusTCP.fnGetInstance().IsConnected) {
+                        WriteResultToPlcByFileName(fileName);
+                    }
+  
 
                 }
                 catch (Exception ex){
@@ -968,8 +967,8 @@ namespace LionSDKDotDemo
             File.Move(imageFile, newFileName);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " Move {0} to {1} ", imageFile, newFileName);
 
-            ImageQueueBuffer.Push(newFileName);
-            Console.WriteLine("ImageQueueBuffer.Count {0}", ImageQueueBuffer.Count());
+            ImageQueueBuffer.Enqueue(newFileName);
+            Console.WriteLine("push ImageQueueBuffer.Count {0}", ImageQueueBuffer.Count());
 
             return newFileName;
         }
@@ -994,12 +993,11 @@ namespace LionSDKDotDemo
 
         int progressValue = 0;        
         void UPDATE_PROGRESS(STEP step) {
-
             switch (step)
             {
                 case STEP.Start_Acq:
                     toolStripStatusLabel_ProgressInfo.Text = "采集图像";
-                    progressValue += 10;
+                    progressValue = 10;
                    
                     break;
                 case STEP.Copy_Image:
@@ -1031,7 +1029,7 @@ namespace LionSDKDotDemo
         private int AsyncImageCallback(LU_DEVICE device, byte[] pImgData, int nDataBuf, string pFile)
         {
 
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " AsyncImageCallback come " + device.uvcIdentity.Id.ToString());
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " AsyncImageCallback come " + System.Text.Encoding.ASCII.GetString(device.uvcIdentity.DevSerial));
 
             this.BeginInvoke(new Action(() =>
             {
