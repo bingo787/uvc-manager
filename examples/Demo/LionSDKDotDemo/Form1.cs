@@ -51,7 +51,7 @@ namespace LionSDKDotDemo
         // 读取PLC状态的线程`
         private Thread monitorPlcCommandThread;
         // 控制器对象
-        private static TcpClient tcpClient = new TcpClient();
+        private static TcpClient ImageProcessTcpClient = new TcpClient();
 
 
         //当前的设备对象
@@ -116,8 +116,7 @@ namespace LionSDKDotDemo
             Config.Instance.WriteString("PLCPara", "IP", this.textBoxIpAddress.Text);
             Config.Instance.WriteString("PLCPara", "Port", this.textBoxPort.Text);
 
-            Config.Instance.WriteString("ModeSelect", "Auto", this.radioButtonAutoMode.Checked.ToString());
-            Config.Instance.WriteString("ModeSelect", "Manual", this.radioButtonManualMode.Checked.ToString());
+      
 
         }
         string plcPostion = "0000";
@@ -127,8 +126,7 @@ namespace LionSDKDotDemo
 
             while (PLCHelperModbusTCP.fnGetInstance().IsConnected)
             {
-
-               
+  
                 try
                 {
                     // 2011 Xray On Off
@@ -175,9 +173,7 @@ namespace LionSDKDotDemo
                 }
                 catch (Exception ex)
                 {
-                    // MessageBox.Show("PLC M2010读取异常, 请重新连接PLC");
-                    Console.WriteLine(ex.ToString());
-                    //break;
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 已断开PLC ");
                 }
 
 
@@ -186,12 +182,12 @@ namespace LionSDKDotDemo
 
 
         }
-
+        Process imageProcessServices;
         void runImageProcessServices() {
 
             try
             {
-                Process p = new Process
+                imageProcessServices = new Process
                 {
                     StartInfo =
                     {
@@ -203,8 +199,7 @@ namespace LionSDKDotDemo
                         CreateNoWindow = true
                     }
                 };
-                p.Start();
-              
+                imageProcessServices.Start();              
             }
             catch (Exception ex){
                 MessageBox.Show("图像处理服务打开失败！ " + ViFilePath + ex.ToString());
@@ -213,47 +208,79 @@ namespace LionSDKDotDemo
           
         }
 
-        public void InitAllDevice() {
+        public void OneKeyStart() {
 
 
             try
             {
-                // 0. 加载配置
+                lastPos = -1;
 
-                LoadConfig();
 
-                // 4. 启动图像处理服务
+                // 1. 检查设备
 
-              //  runImageProcessServices();
+                int nCount = LionSDK.LionSDK.GetDeviceCount();
+                if (nCount != 2)
+                {
+                    MessageBox.Show("传感器数量: "+ nCount.ToString() + ", 不是2个，请检查图像传感器是否已插好？");
+                    return;
+                }
+                else {
 
-                // 1. 枚举设备
-
-                buttonEnumDev_Click(null, null);
-
-                // 2. 设置Sensor参数
-                buttonSetParameter_Click(null, null);
+                    buttonEnumDev_Click(null, null);
+                    // 2. 设置Sensor参数
+                    buttonSetParameter_Click(null, null);
+                }
 
                 // 3. 打开高压串口
-             //   buttonConnectHVPort_Click(null, null);
+                try
+                {
+                    HVSerialPortControler.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
+                        int.Parse(this.comboBoxHVBaudRate.Text),
+                        (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
+                        int.Parse(this.comBoxHVDataBit.Text),
+                        (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
+
+                    HVSerialPortControler.Instance.Connect();
+                }
+                catch
+                {
+                    MessageBox.Show("高压串口打开失败, 请检查串口 " + this.comboBoxHVPort.Text);
+                    return;
+                }
 
                 // 5. 连接图像处理服务
+                
+                ImageProcessTcpClient.Connect();
+                if (!ImageProcessTcpClient.IsConnected()) {
+                    return;
+                }
 
-                buttonConnectServer_Click(null, null);
 
-                // 6. 连接PLC
+                bool ret = PLCHelperModbusTCP.fnGetInstance().ConnectServer(textBoxIpAddress.Text, textBoxPort.Text);
+                if (!ret) {
+                    return;
+                }
 
-             //   buttonConnectPLC_Click(null, null);
+                // 7. 创建图像处理线程
+                processImageThread_ = new Thread(new ThreadStart(delegate
+                {
+                    ProcessImage();
+                }));
 
-                // 7. 初始化成功，等待指令
+                processImageThread_.Start();
+
+
 
             }
             catch {
-                MessageBox.Show("系统初始化失败！请手动检查连接");
+                MessageBox.Show("系统初始化失败！请手动修正参数，重新启动");
                 return;
             }
 
-
             UPDATE_PROGRESS(STEP.Idle);
+
+            buttonStart.BackColor = Color.Green;
+            buttonStart.Text = "正在运行";
 
         }
 
@@ -283,63 +310,24 @@ namespace LionSDKDotDemo
 
 
             // 高压初始化
-            this.labelHVPortLED.Text = "●";
-            TriggerHVPortStatus(false);
+
             this.pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
             this.pictureBoxXrayOnOff.Invalidate();
-
             InitilizeControlSystem();
 
-            // PLC初始化
-            this.labelPLCStatus.Text = "●";
-            labelPLCStatus.ForeColor = Color.Red;
-            buttonConnectPLC.Text = "连接";
 
+            // 0. 加载配置
 
+            LoadConfig();
 
-            InitAllDevice();
+          //  runImageProcessServices();
 
             // 清空显示
             buttonClearImage_Click(null, null);
 
-            // 自动显示
-            if (Config.Instance.ReadString("ModeSelect", "Auto") == "True")
-            {
-                this.radioButtonAutoMode.Checked = true;
-            }
-            else
-            {
-                this.radioButtonManualMode.Checked = true;
-            }
-
-            // 创建图像处理线程
-            processImageThread_ = new Thread(new ThreadStart(delegate
-            {
-                ProcessImage();
-            }));
-
-            processImageThread_.Start();
-
-
         }
 
-        private void TriggerHVPortStatus(bool open)
-        {
-            if (open)
-            {
-                this.labelHVPortLED.ForeColor = Color.Green;
-                this.buttonConnectHVPort.Text = "关闭串口";
-            }
-            else
-            {
-                this.labelHVPortLED.ForeColor = Color.Red;
-                this.buttonConnectHVPort.Text = "打开串口";
-            }
 
-            this.textBoxCurrent.Enabled = open;
-            this.textBoxKV.Enabled = open;
-
-        }
 
         private uint[] ImageIds = { 0, 0 };
 
@@ -369,9 +357,6 @@ namespace LionSDKDotDemo
             root.ExpandAll();
             Console.WriteLine("buttonEnumDev_Click listDev.Count {0}", listDev.Count);
 
-            if (nCount != 2) {
-                MessageBox.Show("Sensor数量不是 2 个，请检查Sensor是否插好,然后手动枚举设备");
-            }
         }
 
         private void treeViewDevice_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -913,9 +898,9 @@ namespace LionSDKDotDemo
 
                     UPDATE_PROGRESS(STEP.Process_Image);
 
-                    if (tcpClient.IsConnected())
+                    if (ImageProcessTcpClient.IsConnected())
                     {
-                        string res = tcpClient.ProcessImage(fileName);
+                        string res = ImageProcessTcpClient.ProcessImage(fileName);
 
                         if (!res.Contains("OK") && !res.Contains("NG"))
                         {
@@ -1052,8 +1037,6 @@ namespace LionSDKDotDemo
                     // 拷贝图像
                     string newFile = EnqueueImage(pFile.Replace("bmp", "jpg"));
 
-                    // 显示图像
-                   // DisplayImageByFileName(newFile);
 
                 }
             }));
@@ -1082,9 +1065,12 @@ namespace LionSDKDotDemo
         {
             try
             {
-                tcpClient.Disconnect();
+                
                 HVSerialPortControler.Instance.XRayOff();
                 HVSerialPortControler.Instance.CloseControlSystem();
+
+                ImageProcessTcpClient.Disconnect();
+                imageProcessServices.Kill();
 
             }
             catch
@@ -1096,31 +1082,7 @@ namespace LionSDKDotDemo
         }
 
 
-        /// <summary>
-        /// 连接视觉检测服务
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
 
-        private void buttonConnectServer_Click(object sender, EventArgs e)
-        {
-            if (tcpClient.IsConnected())
-            {
-                tcpClient.Disconnect();
-                buttonConnectServer.Text = "连接智能分析";
-
-            }
-            else
-            {
-                tcpClient.Connect();
-                if (tcpClient.IsConnected()) {
-                    buttonConnectServer.Text = "断开智能分析";
-                }
-              
-
-            }
-
-        }
 
 
         /// <summary>
@@ -1129,15 +1091,13 @@ namespace LionSDKDotDemo
         /// <param name="sender"></param>
         /// <param name="e"></param>
 
-        static bool IsHVPortConnected = false;
+
         private void buttonConnectHVPort_Click(object sender, EventArgs e)
         {
 
-            if (IsHVPortConnected)
+            if (buttonConnectHVPort.Text == "关闭光源串口")
             {
                 HVSerialPortControler.Instance.CloseControlSystem();
-                TriggerHVPortStatus(false);
-                IsHVPortConnected = false;
                 toolStripStatusLabel_HVConn.Text = "高压-已断开";
             }
             else
@@ -1151,13 +1111,11 @@ namespace LionSDKDotDemo
                         (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
 
                     HVSerialPortControler.Instance.Connect();
-                    TriggerHVPortStatus(true);
-                    IsHVPortConnected = true;
+                    buttonConnectHVPort.Text = "关闭光源串口";
                 }
                 catch
                 {
                     MessageBox.Show("高压串口打开失败");
-                    TriggerHVPortStatus(false);
                 }
 
             }
@@ -1174,7 +1132,7 @@ namespace LionSDKDotDemo
 
         private void buttonConnectPLC_Click(object sender, EventArgs e)
         {
-            if (!PLCHelperModbusTCP.fnGetInstance().IsConnected)
+            if (buttonConnectPLC.Text == "连接PLC")
             {
                 try
                 {
@@ -1188,9 +1146,6 @@ namespace LionSDKDotDemo
                     }
 
 
-                    labelPLCStatus.ForeColor = Color.Green;
-                    buttonConnectPLC.Text = "已连接";
-
 
                     monitorPlcCommandThread = new Thread(new ThreadStart(delegate
                     {
@@ -1198,13 +1153,12 @@ namespace LionSDKDotDemo
                     }));
 
                     monitorPlcCommandThread.Start();
+                    buttonConnectPLC.Text = "断开PLC";
 
 
                 }
                 catch
                 {
-                    labelPLCStatus.ForeColor = Color.Red;
-                    buttonConnectPLC.Text = "连接";
                     MessageBox.Show("PLC连接失败 " + textBoxIpAddress.Text + ":" + textBoxPort.Text);
                 }
 
@@ -1214,8 +1168,8 @@ namespace LionSDKDotDemo
 
                 // 断开PLC　
                 PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
-                labelPLCStatus.ForeColor = Color.Red;
-                buttonConnectPLC.Text = "连接";
+                buttonConnectPLC.Text = "连接PLC";
+                
             }
         }
 
@@ -1337,9 +1291,15 @@ namespace LionSDKDotDemo
 
                 try
                 {
-                    tcpClient.Disconnect();
+                    // 图像处理服务
+                    ImageProcessTcpClient.Disconnect();
+                    imageProcessServices.Kill();
+
+                    // 光源
                     HVSerialPortControler.Instance.XRayOff();
                     HVSerialPortControler.Instance.CloseControlSystem();
+
+                    // PLC
                     PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
 
                 }
@@ -1479,50 +1439,6 @@ namespace LionSDKDotDemo
 
 
 
-        private void radioButtonLock_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButtonAutoMode.Checked)
-            {
-
-                groupBox4.Enabled = false;
-                groupBox7.Enabled = false;
-
-                for (int i = 0; i < groupBox5.Controls.Count; i++)
-                {
-
-                    if (groupBox5.Controls[i].Text != "●")
-                    {
-                        groupBox5.Controls[i].Enabled = false;
-                    }
-
-                }
-                for (int i = 0; i < groupBox6.Controls.Count; i++)
-                {
-
-                    if (groupBox6.Controls[i].Text != "●")
-                    {
-                        groupBox6.Controls[i].Enabled = false;
-                    }
-
-                }
-
-
-            }
-            else
-            {
-                groupBox4.Enabled = true;
-                groupBox7.Enabled = true;
-
-                for (int i = 0; i < groupBox5.Controls.Count; i++)
-                {
-                    groupBox5.Controls[i].Enabled = true;
-                }
-                for (int i = 0; i < groupBox6.Controls.Count; i++)
-                {
-                    groupBox6.Controls[i].Enabled = true;
-                }
-            }
-        }
 
         private void textBoxActTime_TextChanged(object sender, EventArgs e)
         {
@@ -1535,6 +1451,11 @@ namespace LionSDKDotDemo
                 MessageBox.Show("无效的参数，ACT时间最大为 " + SensorGetImageTimeOut.ToString() +" ms");
                 return;
             }
+        }
+
+        private void buttonStart_Click(object sender, EventArgs e)
+        {
+            OneKeyStart();
         }
     }
 }
