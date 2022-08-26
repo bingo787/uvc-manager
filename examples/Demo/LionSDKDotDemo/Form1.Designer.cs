@@ -108,11 +108,11 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.treeViewDevice);
-            this.groupBox1.Location = new System.Drawing.Point(13, 14);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox1.Location = new System.Drawing.Point(26, 28);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(262, 125);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Size = new System.Drawing.Size(524, 250);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设备列表";
@@ -121,10 +121,10 @@
             // 
             this.treeViewDevice.CheckBoxes = true;
             this.treeViewDevice.FullRowSelect = true;
-            this.treeViewDevice.Location = new System.Drawing.Point(4, 16);
-            this.treeViewDevice.Margin = new System.Windows.Forms.Padding(2);
+            this.treeViewDevice.Location = new System.Drawing.Point(8, 32);
+            this.treeViewDevice.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.treeViewDevice.Name = "treeViewDevice";
-            this.treeViewDevice.Size = new System.Drawing.Size(250, 100);
+            this.treeViewDevice.Size = new System.Drawing.Size(496, 196);
             this.treeViewDevice.TabIndex = 0;
             this.treeViewDevice.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewDevice_AfterCheck);
             this.treeViewDevice.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewDevice_NodeMouseClick);
@@ -132,23 +132,23 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.textBoxDevInfo);
-            this.groupBox2.Location = new System.Drawing.Point(279, 14);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox2.Location = new System.Drawing.Point(558, 28);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(262, 125);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Size = new System.Drawing.Size(524, 250);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "设备信息";
             // 
             // textBoxDevInfo
             // 
-            this.textBoxDevInfo.Location = new System.Drawing.Point(4, 16);
-            this.textBoxDevInfo.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxDevInfo.Location = new System.Drawing.Point(8, 32);
+            this.textBoxDevInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxDevInfo.Multiline = true;
             this.textBoxDevInfo.Name = "textBoxDevInfo";
             this.textBoxDevInfo.ReadOnly = true;
-            this.textBoxDevInfo.Size = new System.Drawing.Size(250, 100);
+            this.textBoxDevInfo.Size = new System.Drawing.Size(496, 196);
             this.textBoxDevInfo.TabIndex = 0;
             this.textBoxDevInfo.Text = "设备名称:\r\n设备版本:\r\n设备路径:";
             // 
@@ -156,31 +156,31 @@
             // 
             this.groupBox3.Controls.Add(this.pictureBoxImage1);
             this.groupBox3.Controls.Add(this.pictureBoxImage);
-            this.groupBox3.Location = new System.Drawing.Point(559, 14);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Location = new System.Drawing.Point(1118, 28);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox3.Size = new System.Drawing.Size(914, 601);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Size = new System.Drawing.Size(1828, 1202);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "图像";
             // 
             // pictureBoxImage1
             // 
-            this.pictureBoxImage1.Location = new System.Drawing.Point(452, 16);
-            this.pictureBoxImage1.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBoxImage1.Location = new System.Drawing.Point(904, 32);
+            this.pictureBoxImage1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBoxImage1.Name = "pictureBoxImage1";
-            this.pictureBoxImage1.Size = new System.Drawing.Size(415, 570);
+            this.pictureBoxImage1.Size = new System.Drawing.Size(830, 1140);
             this.pictureBoxImage1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxImage1.TabIndex = 1;
             this.pictureBoxImage1.TabStop = false;
             // 
             // pictureBoxImage
             // 
-            this.pictureBoxImage.Location = new System.Drawing.Point(4, 16);
-            this.pictureBoxImage.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureBoxImage.Location = new System.Drawing.Point(8, 32);
+            this.pictureBoxImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBoxImage.Name = "pictureBoxImage";
-            this.pictureBoxImage.Size = new System.Drawing.Size(415, 570);
+            this.pictureBoxImage.Size = new System.Drawing.Size(830, 1140);
             this.pictureBoxImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxImage.TabIndex = 0;
             this.pictureBoxImage.TabStop = false;
@@ -197,11 +197,11 @@
             this.groupBox4.Controls.Add(this.label6);
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Location = new System.Drawing.Point(13, 145);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox4.Location = new System.Drawing.Point(26, 290);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Size = new System.Drawing.Size(319, 161);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Size = new System.Drawing.Size(638, 316);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "传感器参数设置";
@@ -209,36 +209,36 @@
             // comboBoxFilter
             // 
             this.comboBoxFilter.FormattingEnabled = true;
-            this.comboBoxFilter.Location = new System.Drawing.Point(89, 90);
-            this.comboBoxFilter.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBoxFilter.Location = new System.Drawing.Point(178, 180);
+            this.comboBoxFilter.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.comboBoxFilter.Name = "comboBoxFilter";
-            this.comboBoxFilter.Size = new System.Drawing.Size(132, 20);
+            this.comboBoxFilter.Size = new System.Drawing.Size(260, 32);
             this.comboBoxFilter.TabIndex = 41;
             // 
             // comboBoxModel
             // 
             this.comboBoxModel.FormattingEnabled = true;
-            this.comboBoxModel.Location = new System.Drawing.Point(89, 59);
-            this.comboBoxModel.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBoxModel.Location = new System.Drawing.Point(178, 118);
+            this.comboBoxModel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.comboBoxModel.Name = "comboBoxModel";
-            this.comboBoxModel.Size = new System.Drawing.Size(132, 20);
+            this.comboBoxModel.Size = new System.Drawing.Size(260, 32);
             this.comboBoxModel.TabIndex = 39;
             // 
             // textBoxActTime
             // 
-            this.textBoxActTime.Location = new System.Drawing.Point(89, 118);
-            this.textBoxActTime.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxActTime.Location = new System.Drawing.Point(178, 236);
+            this.textBoxActTime.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxActTime.Name = "textBoxActTime";
-            this.textBoxActTime.Size = new System.Drawing.Size(132, 21);
+            this.textBoxActTime.Size = new System.Drawing.Size(260, 35);
             this.textBoxActTime.TabIndex = 36;
             this.textBoxActTime.TextChanged += new System.EventHandler(this.textBoxActTime_TextChanged);
             // 
             // buttonSetParameter
             // 
-            this.buttonSetParameter.Location = new System.Drawing.Point(227, 118);
-            this.buttonSetParameter.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonSetParameter.Location = new System.Drawing.Point(454, 236);
+            this.buttonSetParameter.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.buttonSetParameter.Name = "buttonSetParameter";
-            this.buttonSetParameter.Size = new System.Drawing.Size(75, 23);
+            this.buttonSetParameter.Size = new System.Drawing.Size(150, 46);
             this.buttonSetParameter.TabIndex = 23;
             this.buttonSetParameter.Text = "设置";
             this.buttonSetParameter.UseVisualStyleBackColor = true;
@@ -246,10 +246,10 @@
             // 
             // buttonModifySerial
             // 
-            this.buttonModifySerial.Location = new System.Drawing.Point(227, 27);
-            this.buttonModifySerial.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonModifySerial.Location = new System.Drawing.Point(454, 54);
+            this.buttonModifySerial.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.buttonModifySerial.Name = "buttonModifySerial";
-            this.buttonModifySerial.Size = new System.Drawing.Size(75, 23);
+            this.buttonModifySerial.Size = new System.Drawing.Size(150, 46);
             this.buttonModifySerial.TabIndex = 17;
             this.buttonModifySerial.Text = "修改序列号";
             this.buttonModifySerial.UseVisualStyleBackColor = true;
@@ -257,68 +257,68 @@
             // 
             // textBoxSerial
             // 
-            this.textBoxSerial.Location = new System.Drawing.Point(89, 29);
-            this.textBoxSerial.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxSerial.Location = new System.Drawing.Point(178, 58);
+            this.textBoxSerial.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxSerial.Name = "textBoxSerial";
-            this.textBoxSerial.Size = new System.Drawing.Size(132, 21);
+            this.textBoxSerial.Size = new System.Drawing.Size(260, 35);
             this.textBoxSerial.TabIndex = 16;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(26, 59);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Location = new System.Drawing.Point(52, 118);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(59, 12);
+            this.label8.Size = new System.Drawing.Size(118, 24);
             this.label8.TabIndex = 7;
             this.label8.Text = "出图模式:";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(26, 88);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Location = new System.Drawing.Point(52, 176);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 12);
+            this.label6.Size = new System.Drawing.Size(118, 24);
             this.label6.TabIndex = 5;
             this.label6.Text = "图像处理:";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 118);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Location = new System.Drawing.Point(8, 236);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 12);
+            this.label4.Size = new System.Drawing.Size(166, 24);
             this.label4.TabIndex = 3;
             this.label4.Text = "曝光时间(ms):";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 29);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(28, 58);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 12);
+            this.label1.Size = new System.Drawing.Size(142, 24);
             this.label1.TabIndex = 0;
             this.label1.Text = "设备序列号:";
             // 
             // textBoxCurrent
             // 
-            this.textBoxCurrent.Location = new System.Drawing.Point(234, 59);
-            this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxCurrent.Location = new System.Drawing.Point(468, 118);
+            this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxCurrent.Name = "textBoxCurrent";
-            this.textBoxCurrent.Size = new System.Drawing.Size(61, 21);
+            this.textBoxCurrent.Size = new System.Drawing.Size(118, 35);
             this.textBoxCurrent.TabIndex = 27;
             this.textBoxCurrent.Text = "0";
             this.textBoxCurrent.TextChanged += new System.EventHandler(this.textBoxCurrent_TextChanged);
             // 
             // textBoxKV
             // 
-            this.textBoxKV.Location = new System.Drawing.Point(234, 33);
-            this.textBoxKV.Margin = new System.Windows.Forms.Padding(2);
+            this.textBoxKV.Location = new System.Drawing.Point(468, 66);
+            this.textBoxKV.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBoxKV.Name = "textBoxKV";
-            this.textBoxKV.Size = new System.Drawing.Size(61, 21);
+            this.textBoxKV.Size = new System.Drawing.Size(118, 35);
             this.textBoxKV.TabIndex = 26;
             this.textBoxKV.Text = "0";
             this.textBoxKV.TextChanged += new System.EventHandler(this.textBoxKV_TextChanged);
@@ -326,29 +326,29 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(171, 67);
-            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Location = new System.Drawing.Point(342, 134);
+            this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(59, 12);
+            this.label13.Size = new System.Drawing.Size(118, 24);
             this.label13.TabIndex = 12;
             this.label13.Text = "电流(mA):";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(171, 41);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label2.Location = new System.Drawing.Point(342, 82);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(59, 12);
+            this.label2.Size = new System.Drawing.Size(118, 24);
             this.label2.TabIndex = 1;
             this.label2.Text = "电压(kV):";
             // 
             // buttonEnumDev
             // 
-            this.buttonEnumDev.Location = new System.Drawing.Point(49, 29);
-            this.buttonEnumDev.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonEnumDev.Location = new System.Drawing.Point(98, 58);
+            this.buttonEnumDev.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.buttonEnumDev.Name = "buttonEnumDev";
-            this.buttonEnumDev.Size = new System.Drawing.Size(86, 23);
+            this.buttonEnumDev.Size = new System.Drawing.Size(172, 46);
             this.buttonEnumDev.TabIndex = 4;
             this.buttonEnumDev.Text = "枚举设备";
             this.buttonEnumDev.UseVisualStyleBackColor = true;
@@ -356,10 +356,10 @@
             // 
             // buttonAbandon
             // 
-            this.buttonAbandon.Location = new System.Drawing.Point(51, 99);
-            this.buttonAbandon.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonAbandon.Location = new System.Drawing.Point(102, 198);
+            this.buttonAbandon.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.buttonAbandon.Name = "buttonAbandon";
-            this.buttonAbandon.Size = new System.Drawing.Size(86, 23);
+            this.buttonAbandon.Size = new System.Drawing.Size(172, 46);
             this.buttonAbandon.TabIndex = 19;
             this.buttonAbandon.Text = "中断图像获取";
             this.buttonAbandon.UseVisualStyleBackColor = true;
@@ -382,9 +382,11 @@
             this.groupBox5.Controls.Add(this.textBoxCurrent);
             this.groupBox5.Controls.Add(this.label13);
             this.groupBox5.Controls.Add(this.textBoxKV);
-            this.groupBox5.Location = new System.Drawing.Point(13, 321);
+            this.groupBox5.Location = new System.Drawing.Point(26, 616);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(319, 214);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox5.Size = new System.Drawing.Size(638, 407);
             this.groupBox5.TabIndex = 25;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "高压参数设置";
@@ -392,9 +394,10 @@
             // pictureBoxXrayOnOff
             // 
             this.pictureBoxXrayOnOff.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBoxXrayOnOff.InitialImage")));
-            this.pictureBoxXrayOnOff.Location = new System.Drawing.Point(195, 93);
+            this.pictureBoxXrayOnOff.Location = new System.Drawing.Point(390, 186);
+            this.pictureBoxXrayOnOff.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.pictureBoxXrayOnOff.Name = "pictureBoxXrayOnOff";
-            this.pictureBoxXrayOnOff.Size = new System.Drawing.Size(100, 100);
+            this.pictureBoxXrayOnOff.Size = new System.Drawing.Size(200, 200);
             this.pictureBoxXrayOnOff.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxXrayOnOff.TabIndex = 48;
             this.pictureBoxXrayOnOff.TabStop = false;
@@ -402,93 +405,104 @@
             // comboBoxHVStopBit
             // 
             this.comboBoxHVStopBit.FormattingEnabled = true;
-            this.comboBoxHVStopBit.Location = new System.Drawing.Point(65, 145);
+            this.comboBoxHVStopBit.Location = new System.Drawing.Point(130, 290);
+            this.comboBoxHVStopBit.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.comboBoxHVStopBit.Name = "comboBoxHVStopBit";
-            this.comboBoxHVStopBit.Size = new System.Drawing.Size(62, 20);
+            this.comboBoxHVStopBit.Size = new System.Drawing.Size(120, 32);
             this.comboBoxHVStopBit.TabIndex = 1;
             // 
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(12, 148);
+            this.label23.Location = new System.Drawing.Point(24, 296);
+            this.label23.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(47, 12);
+            this.label23.Size = new System.Drawing.Size(94, 24);
             this.label23.TabIndex = 0;
             this.label23.Text = "停止位:";
             // 
             // comBoxHVCheckBit
             // 
             this.comBoxHVCheckBit.FormattingEnabled = true;
-            this.comBoxHVCheckBit.Location = new System.Drawing.Point(65, 119);
+            this.comBoxHVCheckBit.Location = new System.Drawing.Point(130, 238);
+            this.comBoxHVCheckBit.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.comBoxHVCheckBit.Name = "comBoxHVCheckBit";
-            this.comBoxHVCheckBit.Size = new System.Drawing.Size(62, 20);
+            this.comBoxHVCheckBit.Size = new System.Drawing.Size(120, 32);
             this.comBoxHVCheckBit.TabIndex = 1;
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(12, 122);
+            this.label22.Location = new System.Drawing.Point(24, 244);
+            this.label22.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(47, 12);
+            this.label22.Size = new System.Drawing.Size(94, 24);
             this.label22.TabIndex = 0;
             this.label22.Text = "校验位:";
             // 
             // comBoxHVDataBit
             // 
             this.comBoxHVDataBit.FormattingEnabled = true;
-            this.comBoxHVDataBit.Location = new System.Drawing.Point(65, 89);
+            this.comBoxHVDataBit.Location = new System.Drawing.Point(130, 178);
+            this.comBoxHVDataBit.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.comBoxHVDataBit.Name = "comBoxHVDataBit";
-            this.comBoxHVDataBit.Size = new System.Drawing.Size(62, 20);
+            this.comBoxHVDataBit.Size = new System.Drawing.Size(120, 32);
             this.comBoxHVDataBit.TabIndex = 1;
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(12, 92);
+            this.label21.Location = new System.Drawing.Point(24, 184);
+            this.label21.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(47, 12);
+            this.label21.Size = new System.Drawing.Size(94, 24);
             this.label21.TabIndex = 0;
             this.label21.Text = "数据位:";
             // 
             // comboBoxHVBaudRate
             // 
             this.comboBoxHVBaudRate.FormattingEnabled = true;
-            this.comboBoxHVBaudRate.Location = new System.Drawing.Point(65, 61);
+            this.comboBoxHVBaudRate.Location = new System.Drawing.Point(130, 122);
+            this.comboBoxHVBaudRate.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.comboBoxHVBaudRate.Name = "comboBoxHVBaudRate";
-            this.comboBoxHVBaudRate.Size = new System.Drawing.Size(62, 20);
+            this.comboBoxHVBaudRate.Size = new System.Drawing.Size(120, 32);
             this.comboBoxHVBaudRate.TabIndex = 1;
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(12, 64);
+            this.label20.Location = new System.Drawing.Point(24, 128);
+            this.label20.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(47, 12);
+            this.label20.Size = new System.Drawing.Size(94, 24);
             this.label20.TabIndex = 0;
             this.label20.Text = "波特率:";
             // 
             // comboBoxHVPort
             // 
             this.comboBoxHVPort.FormattingEnabled = true;
-            this.comboBoxHVPort.Location = new System.Drawing.Point(65, 33);
+            this.comboBoxHVPort.Location = new System.Drawing.Point(130, 66);
+            this.comboBoxHVPort.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.comboBoxHVPort.Name = "comboBoxHVPort";
-            this.comboBoxHVPort.Size = new System.Drawing.Size(62, 20);
+            this.comboBoxHVPort.Size = new System.Drawing.Size(120, 32);
             this.comboBoxHVPort.TabIndex = 1;
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(12, 36);
+            this.label17.Location = new System.Drawing.Point(24, 72);
+            this.label17.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(47, 12);
+            this.label17.Size = new System.Drawing.Size(94, 24);
             this.label17.TabIndex = 0;
             this.label17.Text = "端口号:";
             // 
             // buttonXrayOnOff
             // 
-            this.buttonXrayOnOff.Location = new System.Drawing.Point(52, 169);
+            this.buttonXrayOnOff.Location = new System.Drawing.Point(104, 338);
+            this.buttonXrayOnOff.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonXrayOnOff.Name = "buttonXrayOnOff";
-            this.buttonXrayOnOff.Size = new System.Drawing.Size(85, 23);
+            this.buttonXrayOnOff.Size = new System.Drawing.Size(170, 46);
             this.buttonXrayOnOff.TabIndex = 47;
             this.buttonXrayOnOff.Text = "打开光源";
             this.buttonXrayOnOff.UseVisualStyleBackColor = true;
@@ -496,9 +510,10 @@
             // 
             // buttonConnectHVPort
             // 
-            this.buttonConnectHVPort.Location = new System.Drawing.Point(51, 134);
+            this.buttonConnectHVPort.Location = new System.Drawing.Point(102, 268);
+            this.buttonConnectHVPort.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonConnectHVPort.Name = "buttonConnectHVPort";
-            this.buttonConnectHVPort.Size = new System.Drawing.Size(86, 23);
+            this.buttonConnectHVPort.Size = new System.Drawing.Size(172, 46);
             this.buttonConnectHVPort.TabIndex = 2;
             this.buttonConnectHVPort.Text = "打开光源串口";
             this.buttonConnectHVPort.UseVisualStyleBackColor = true;
@@ -510,52 +525,59 @@
             this.groupBox6.Controls.Add(this.textBoxIpAddress);
             this.groupBox6.Controls.Add(this.label27);
             this.groupBox6.Controls.Add(this.label28);
-            this.groupBox6.Location = new System.Drawing.Point(12, 541);
+            this.groupBox6.Location = new System.Drawing.Point(26, 1048);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(320, 91);
+            this.groupBox6.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox6.Size = new System.Drawing.Size(640, 182);
             this.groupBox6.TabIndex = 26;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "PLC端口参数";
             // 
             // textBoxPort
             // 
-            this.textBoxPort.Location = new System.Drawing.Point(60, 56);
+            this.textBoxPort.Location = new System.Drawing.Point(120, 112);
+            this.textBoxPort.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.textBoxPort.Name = "textBoxPort";
-            this.textBoxPort.Size = new System.Drawing.Size(100, 21);
+            this.textBoxPort.Size = new System.Drawing.Size(196, 35);
             this.textBoxPort.TabIndex = 4;
             this.textBoxPort.Text = "502";
             // 
             // textBoxIpAddress
             // 
-            this.textBoxIpAddress.Location = new System.Drawing.Point(60, 28);
+            this.textBoxIpAddress.Location = new System.Drawing.Point(120, 56);
+            this.textBoxIpAddress.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.textBoxIpAddress.Name = "textBoxIpAddress";
-            this.textBoxIpAddress.Size = new System.Drawing.Size(100, 21);
+            this.textBoxIpAddress.Size = new System.Drawing.Size(196, 35);
             this.textBoxIpAddress.TabIndex = 3;
             this.textBoxIpAddress.Text = "192.168.1.31";
             // 
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(6, 32);
+            this.label27.Location = new System.Drawing.Point(12, 64);
+            this.label27.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(47, 12);
+            this.label27.Size = new System.Drawing.Size(94, 24);
             this.label27.TabIndex = 0;
             this.label27.Text = "IP地址:";
             // 
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(18, 59);
+            this.label28.Location = new System.Drawing.Point(36, 118);
+            this.label28.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(35, 12);
+            this.label28.Size = new System.Drawing.Size(70, 24);
             this.label28.TabIndex = 0;
             this.label28.Text = "端口:";
             // 
             // buttonConnectPLC
             // 
-            this.buttonConnectPLC.Location = new System.Drawing.Point(53, 204);
+            this.buttonConnectPLC.Location = new System.Drawing.Point(106, 408);
+            this.buttonConnectPLC.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonConnectPLC.Name = "buttonConnectPLC";
-            this.buttonConnectPLC.Size = new System.Drawing.Size(83, 23);
+            this.buttonConnectPLC.Size = new System.Drawing.Size(166, 46);
             this.buttonConnectPLC.TabIndex = 2;
             this.buttonConnectPLC.Text = "连接PLC";
             this.buttonConnectPLC.UseVisualStyleBackColor = true;
@@ -570,19 +592,21 @@
             this.groupBox7.Controls.Add(this.buttonAbandon);
             this.groupBox7.Controls.Add(this.buttonConnectHVPort);
             this.groupBox7.Controls.Add(this.buttonAsynchronous);
-            this.groupBox7.Location = new System.Drawing.Point(357, 146);
+            this.groupBox7.Location = new System.Drawing.Point(714, 292);
+            this.groupBox7.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(184, 309);
+            this.groupBox7.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox7.Size = new System.Drawing.Size(368, 618);
             this.groupBox7.TabIndex = 27;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "调试区域";
             // 
             // buttonClearImage
             // 
-            this.buttonClearImage.Location = new System.Drawing.Point(53, 239);
-            this.buttonClearImage.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonClearImage.Location = new System.Drawing.Point(106, 478);
+            this.buttonClearImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.buttonClearImage.Name = "buttonClearImage";
-            this.buttonClearImage.Size = new System.Drawing.Size(85, 21);
+            this.buttonClearImage.Size = new System.Drawing.Size(170, 42);
             this.buttonClearImage.TabIndex = 26;
             this.buttonClearImage.Text = "清空显示";
             this.buttonClearImage.UseVisualStyleBackColor = true;
@@ -590,10 +614,10 @@
             // 
             // buttonAsynchronous
             // 
-            this.buttonAsynchronous.Location = new System.Drawing.Point(49, 64);
-            this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonAsynchronous.Location = new System.Drawing.Point(98, 128);
+            this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.buttonAsynchronous.Name = "buttonAsynchronous";
-            this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
+            this.buttonAsynchronous.Size = new System.Drawing.Size(172, 46);
             this.buttonAsynchronous.TabIndex = 20;
             this.buttonAsynchronous.Text = "获取图像";
             this.buttonAsynchronous.UseVisualStyleBackColor = true;
@@ -613,69 +637,70 @@
             this.toolStripProgressBar,
             this.toolStripStatusLabel_Time,
             this.toolStripStatusLabel_ProgressInfo});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 630);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 1301);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1452, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(2, 0, 28, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(2904, 38);
             this.statusStrip1.TabIndex = 29;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel_PLCConn
             // 
             this.toolStripStatusLabel_PLCConn.Name = "toolStripStatusLabel_PLCConn";
-            this.toolStripStatusLabel_PLCConn.Size = new System.Drawing.Size(70, 17);
+            this.toolStripStatusLabel_PLCConn.Size = new System.Drawing.Size(139, 33);
             this.toolStripStatusLabel_PLCConn.Text = "PLC-未连接";
             // 
             // toolStripStatusLabel_HVConn
             // 
             this.toolStripStatusLabel_HVConn.Name = "toolStripStatusLabel_HVConn";
-            this.toolStripStatusLabel_HVConn.Size = new System.Drawing.Size(73, 17);
+            this.toolStripStatusLabel_HVConn.Size = new System.Drawing.Size(144, 33);
             this.toolStripStatusLabel_HVConn.Text = "高压-未连接";
             // 
             // toolStripStatusLabel_XrayOnOff
             // 
             this.toolStripStatusLabel_XrayOnOff.Name = "toolStripStatusLabel_XrayOnOff";
-            this.toolStripStatusLabel_XrayOnOff.Size = new System.Drawing.Size(61, 17);
+            this.toolStripStatusLabel_XrayOnOff.Size = new System.Drawing.Size(120, 33);
             this.toolStripStatusLabel_XrayOnOff.Text = "Xray-OFF";
             // 
             // toolStripStatusLabel_HV_KV
             // 
             this.toolStripStatusLabel_HV_KV.Name = "toolStripStatusLabel_HV_KV";
-            this.toolStripStatusLabel_HV_KV.Size = new System.Drawing.Size(30, 17);
+            this.toolStripStatusLabel_HV_KV.Size = new System.Drawing.Size(57, 33);
             this.toolStripStatusLabel_HV_KV.Text = "0kV";
             // 
             // toolStripStatusLabel_HV_Cur
             // 
             this.toolStripStatusLabel_HV_Cur.Name = "toolStripStatusLabel_HV_Cur";
-            this.toolStripStatusLabel_HV_Cur.Size = new System.Drawing.Size(30, 17);
+            this.toolStripStatusLabel_HV_Cur.Size = new System.Drawing.Size(60, 33);
             this.toolStripStatusLabel_HV_Cur.Text = "0uA";
             // 
             // toolStripStatusLabel_HV_Temp
             // 
             this.toolStripStatusLabel_HV_Temp.Name = "toolStripStatusLabel_HV_Temp";
-            this.toolStripStatusLabel_HV_Temp.Size = new System.Drawing.Size(23, 17);
+            this.toolStripStatusLabel_HV_Temp.Size = new System.Drawing.Size(44, 33);
             this.toolStripStatusLabel_HV_Temp.Text = "0C";
             // 
             // toolStripStatusLabel_HVError
             // 
             this.toolStripStatusLabel_HVError.Name = "toolStripStatusLabel_HVError";
-            this.toolStripStatusLabel_HVError.Size = new System.Drawing.Size(18, 17);
+            this.toolStripStatusLabel_HVError.Size = new System.Drawing.Size(34, 33);
             this.toolStripStatusLabel_HVError.Text = "--";
             // 
             // toolStripProgressBar
             // 
             this.toolStripProgressBar.Name = "toolStripProgressBar";
-            this.toolStripProgressBar.Size = new System.Drawing.Size(200, 16);
+            this.toolStripProgressBar.Size = new System.Drawing.Size(400, 32);
             // 
             // toolStripStatusLabel_Time
             // 
             this.toolStripStatusLabel_Time.Name = "toolStripStatusLabel_Time";
-            this.toolStripStatusLabel_Time.Size = new System.Drawing.Size(122, 17);
+            this.toolStripStatusLabel_Time.Size = new System.Drawing.Size(241, 33);
             this.toolStripStatusLabel_Time.Text = "2022.11.11 12:25:59";
             // 
             // toolStripStatusLabel_ProgressInfo
             // 
             this.toolStripStatusLabel_ProgressInfo.Name = "toolStripStatusLabel_ProgressInfo";
-            this.toolStripStatusLabel_ProgressInfo.Size = new System.Drawing.Size(18, 17);
+            this.toolStripStatusLabel_ProgressInfo.Size = new System.Drawing.Size(34, 33);
             this.toolStripStatusLabel_ProgressInfo.Text = "--";
             // 
             // timerDateTime
@@ -687,9 +712,11 @@
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.buttonStart);
-            this.groupBox8.Location = new System.Drawing.Point(358, 469);
+            this.groupBox8.Location = new System.Drawing.Point(716, 938);
+            this.groupBox8.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(183, 149);
+            this.groupBox8.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.groupBox8.Size = new System.Drawing.Size(366, 298);
             this.groupBox8.TabIndex = 30;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "控制区域";
@@ -698,9 +725,10 @@
             // 
             this.buttonStart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.buttonStart.Font = new System.Drawing.Font("宋体", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonStart.Location = new System.Drawing.Point(6, 15);
+            this.buttonStart.Location = new System.Drawing.Point(12, 30);
+            this.buttonStart.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(169, 128);
+            this.buttonStart.Size = new System.Drawing.Size(338, 256);
             this.buttonStart.TabIndex = 0;
             this.buttonStart.Text = "启动";
             this.buttonStart.UseVisualStyleBackColor = false;
@@ -708,9 +736,9 @@
             // 
             // Demo
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1452, 652);
+            this.ClientSize = new System.Drawing.Size(2904, 1339);
             this.Controls.Add(this.groupBox8);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox7);
@@ -720,12 +748,13 @@
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(1491, 972);
-            this.MinimumSize = new System.Drawing.Size(967, 539);
+            this.MaximumSize = new System.Drawing.Size(2956, 1873);
+            this.MinimumSize = new System.Drawing.Size(1908, 1007);
             this.Name = "Demo";
-            this.Text = "睿奥自动化检测控制软件(v20220820)";
+            this.Text = "睿奥自动化检测控制软件(v20220826)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Demo_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
