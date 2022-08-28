@@ -32,8 +32,8 @@ namespace LionSDKDotDemo
 
 
         private readonly Tuple<string, string>[] BigBoard = new[] {
-                            Tuple.Create("B-V0",        "NO"  ),  //0
-                            Tuple.Create("NO",    "B-V2"      ), //1
+                            Tuple.Create("B-V0",        "X"  ),  //0
+                            Tuple.Create("X",         "B-V2" ), //1
                             Tuple.Create("B-V4",    "B-V6"  ), //2
                             Tuple.Create("B-V8",    "B-V10" ), //3
                             Tuple.Create("B-V12",   "B-V14" ), //4
@@ -79,16 +79,16 @@ namespace LionSDKDotDemo
         const int PLC_REG_BOARD_TYPE = 995;
         const int PLC_REG_BOARD_NUM = 950;
         const int PLC_REG_POSTION = 999;
-        const int PLC_REG_OK_LEFT = 1210;
-        const int PLC_REG_NG_LEFT = 1211;
-        const int PLC_REG_OK_RIGHT = 1220;
-        const int PLC_REG_NG_RIGHT = 1221;
+        const int PLC_REG_OK_L = 1210;
+        const int PLC_REG_NG_L = 1211;
+        const int PLC_REG_OK_R = 1220;
+        const int PLC_REG_NG_R = 1221;
 
-        const string LEFT_DEV_SN = "R";
-        const string RIGHT_DEV_SN = "L";
+        const string SN_R = "R";
+        const string SN_L = "L";
 
-        const int BIG_BORAD = 0;
-        const int SMALL_BORAD = 1;
+        const int BOARD_TYPE_BIG = 0;
+        const int BORAD_TYPE_SMALL = 1;
         /// <summary>``
         /// Sensor 常量`
         /// </summary>
@@ -187,10 +187,10 @@ namespace LionSDKDotDemo
 
         }
 
-        int PlcStep = 0;
+        int PlcPointLocation = 0;
         int BoardType = 0;
-        int BoardNum = 0;
-        int PlcLastStep = -1;
+        int BoardId = 0;
+        int PlcLastPointLocation = -1;
         private void MonitorPLC()
         {
 
@@ -222,20 +222,20 @@ namespace LionSDKDotDemo
 
 
                     // 读取运动装置的位置
-                    PlcStep = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_POSTION);
+                    PlcPointLocation = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_POSTION);
 
                     // 读取隔离板型号
                     BoardType = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_TYPE);
 
                     // 读取隔离板编号
-                    BoardNum = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_NUM);
+                    BoardId = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_NUM);
 
-                    Console.WriteLine("ACQ = {0},PlcLastStep = {1}, PLC Current Step = {2}, Board Type = {3}, BoardNum = {4}", acqImage, PlcStep, PlcLastStep,  BoardType, BoardNum);
+                    Console.WriteLine("ACQ = {0},PlcLastStep = {1}, PLC Current Step = {2}, Board Type = {3}, BoardNum = {4}", acqImage, PlcPointLocation, PlcLastPointLocation,  BoardType, BoardId);
 
                     //  Console.WriteLine("currentPos {0}, lastPos {1},xrayOnOff {2}", pos, lastPos, xrayOnOff);
-                    if (xrayOnOff && acqImage && (PlcLastStep != PlcStep))
+                    if (xrayOnOff && acqImage && (PlcLastPointLocation != PlcPointLocation))
                     {
-                        PlcLastStep = PlcStep;
+                        PlcLastPointLocation = PlcPointLocation;
 
                         this.BeginInvoke(new Action(() =>
                         {
@@ -295,7 +295,7 @@ namespace LionSDKDotDemo
 
             try
             {
-                PlcLastStep = -1;
+                PlcLastPointLocation = -1;
 
 
                 // 1. 检查设备
@@ -442,12 +442,12 @@ namespace LionSDKDotDemo
                     TreeNode node = new TreeNode();
                     node.Text = strText;
                     node.Name = Convert.ToString(luDev.uvcIdentity.Id);
-
                     root.Nodes.Add(node);
                 }
             }
             root.ExpandAll();
             Console.WriteLine("buttonEnumDev_Click listDev.Count {0}", listDev.Count);
+          
 
         }
 
@@ -844,68 +844,6 @@ namespace LionSDKDotDemo
             }
         }
 
-        ///// <summary>
-        ///// 同步获取像
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void buttonSynchronous_Click(object sender, EventArgs e)
-        //{
-
-        //    for (int d = 0; d < listDev.Count; d++)
-        //    {
-        //        // Console.WriteLine("listDev[d].uvcIdentity.Id  {0}", listDev[d].uvcIdentity.Id);
-        //        {
-        //            LU_DEVICE luDev = listDev[d];
-        //            unsafe
-        //            {
-        //                string strFile = "";
-
-        //                int nBuf = 0;
-        //                byte[] data = null;
-        //                int ret_image = LionSDK.LionSDK.GetImage(ref luDev, 0, ref data, ref nBuf, ref strFile);
-
-        //                if (LionCom.LU_SUCCESS == ret_image)
-        //                {
-        //                    if (!string.IsNullOrEmpty(strFile))
-        //                    {
-        //                        // 显示图像
-
-
-        //                        if (luDev.uvcIdentity.Id == ImageIds[0])
-        //                        {
-        //                            this.pictureBoxImage.Load(strFile);
-        //                        }
-        //                        else if (luDev.uvcIdentity.Id == ImageIds[1])
-        //                        {
-        //                            this.pictureBoxImage1.Load(strFile);
-        //                        }
-        //                        else
-        //                        {
-        //                            MessageBox.Show("请重新枚举设备!");
-        //                            return;
-        //                        }
-
-
-        //                        // 处理图像
-        //                        EnqueueImage(strFile.Replace("bmp", "jpg"));
-        //                    }
-        //                    else
-        //                    {
-        //                        MessageBox.Show("图像获取失败! 路径为空");
-        //                    }
-
-        //                }
-        //                else
-        //                {
-        //                    MessageBox.Show("图像获取失败!  " + ret_image.ToString());
-        //                }
-
-        //            }
-        //            //break;
-        //        }
-        //    }
-        //}
 
         void DisplayImageByFileName(string file)
         {
@@ -913,11 +851,11 @@ namespace LionSDKDotDemo
             // "D:\temp\202223232121_0_23_L_A-V10_NG.jpg"
             try
             {
-                if (file.Contains(LEFT_DEV_SN))
+                if (file.Contains(SN_R))
                 {
                     this.pictureBoxImage.Load(file);
                 }
-                else if (file.Contains(RIGHT_DEV_SN))
+                else if (file.Contains(SN_L))
                 {
                     this.pictureBoxImage1.Load(file);
                 }
@@ -947,44 +885,36 @@ namespace LionSDKDotDemo
                  原图：日期_版型_版号_点位_左右_镍片号.jpg
                 20220716115919_0_7021002580_23_L_B-V10.jpg
 
-                检测处理后的图：日期_版型_版号_点位_左右_镍片号_检测结果.jpg
+                检测处理后的图：日期_版型_版号_点位_SN_镍片号_检测结果.jpg
                 20220716115919_0_7021002580_23_L_B-V10_NG.jpg
 
                  */
-                string LR = file.Split('_').ElementAt(4);
-                string result = file.Split('_').ElementAt(6);
-                string point = file.Split('_').ElementAt(3);
 
-                result = result.Replace(".jpg","");
+                string[] list = file.Split('_');
+                string sn = list[4];
+                string result = list[6].Replace(".jpg", ""); ;
 
-                Console.WriteLine("LR= {0}, result {1}", LR, result);
+                Console.WriteLine("sn= {0}, result {1}", sn, result);
 
-
-                // 0和1号点位需要特殊处理结果
-
-
-                if (file.Contains(LEFT_DEV_SN) && file.Contains("OK"))
+                if (sn == SN_R && result == "OK")
                 {
-                    Console.WriteLine("PLC_REG_OK_LEFT");
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_LEFT, true);
+                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_R, true);
                 }
-                else if (file.Contains(LEFT_DEV_SN) && file.Contains("NG"))
+                else if (sn == SN_R && result == "NG")
                 {
-                    Console.WriteLine("PLC_REG_NG_LEFT");
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_LEFT, true);
+                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_R, true);
                 }
-                else if (file.Contains(RIGHT_DEV_SN) && file.Contains("OK"))
+                else if (sn == SN_L && result == "OK")
                 {
-                    Console.WriteLine("PLC_REG_OK_RIGHT");
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_RIGHT, true);
+                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_L, true);
                 }
-                else if (file.Contains(RIGHT_DEV_SN) && file.Contains("NG"))
+                else if (sn == SN_L && result == "NG")
                 {
-                    Console.WriteLine("PLC_REG_NG_RIGHT");
-                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_RIGHT, true);
+                    PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_L, true);
                 }
                 else {
-                    Console.WriteLine("file: {0}, Not write result ", file);
+
+                    MessageBox.Show(sn + result + " 图像处理结果不正确， 无法向PLC写入结果");
                 }
              
             }
@@ -1001,8 +931,6 @@ namespace LionSDKDotDemo
             {
                 try
                 {
-
-
                     string fileName = "";
                     bool ret = ImageQueueBuffer.TryDequeue(out fileName);
                     Console.WriteLine("pull ImageQueueBuffer.Count {0}, ret {1}", ImageQueueBuffer.Count(), ret);
@@ -1045,6 +973,49 @@ namespace LionSDKDotDemo
 
         }
 
+        string GetTargetName(string SN) {
+
+            string target = "UNKNOW";
+            try
+            {
+                if (BoardType == BOARD_TYPE_BIG)
+                {
+                    // BigBoard
+                    if (SN == SN_R)
+                    {
+                        target = BigBoard[PlcPointLocation].Item1;
+                    }
+                    else if (SN == SN_L)
+                    {
+                        target = BigBoard[PlcPointLocation].Item2;
+                    }
+                }
+                else if (BoardType == BORAD_TYPE_SMALL)
+                {
+                    // Small Board
+                    if (SN == SN_R)
+                    {
+                        target = SmallBoard[PlcPointLocation].Item1;
+                    }
+                    else if (SN == SN_L)
+                    {
+                        target = SmallBoard[PlcPointLocation].Item2;
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("未知的版型 {0}", BoardType.ToString());
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            return target;
+        }
 
         private void EnqueueImage(string SN, string imageFile)
         {
@@ -1053,78 +1024,25 @@ namespace LionSDKDotDemo
 
             UPDATE_PROGRESS(STEP.Copy_Image);
 
-
-            // 原始文件名为 luvc_camera_7416.jpg
             /*
-             原图：日期_版型_版号_点位_左右_镍片号.jpg
-            20220716115919_0_7021002580_23_L_B-V10.jpg
 
-            检测处理后的图：日期_版型_版号_点位_左右_镍片号_检测结果.jpg
+
+            检测处理后的图：日期_版型_版号_点位_传感器序列号_镍片号.jpg
             20220716115919_0_7021002580_23_L_B-V10_NG.jpg
              
              */
 
 
-            string target = "";
+            string target = GetTargetName(SN);
 
-            try {
-                if (BoardType == BIG_BORAD)
-                {
-                    // BigBoard
-                    if (SN == LEFT_DEV_SN)
-                    {
-                        target = BigBoard[PlcStep].Item1;
-                    }
-                    else if (SN == RIGHT_DEV_SN)
-                    {
-                        target = BigBoard[PlcStep].Item2;
-                    }
-                    else
-                    {
-                        MessageBox.Show("错误的设备序列号，必须是L或者R，当前是{0}", SN);
-                        return ;
-                    }
-
-
-                }
-                else if (BoardType == SMALL_BORAD)
-                {
-                    // Small Board
-                    if (SN == LEFT_DEV_SN)
-                    {
-                        target = SmallBoard[PlcStep].Item1;
-                    }
-                    else if (SN == RIGHT_DEV_SN)
-                    {
-                        target = SmallBoard[PlcStep].Item2;
-                    }
-                    else
-                    {
-                        MessageBox.Show("错误的设备序列号，必须是L或者R，当前是{0}", SN);
-                        return ;
-                    }
-
-                }
-                else
-                {
-                    MessageBox.Show("未知的版型 {0}", BoardType.ToString());
-                    return ;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return ;
-            }
 
             string datetime = DateTime.Now.ToString("yyyyMMddhhmmss");
-            string newImageFileName = datetime + "_"
-                            + BoardType.ToString() + "_"
-                            + BoardNum.ToString() + "_"
-                            + PlcStep.ToString() + "_"
-                            + SN + "_"
-                            + target + ".jpg";
+            string newImageFileName = datetime + "_"                // 日期
+                            + BoardType.ToString() + "_"            // 版型
+                            + BoardId.ToString() + "_"              // 版号
+                            + PlcPointLocation.ToString() + "_"     // 点位
+                            + SN + "_"                              // 序列号   
+                            + target + ".jpg";                      // 镍片号
 
             string newFileName = "D:\\temp\\" + newImageFileName;
 
