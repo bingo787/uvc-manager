@@ -32,32 +32,31 @@ namespace LionSDKDotDemo
 
 
         private readonly Tuple<string, string>[] BigBoard = new[] {
-                            Tuple.Create("",        "B-V0"  ),
-                            Tuple.Create("B-V2",    ""      ),
-                            Tuple.Create("B-V4",    "B-V6"  ),
-                            Tuple.Create("B-V8",    "B-V10" ),
-                            Tuple.Create("B-V12",   "B-V14" ),
-                            Tuple.Create("B-V16",   "B-V18" ),
-                            Tuple.Create("B-V12",   "B-V14" ),
-                            Tuple.Create("B-V20",   "B-V22" ),
-                            Tuple.Create("B-V21",   "B-V23" ),
-                            Tuple.Create("B-V17",   "B-V19" ),
-                            Tuple.Create("B-V13",   "B-V15" ),
-                            Tuple.Create("B-V9",    "B-V11" ),
-                            Tuple.Create("B-V5",    "B-V7"  ),
-                            Tuple.Create("B-V1",    "B-V3"  ),
-                            Tuple.Create("A-V22",   "A-V20" ),
-                            Tuple.Create("A-V18",   "A-V16" ),
-                            Tuple.Create("A-V14",   "A-V12" ),
-                            Tuple.Create("A-V10",   "A-V8"  ),
-                            Tuple.Create("A-V6",    "A-V4"  ),
-                            Tuple.Create("A-V2",    "A-V0"  ),
-                            Tuple.Create("A-V3",    "A-V1"  ),
-                            Tuple.Create("A-V7",    "A-V5"  ),
-                            Tuple.Create("A-V11",   "A-V9"  ),
-                            Tuple.Create("A-V15",   "A-V13" ),
-                            Tuple.Create("A-V19",   "A-V17" ),
-                            Tuple.Create("A-V23",   "A-V21" ),
+                            Tuple.Create("B-V0",        "NO"  ),  //0
+                            Tuple.Create("NO",    "B-V2"      ), //1
+                            Tuple.Create("B-V4",    "B-V6"  ), //2
+                            Tuple.Create("B-V8",    "B-V10" ), //3
+                            Tuple.Create("B-V12",   "B-V14" ), //4
+                            Tuple.Create("B-V16",   "B-V18" ), //5
+                            Tuple.Create("B-V12",   "B-V14" ), //6
+                            Tuple.Create("B-V21",   "B-V23" ), // 7 
+                            Tuple.Create("B-V17",   "B-V19" ), // 8
+                            Tuple.Create("B-V13",   "B-V15" ),// 9
+                            Tuple.Create("B-V9",    "B-V11" ), //10 
+                            Tuple.Create("B-V5",    "B-V7"  ), //11
+                            Tuple.Create("B-V1",    "B-V3"  ), //12
+                            Tuple.Create("A-V22",   "A-V20" ), // 13
+                            Tuple.Create("A-V18",   "A-V16" ), //14
+                            Tuple.Create("A-V14",   "A-V12" ), // 15
+                            Tuple.Create("A-V10",   "A-V8"  ), //16
+                            Tuple.Create("A-V6",    "A-V4"  ), //17
+                            Tuple.Create("A-V2",    "A-V0"  ), //18
+                            Tuple.Create("A-V3",    "A-V1"  ), //19
+                            Tuple.Create("A-V7",    "A-V5"  ), //20
+                            Tuple.Create("A-V11",   "A-V9"  ), //21
+                            Tuple.Create("A-V15",   "A-V13" ), //22
+                            Tuple.Create("A-V19",   "A-V17" ), //23
+                            Tuple.Create("A-V23",   "A-V21" ), //24
         };
 
         private readonly Tuple<string, string>[] SmallBoard = new[]
@@ -77,15 +76,16 @@ namespace LionSDKDotDemo
 
         const int PLC_REG_ACQ = 2010;
         const int PLC_REG_XRAY_ONOFF = 2011;
-        const int PLC_REG_BOARD = 995;
+        const int PLC_REG_BOARD_TYPE = 995;
+        const int PLC_REG_BOARD_NUM = 950;
         const int PLC_REG_POSTION = 999;
         const int PLC_REG_OK_LEFT = 1210;
         const int PLC_REG_NG_LEFT = 1211;
         const int PLC_REG_OK_RIGHT = 1220;
         const int PLC_REG_NG_RIGHT = 1221;
 
-        const string LEFT_DEV_SN = "L";
-        const string RIGHT_DEV_SN = "R";
+        const string LEFT_DEV_SN = "R";
+        const string RIGHT_DEV_SN = "L";
 
         const int BIG_BORAD = 0;
         const int SMALL_BORAD = 1;
@@ -189,6 +189,7 @@ namespace LionSDKDotDemo
 
         int PlcStep = 0;
         int BoardType = 0;
+        int BoardNum = 0;
         int PlcLastStep = -1;
         private void MonitorPLC()
         {
@@ -214,7 +215,7 @@ namespace LionSDKDotDemo
                         buttonXrayOnOff_Click(null, null);
                     }
 
-                    Thread.Sleep(500);
+                    Thread.Sleep(800);
 
                     // 读取采集图像指令
                     bool acqImage = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
@@ -224,9 +225,12 @@ namespace LionSDKDotDemo
                     PlcStep = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_POSTION);
 
                     // 读取隔离板型号
-                    BoardType = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD);
+                    BoardType = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_TYPE);
 
- 
+                    // 读取隔离板编号
+                    BoardNum = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_NUM);
+
+                    Console.WriteLine("ACQ = {0},PlcLastStep = {1}, PLC Current Step = {2}, Board Type = {3}, BoardNum = {4}", acqImage, PlcStep, PlcLastStep,  BoardType, BoardNum);
 
                     //  Console.WriteLine("currentPos {0}, lastPos {1},xrayOnOff {2}", pos, lastPos, xrayOnOff);
                     if (xrayOnOff && acqImage && (PlcLastStep != PlcStep))
@@ -334,21 +338,31 @@ namespace LionSDKDotDemo
                 {
                     return;
                 }
-
-
-                bool ret = PLCHelperModbusTCP.fnGetInstance().ConnectServer(textBoxIpAddress.Text, textBoxPort.Text);
-                if (!ret)
-                {
-                    return;
-                }
-
-                // 7. 创建图像处理线程
+                // 6. 创建图像处理线程
                 processImageThread_ = new Thread(new ThreadStart(delegate
                 {
                     ProcessImage();
                 }));
 
                 processImageThread_.Start();
+
+
+                // 连接PLC
+                bool ret = PLCHelperModbusTCP.fnGetInstance().ConnectServer(textBoxIpAddress.Text, textBoxPort.Text);
+                if (!ret)
+                {
+                    return;
+                }
+
+                // 创建PLC监控线程
+                monitorPlcCommandThread = new Thread(new ThreadStart(delegate
+                {
+                    MonitorPLC();
+                }));
+
+                monitorPlcCommandThread.Start();
+
+
 
 
 
@@ -896,15 +910,14 @@ namespace LionSDKDotDemo
         void DisplayImageByFileName(string file)
         {
 
-            // "D:\temp\202223232121_0_23_L_A-V10.jpg"
+            // "D:\temp\202223232121_0_23_L_A-V10_NG.jpg"
             try
             {
-                string pos = file.Split('_').ElementAt(3);
-                if (pos == LEFT_DEV_SN)
+                if (file.Contains(LEFT_DEV_SN))
                 {
                     this.pictureBoxImage.Load(file);
                 }
-                else if (pos == RIGHT_DEV_SN)
+                else if (file.Contains(RIGHT_DEV_SN))
                 {
                     this.pictureBoxImage1.Load(file);
                 }
@@ -929,25 +942,51 @@ namespace LionSDKDotDemo
                 // 处理结果
                 // 图1： OK->1210写True, NG->1211写False
                 // 图2： OK->1211写True, NG->1221写False
-                // "D:\temp\202223232121_0_23_L_A-V10_NG.jpg"
-                string pos = file.Split('_').ElementAt(3);
-                string result = file.Split('_').ElementAt(5);
-                if (pos == LEFT_DEV_SN && result == "OK")
+                // 原始文件名为 luvc_camera_7416.jpg
+                /*
+                 原图：日期_版型_版号_点位_左右_镍片号.jpg
+                20220716115919_0_7021002580_23_L_B-V10.jpg
+
+                检测处理后的图：日期_版型_版号_点位_左右_镍片号_检测结果.jpg
+                20220716115919_0_7021002580_23_L_B-V10_NG.jpg
+
+                 */
+                string LR = file.Split('_').ElementAt(4);
+                string result = file.Split('_').ElementAt(6);
+                string point = file.Split('_').ElementAt(3);
+
+                result = result.Replace(".jpg","");
+
+                Console.WriteLine("LR= {0}, result {1}", LR, result);
+
+
+                // 0和1号点位需要特殊处理结果
+
+
+                if (file.Contains(LEFT_DEV_SN) && file.Contains("OK"))
                 {
+                    Console.WriteLine("PLC_REG_OK_LEFT");
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_LEFT, true);
                 }
-                else if (pos == LEFT_DEV_SN && result == "NG") {
+                else if (file.Contains(LEFT_DEV_SN) && file.Contains("NG"))
+                {
+                    Console.WriteLine("PLC_REG_NG_LEFT");
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_LEFT, true);
                 }
-                else if (pos == RIGHT_DEV_SN && result == "OK")
+                else if (file.Contains(RIGHT_DEV_SN) && file.Contains("OK"))
                 {
+                    Console.WriteLine("PLC_REG_OK_RIGHT");
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_RIGHT, true);
                 }
-                else if (pos == RIGHT_DEV_SN && result == "NG")
+                else if (file.Contains(RIGHT_DEV_SN) && file.Contains("NG"))
                 {
+                    Console.WriteLine("PLC_REG_NG_RIGHT");
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_RIGHT, true);
                 }
-              
+                else {
+                    Console.WriteLine("file: {0}, Not write result ", file);
+                }
+             
             }
             catch (Exception ex)
             {
@@ -1016,8 +1055,14 @@ namespace LionSDKDotDemo
 
 
             // 原始文件名为 luvc_camera_7416.jpg
-            // 拷贝文件名： datetime_board_step_sn_target.jpg;
-            // 20221010_0_23_LEFT_A-V10.jpg
+            /*
+             原图：日期_版型_版号_点位_左右_镍片号.jpg
+            20220716115919_0_7021002580_23_L_B-V10.jpg
+
+            检测处理后的图：日期_版型_版号_点位_左右_镍片号_检测结果.jpg
+            20220716115919_0_7021002580_23_L_B-V10_NG.jpg
+             
+             */
 
 
             string target = "";
@@ -1076,9 +1121,10 @@ namespace LionSDKDotDemo
             string datetime = DateTime.Now.ToString("yyyyMMddhhmmss");
             string newImageFileName = datetime + "_"
                             + BoardType.ToString() + "_"
+                            + BoardNum.ToString() + "_"
                             + PlcStep.ToString() + "_"
                             + SN + "_"
-                            + target;
+                            + target + ".jpg";
 
             string newFileName = "D:\\temp\\" + newImageFileName;
 
@@ -1115,7 +1161,7 @@ namespace LionSDKDotDemo
             {
                 case STEP.Start_Acq:
                     toolStripStatusLabel_ProgressInfo.Text = "采集图像";
-                    progressValue = 10;
+                    progressValue = 20;
 
                     break;
                 case STEP.Copy_Image:
