@@ -726,7 +726,7 @@
             this.MaximumSize = new System.Drawing.Size(1500, 700);
             this.MinimumSize = new System.Drawing.Size(1500, 700);
             this.Name = "Demo";
-            this.Text = "睿奥自动化检测控制软件(v20220826)";
+            this.Text = "睿奥自动化检测控制软件(v20221125)";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Demo_FormClosing);
             this.groupBox1.ResumeLayout(false);
