@@ -123,7 +123,7 @@ namespace LionSDKDotDemo
 
         //当前的设备对象
         private List<LU_DEVICE> listDev = new List<LU_DEVICE>();
-
+        private int delay_ms = 1000;
         private void LoadConfig()
         {
 
@@ -133,7 +133,8 @@ namespace LionSDKDotDemo
             this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
 
 
-            this.textBoxActTime.Text = Config.Instance.ReadString("UVCSetting", "ActTime");
+           int.TryParse(Config.Instance.ReadString("UVCSetting", "DelayMs"), out delay_ms);
+            int.TryParse(Config.Instance.ReadString("HVSettingPara", "Current_Max"), out HV_MaxCurrent);
 
             // HV port
             PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
@@ -215,7 +216,8 @@ namespace LionSDKDotDemo
                         buttonXrayOnOff_Click(null, null);
                     }
 
-                    Thread.Sleep(800);
+                    Console.WriteLine("延时 {0} ms", delay_ms);
+                    Thread.Sleep(delay_ms);
 
                     // 读取采集图像指令
                     bool acqImage = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
