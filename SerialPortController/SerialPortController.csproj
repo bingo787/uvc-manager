@@ -89,9 +89,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigHelper.cs" />
     <Compile Include="HVPortController.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="MC110PortController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -319,13 +319,13 @@ namespace LionSDKDotDemo
                 // 3. 打开高压串口
                 try
                 {
-                    HVSerialPortControler.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
+                    SerialPortControler_RS232PROTOCOL_MC110.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
                         int.Parse(this.comboBoxHVBaudRate.Text),
                         (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
                         int.Parse(this.comBoxHVDataBit.Text),
                         (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
 
-                    HVSerialPortControler.Instance.Connect();
+                    SerialPortControler_RS232PROTOCOL_MC110.Instance.Connect();
                 }
                 catch
                 {
@@ -1170,8 +1170,8 @@ namespace LionSDKDotDemo
             try
             {
 
-                HVSerialPortControler.Instance.XRayOff();
-                HVSerialPortControler.Instance.CloseControlSystem();
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.CloseControlSystem();
 
                 ImageProcessTcpClient.Disconnect();
                 imageProcessServices.Kill();
@@ -1201,20 +1201,20 @@ namespace LionSDKDotDemo
 
             if (buttonConnectHVPort.Text == "关闭光源串口")
             {
-                HVSerialPortControler.Instance.CloseControlSystem();
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.CloseControlSystem();
                 toolStripStatusLabel_HVConn.Text = "高压-已断开";
             }
             else
             {
                 try
                 {
-                    HVSerialPortControler.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
+                    SerialPortControler_RS232PROTOCOL_MC110.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
                         int.Parse(this.comboBoxHVBaudRate.Text),
                         (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
                         int.Parse(this.comBoxHVDataBit.Text),
                         (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
 
-                    HVSerialPortControler.Instance.Connect();
+                    SerialPortControler_RS232PROTOCOL_MC110.Instance.Connect();
                     buttonConnectHVPort.Text = "关闭光源串口";
                 }
                 catch
@@ -1296,7 +1296,7 @@ namespace LionSDKDotDemo
             }
 
 
-            //  HVSerialPortControler.Instance.SetKV(kv);
+            //  SerialPortControler_RS232PROTOCOL_MC110.Instance.SetKV(kv);
 
         }
 
@@ -1321,13 +1321,13 @@ namespace LionSDKDotDemo
             }
 
 
-            //  HVSerialPortControler.Instance.SetCurrent(current);
+            //  SerialPortControler_RS232PROTOCOL_MC110.Instance.SetCurrent(current);
         }
 
         private void buttonXrayOnOff_Click(object sender, EventArgs e)
         {
 
-            if (!HVSerialPortControler.Instance.IsOpen())
+            if (!SerialPortControler_RS232PROTOCOL_MC110.Instance.IsOpen())
             {
 
                 MessageBox.Show("请先打开高压串口！");
@@ -1365,7 +1365,7 @@ namespace LionSDKDotDemo
                 }
 
                 Console.WriteLine("KV {0}, Current {0}", kv, current);
-                HVSerialPortControler.Instance.Preheat(kv, current);
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.Preheat(kv, current);
 
 
 
@@ -1375,7 +1375,7 @@ namespace LionSDKDotDemo
             {
                 // 关闭
 
-                HVSerialPortControler.Instance.XRayOff();
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
                 buttonXrayOnOff.Text = "打开光源";
             }
         }
@@ -1400,8 +1400,8 @@ namespace LionSDKDotDemo
                     imageProcessServices.Kill();
 
                     // 光源
-                    HVSerialPortControler.Instance.XRayOff();
-                    HVSerialPortControler.Instance.CloseControlSystem();
+                    SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
+                    SerialPortControler_RS232PROTOCOL_MC110.Instance.CloseControlSystem();
 
                     // PLC
                     PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
@@ -1521,12 +1521,12 @@ namespace LionSDKDotDemo
             try
             {
 
-                HVSerialPortControler.Instance.XRayOnChanged += ControlSystem_XRayOnChanged;
-                HVSerialPortControler.Instance.VoltageChanged += ControlSystem_VoltageChanged;
-                HVSerialPortControler.Instance.CurrentChanged += ControlSystem_CurrentChanged;
-                HVSerialPortControler.Instance.TemperatureChanged += ControlSystem_TemperatureChanged;
-                HVSerialPortControler.Instance.StateReported += ControlSystem_StateReported;
-                HVSerialPortControler.Instance.Connected += ControlSystem_Connected;
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOnChanged += ControlSystem_XRayOnChanged;
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.VoltageChanged += ControlSystem_VoltageChanged;
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.CurrentChanged += ControlSystem_CurrentChanged;
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.TemperatureChanged += ControlSystem_TemperatureChanged;
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.StateReported += ControlSystem_StateReported;
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.Connected += ControlSystem_Connected;
 
             }
             catch (Exception)
