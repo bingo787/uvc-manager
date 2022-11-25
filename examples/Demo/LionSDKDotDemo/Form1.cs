@@ -38,7 +38,7 @@ namespace LionSDKDotDemo
                             Tuple.Create("B-V8",    "B-V10" ), //3
                             Tuple.Create("B-V12",   "B-V14" ), //4
                             Tuple.Create("B-V16",   "B-V18" ), //5
-                            Tuple.Create("B-V12",   "B-V14" ), //6
+                            Tuple.Create("B-V20",   "B-V22" ), //6
                             Tuple.Create("B-V21",   "B-V23" ), // 7 
                             Tuple.Create("B-V17",   "B-V19" ), // 8
                             Tuple.Create("B-V13",   "B-V15" ),// 9
