@@ -96,8 +96,9 @@ namespace LionSDKDotDemo
         const UInt32 SensorGetImageTimeOut = 100000;
 
 
-        double HV_MaxKV = 80.0f; // 80kv
+        double HV_MaxKV = 100.0f; // 80kv
         int HV_MaxCurrent = 1000; //1000mA
+        double HV_MaxPower = 15.0; //W
 
         string ViFilePath = "";
         string NiLabviewExePath = "";
@@ -131,10 +132,10 @@ namespace LionSDKDotDemo
             // UVC
             this.comboBoxModel.SelectedIndex = uvcMode.IndexOf(Config.Instance.ReadString("UVCSetting", "Mode"));
             this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
-
+            this.textBoxActTime.Text = Config.Instance.ReadString("UVCSetting", "ActTime");
 
            int.TryParse(Config.Instance.ReadString("UVCSetting", "DelayMs"), out delay_ms);
-            int.TryParse(Config.Instance.ReadString("HVSettingPara", "Current_Max"), out HV_MaxCurrent);
+           
 
             // HV port
             PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
@@ -149,8 +150,9 @@ namespace LionSDKDotDemo
 
             double.TryParse(Config.Instance.ReadString("HVSettingPara", "KV_Max"), out HV_MaxKV);
             int.TryParse(Config.Instance.ReadString("HVSettingPara", "Current_Max"), out HV_MaxCurrent);
-
-            Console.WriteLine("KV_Max = {0}, Current_Max = {1}", HV_MaxKV, HV_MaxCurrent);
+            double.TryParse(Config.Instance.ReadString("HVSettingPara", "Power_Max"), out HV_MaxPower);
+            
+            Console.WriteLine("KV_Max = {0}, Current_Max = {1}, Power_Max = {2}", HV_MaxKV, HV_MaxCurrent, HV_MaxPower);
 
             // PLC 参数设置
 
@@ -1304,19 +1306,18 @@ namespace LionSDKDotDemo
 
         private void textBoxCurrent_TextChanged(object sender, EventArgs e)
         {
-            int current = 0;
+          
+            double power = 0.0f;
 
-
-
-            if (!int.TryParse(textBoxCurrent.Text.ToString(), out current))
+            if (!double.TryParse(textBoxCurrent.Text.ToString(), out power))
             {
 
                 MessageBox.Show("输入的参数非法");
                 return;
             }
-            if (current > HV_MaxCurrent)
+            if (power > HV_MaxPower)
             {
-                MessageBox.Show("输入的参数超过最大值 " + HV_MaxCurrent.ToString());
+                MessageBox.Show("输入的参数超过最大值 " + HV_MaxPower.ToString());
                 return;
             }
 
@@ -1351,21 +1352,21 @@ namespace LionSDKDotDemo
                     return;
                 }
 
-                int current;
-                if (!int.TryParse(textBoxCurrent.Text.ToString(), out current))
+                double power;
+                if (!double.TryParse(textBoxCurrent.Text.ToString(), out power))
                 {
 
                     MessageBox.Show("输入的参数非法");
                     return;
                 }
-                if (current > HV_MaxCurrent)
+                if (power > HV_MaxPower)
                 {
-                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxCurrent.ToString());
+                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxPower.ToString());
                     return;
                 }
 
-                Console.WriteLine("KV {0}, Current {0}", kv, current);
-                SerialPortControler_RS232PROTOCOL_MC110.Instance.Preheat(kv, current);
+                Console.WriteLine("KV {0}, Power {1}", kv, power);
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.Preheat(kv, power);
 
 
 
