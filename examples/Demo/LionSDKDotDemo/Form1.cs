@@ -900,19 +900,19 @@ namespace LionSDKDotDemo
 
                 Console.WriteLine("sn= {0}, result {1}", sn, result);
 
-                if (sn == SN_R && result == "OK")
+                if (sn == SN_R && result.Contains("OK"))
                 {
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_R, true);
                 }
-                else if (sn == SN_R && result == "NG")
+                else if (sn == SN_R && result.Contains("NG"))
                 {
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_R, true);
                 }
-                else if (sn == SN_L && result == "OK")
+                else if (sn == SN_L && result.Contains("OK"))
                 {
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_OK_L, true);
                 }
-                else if (sn == SN_L && result == "NG")
+                else if (sn == SN_L && result.Contains("NG"))
                 {
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_L, true);
                 }

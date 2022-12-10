@@ -73,12 +73,16 @@ namespace SerialPortController
         /// </summary>
         public void OpenSerialPort(string portName, int baudRate, Parity parity, int dataBits, StopBits stopbits)
         {
+
+            Console.WriteLine("{0},{1}", portName, baudRate);
             _serialPort = new SerialPort(portName, baudRate, parity, dataBits, stopbits);
             _serialPort.DataReceived += _serialPort_DataReceived;
             _serialPort.WriteTimeout = 1000;
             _serialPort.ReadTimeout = 1000;
             _serialPort.Open();
             _is_open = true;
+            _running = true;
+
         }
 
         public bool IsOpen() {
@@ -100,9 +104,9 @@ namespace SerialPortController
                 byte[] buffer = new byte[1024];
                 int len = port.Read(buffer, 0, buffer.Length);
                 string message = ASCIIEncoding.ASCII.GetString(buffer, 0, len);
-#if DEBUG
-                Console.WriteLine("Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
-#endif
+ 
+              //  Console.WriteLine("Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
+ 
 
 
                 string[] messes = message.Split(EndTag);
@@ -190,7 +194,7 @@ namespace SerialPortController
             string arg;
             int temp;
             string RES_OK = "[ERR:0]";
-          //  Console.WriteLine("[ReceivedMessage][" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message + " lastComand:" + _lastCommand);
+         //   Console.WriteLine("[ReceivedMessage][" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message + " lastComand:" + _lastCommand);
             ///处理错误代码
             //if (message.StartsWith("[ERR:"))
             {
@@ -203,7 +207,7 @@ namespace SerialPortController
                     <STATUS:0,0,0,0,1,2,60000,90,0:10,67,33[ERR:27,29]>
                  */
                 string ResponseError = message.Split('[').Last().TrimEnd(']'); // --> ERR:27,29
-               // Console.WriteLine("Error Code : {0}", ResponseError);
+            //    Console.WriteLine("Error Code : {0}", ResponseError);
 
                 string[] ResponseErrorCode = ResponseError.Split(new Char[] { ':', ',' });
 
@@ -452,9 +456,9 @@ namespace SerialPortController
                 _serialPort.Write(command.ToArray(), 0, command.Count);
             }
             _isNeedFeeddingDog = false;
-#if DEBUG
-           Console.WriteLine("Send [" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
-#endif
+ 
+        //   Console.WriteLine("Send [" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
+ 
         }
         /// <summary>
         /// 发送命令
@@ -718,21 +722,21 @@ namespace SerialPortController
             string date = day + "," + month + "," + year;
 
            // date = "31,12,2023";
-            Console.WriteLine("SDATE {0}", date);
+           Console.WriteLine("SDATE {0}", date);
            
             SendCommand("SDATE:" + date);
             Thread.Sleep(200);
           
             // 为了获取热机的时间
-           // SendCommand("GDATE");
-            //Thread.Sleep(200);
-            //SendCommand("SAV:1");
-            //Thread.Sleep(200);
-            //SendCommand("SPWR:1");
-            //Thread.Sleep(200);
+            SendCommand("GDATE");
+          //  Thread.Sleep(200);
+          //  SendCommand("SAV:1");
+          //  Thread.Sleep(200);
+          //  SendCommand("SPWR:1");
+            Thread.Sleep(200);
             SendCommand("EH:1");
-            //Thread.Sleep(200);
-            //SendCommand("EP:1");
+         //   Thread.Sleep(200);
+            SendCommand("EP:1");
 
         }
     }
