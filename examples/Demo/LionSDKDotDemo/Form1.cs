@@ -342,13 +342,7 @@ namespace LionSDKDotDemo
                 {
                     return;
                 }
-                // 6. 创建图像处理线程
-                processImageThread_ = new Thread(new ThreadStart(delegate
-                {
-                    ProcessImage();
-                }));
 
-                processImageThread_.Start();
 
 
                 // 连接PLC
@@ -424,6 +418,14 @@ namespace LionSDKDotDemo
 
             // 清空显示
             buttonClearImage_Click(null, null);
+
+            // 6. 创建图像处理线程
+            processImageThread_ = new Thread(new ThreadStart(delegate
+            {
+                ProcessImage();
+            }));
+
+            processImageThread_.Start();
 
         }
 
@@ -1458,7 +1460,7 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_Cur.Text = arg + "uA";
+                toolStripStatusLabel_HV_Cur.Text = (arg/10.0).ToString("f2") + "W";
             }));
         }
         /// <summary>
@@ -1469,7 +1471,7 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_KV.Text = arg + "kV";
+                toolStripStatusLabel_HV_KV.Text = arg.ToString("f2") + "kV";
             }));
         }
         /// <summary>
