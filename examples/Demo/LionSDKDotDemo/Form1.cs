@@ -56,7 +56,8 @@ namespace LionSDKDotDemo
                             Tuple.Create("A-V11",   "A-V9"  ), //21
                             Tuple.Create("A-V15",   "A-V13" ), //22
                             Tuple.Create("A-V19",   "A-V17" ), //23
-                            Tuple.Create("A-V23",   "A-V21" ), //24
+                            Tuple.Create("A-V23",   "X" ), //24
+                            Tuple.Create("X",   "A-V21" ), //25
         };
 
         private readonly Tuple<string, string>[] SmallBoard = new[]
