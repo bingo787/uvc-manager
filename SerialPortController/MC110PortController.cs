@@ -94,6 +94,53 @@ namespace SerialPortController
             _serialPort.Close();
         }
         string _lastMessage = string.Empty;
+
+        string recieve_buffer_;
+        bool cacheSerialPortMessage(string head_tag, string tail_tag,
+                                         string data, ref string message)
+        {
+
+            bool completed = false;
+            // 异常类：无头且变量为空，已丢失头部，数据不可靠，直接返回
+
+            if ((!data.Contains(head_tag)) && (recieve_buffer_.Length == 0))
+            {
+                return false;
+            }
+            // 第一种：有头无尾，先清空原有内容，再附加
+            if ((data.Contains(head_tag)) && (!data.Contains(tail_tag)))
+            {
+                recieve_buffer_ = "";
+                recieve_buffer_.Concat(data);
+            }
+            // 第二种：无头无尾且变量已有内容，数据中段部分，继续附加即可
+            if ((!data.Contains(head_tag)) && (!data.Contains(tail_tag)) &&
+                (recieve_buffer_.Length == 0))
+            {
+                recieve_buffer_.Concat(data);
+            }
+            // 第三种：无头有尾且变量已有内容，已完整读取，附加后输出数据，并清空变量
+            if ((!data.Contains(head_tag)) && (data.Contains(tail_tag)) &&
+                (recieve_buffer_.Length == 0))
+            {
+                recieve_buffer_.Concat(data);
+                message = recieve_buffer_;
+                recieve_buffer_ = "";
+                completed = true;
+            }
+            // 第四种：有头有尾（一段完整的内容），先清空原有内容，再附加，然后输出，最后清空变量
+            if ((data.Contains(head_tag)) && (data.Contains(tail_tag)))
+            {
+                recieve_buffer_ = "";
+                recieve_buffer_.Concat(data);
+                message = recieve_buffer_;
+                recieve_buffer_ = "";
+                completed = true;
+            }
+
+            return completed;
+        }
+
         void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort port = sender as SerialPort;
@@ -103,11 +150,13 @@ namespace SerialPortController
                 Thread.Sleep(30);
                 byte[] buffer = new byte[1024];
                 int len = port.Read(buffer, 0, buffer.Length);
-                string message = ASCIIEncoding.ASCII.GetString(buffer, 0, len);
- 
-              //  Console.WriteLine("Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
- 
+                string data = ASCIIEncoding.ASCII.GetString(buffer, 0, len);
+                string message ="";
+                //  Console.WriteLine("Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
 
+                if (!cacheSerialPortMessage("<", ">", data, ref message)) {
+                    continue;
+                }
 
                 string[] messes = message.Split(EndTag);
                 if (messes.Length > 0)
