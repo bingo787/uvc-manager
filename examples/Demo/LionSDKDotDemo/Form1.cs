@@ -57,7 +57,11 @@ namespace LionSDKDotDemo
                             Tuple.Create("A-V15",   "A-V13" ), //22
                             Tuple.Create("A-V19",   "A-V17" ), //23
                             Tuple.Create("A-V23",   "X" ), //24
-                            Tuple.Create("X",   "A-V21" ), //25
+                            Tuple.Create("X",   "X" ), //25
+                            Tuple.Create("X",   "X" ), //26
+                            Tuple.Create("X",   "X" ), //27
+                            Tuple.Create("X",   "X" ), //28
+                            Tuple.Create("X",   "X" ) //29
         };
 
         private readonly Tuple<string, string>[] SmallBoard = new[]
@@ -135,8 +139,8 @@ namespace LionSDKDotDemo
             this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
             this.textBoxActTime.Text = Config.Instance.ReadString("UVCSetting", "ActTime");
 
-           int.TryParse(Config.Instance.ReadString("UVCSetting", "DelayMs"), out delay_ms);
-           
+            int.TryParse(Config.Instance.ReadString("UVCSetting", "DelayMs"), out delay_ms);
+
 
             // HV port
             PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
@@ -152,7 +156,7 @@ namespace LionSDKDotDemo
             double.TryParse(Config.Instance.ReadString("HVSettingPara", "KV_Max"), out HV_MaxKV);
             int.TryParse(Config.Instance.ReadString("HVSettingPara", "Current_Max"), out HV_MaxCurrent);
             double.TryParse(Config.Instance.ReadString("HVSettingPara", "Power_Max"), out HV_MaxPower);
-            
+
             Console.WriteLine("KV_Max = {0}, Current_Max = {1}, Power_Max = {2}", HV_MaxKV, HV_MaxCurrent, HV_MaxPower);
 
             // PLC 参数设置
@@ -195,6 +199,7 @@ namespace LionSDKDotDemo
         int BoardType = 0;
         int BoardId = 0;
         int PlcLastPointLocation = -1;
+        bool IsXrayOnOff = false;
         private void MonitorPLC()
         {
 
@@ -203,27 +208,28 @@ namespace LionSDKDotDemo
 
                 try
                 {
- 
+
                     // 读取光源控制指令
-                    bool xrayOnOff = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
-                    if (xrayOnOff && buttonXrayOnOff.Text == "打开光源")
+                    bool on_off_flag = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
+                    if (on_off_flag && !IsXrayOnOff)
                     {
                         // 打开光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 打开光源 ");
-                        buttonXrayOnOff_Click(null, null);
+                        XrayOnOff(true);
                     }
-                    else if (!xrayOnOff && buttonXrayOnOff.Text == "关闭光源")
+
+                    if (on_off_flag)
                     {
                         // 关闭光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 关闭光源 ");
-                        buttonXrayOnOff_Click(null, null);
+                        XrayOnOff(false);
                     }
 
                     Console.WriteLine("延时 {0} ms", delay_ms);
                     Thread.Sleep(delay_ms);
 
                     // 读取采集图像指令
-                    bool acqImage = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
+                    bool acq_flag = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
 
 
                     // 读取运动装置的位置
@@ -235,10 +241,10 @@ namespace LionSDKDotDemo
                     // 读取隔离板编号
                     BoardId = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_NUM);
 
-                    Console.WriteLine("ACQ = {0},PlcLastStep = {1}, PLC Current Step = {2}, Board Type = {3}, BoardNum = {4}", acqImage, PlcPointLocation, PlcLastPointLocation,  BoardType, BoardId);
+                    Console.WriteLine("ACQ = {0},PlcLastStep = {1}, PLC Current Step = {2}, Board Type = {3}, BoardNum = {4}", acq_flag, PlcPointLocation, PlcLastPointLocation, BoardType, BoardId);
 
                     //  Console.WriteLine("currentPos {0}, lastPos {1},xrayOnOff {2}", pos, lastPos, xrayOnOff);
-                    if (xrayOnOff && acqImage && (PlcLastPointLocation != PlcPointLocation))
+                    if (on_off_flag && acq_flag && (PlcLastPointLocation != PlcPointLocation))
                     {
                         PlcLastPointLocation = PlcPointLocation;
 
@@ -454,7 +460,7 @@ namespace LionSDKDotDemo
             }
             root.ExpandAll();
             Console.WriteLine("buttonEnumDev_Click listDev.Count {0}", listDev.Count);
-          
+
 
         }
 
@@ -919,11 +925,12 @@ namespace LionSDKDotDemo
                 {
                     PLCHelperModbusTCP.fnGetInstance().WriteSingleMReg(PLC_REG_NG_L, true);
                 }
-                else {
+                else
+                {
 
                     MessageBox.Show(sn + result + " 图像处理结果不正确， 无法向PLC写入结果");
                 }
-             
+
             }
             catch (Exception ex)
             {
@@ -980,7 +987,8 @@ namespace LionSDKDotDemo
 
         }
 
-        string GetTargetName(string SN) {
+        string GetTargetName(string SN)
+        {
 
             string target = "UNKNOW";
             try
@@ -1121,7 +1129,7 @@ namespace LionSDKDotDemo
             deviceSN = deviceSN.Split('_').ElementAt(0);
 
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " AsyncImageCallback come 设备号: " + deviceSN);
-           
+
 
             this.BeginInvoke(new Action(() =>
             {
@@ -1141,10 +1149,10 @@ namespace LionSDKDotDemo
                         MessageBox.Show(ex.ToString());
                     }
 
-                    
+
                     Console.WriteLine("device SN : {0}", deviceSN);
                     // 拷贝图像
-                   EnqueueImage(deviceSN, pFile.Replace("bmp", "jpg"));
+                    EnqueueImage(deviceSN, pFile.Replace("bmp", "jpg"));
 
 
                 }
@@ -1309,7 +1317,7 @@ namespace LionSDKDotDemo
 
         private void textBoxCurrent_TextChanged(object sender, EventArgs e)
         {
-          
+
             double power = 0.0f;
 
             if (!double.TryParse(textBoxCurrent.Text.ToString(), out power))
@@ -1326,6 +1334,56 @@ namespace LionSDKDotDemo
 
 
             //  SerialPortControler_RS232PROTOCOL_MC110.Instance.SetCurrent(current);
+        }
+
+
+        private void XrayOnOff(bool on)
+        {
+
+            if (on)
+            {
+                // 打开光源
+                double kv = 0;
+
+                if (!double.TryParse(textBoxKV.Text.ToString(), out kv))
+                {
+
+                    MessageBox.Show("输入的参数非法");
+                    return;
+                }
+                if (kv > HV_MaxKV)
+                {
+                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxKV.ToString());
+                    return;
+                }
+
+                double power;
+                if (!double.TryParse(textBoxCurrent.Text.ToString(), out power))
+                {
+
+                    MessageBox.Show("输入的参数非法");
+                    return;
+                }
+                if (power > HV_MaxPower)
+                {
+                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxPower.ToString());
+                    return;
+                }
+
+                Console.WriteLine("KV {0}, Power {1}", kv, power);
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.Preheat(kv, power);
+                buttonXrayOnOff.Text = "关闭光源";
+                this.pictureBoxXrayOnOff.Image = Properties.Resources.fushe_red;
+                this.pictureBoxXrayOnOff.Invalidate();
+            }
+            else
+            {
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
+                buttonXrayOnOff.Text = "打开光源";
+                this.pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
+                this.pictureBoxXrayOnOff.Invalidate();
+            }
+
         }
 
         private void buttonXrayOnOff_Click(object sender, EventArgs e)
@@ -1461,7 +1519,7 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_Cur.Text = (arg/10.0).ToString("f2") + "W";
+                toolStripStatusLabel_HV_Cur.Text = (arg / 10.0).ToString("f2") + "W";
             }));
         }
         /// <summary>
@@ -1485,9 +1543,11 @@ namespace LionSDKDotDemo
             {
                 if (arg)
                 {
+
                     toolStripStatusLabel_XrayOnOff.Text = "XRay ON";
                     toolStripStatusLabel_XrayOnOff.ForeColor = Color.Red;
                     pictureBoxXrayOnOff.Image = Properties.Resources.fushe_red;
+
                 }
                 else
                 {
@@ -1496,6 +1556,7 @@ namespace LionSDKDotDemo
                     pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
 
                 }
+                IsXrayOnOff = arg;
                 pictureBoxXrayOnOff.Invalidate();
             }));
 
