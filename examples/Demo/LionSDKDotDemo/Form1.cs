@@ -199,7 +199,7 @@ namespace LionSDKDotDemo
         int BoardType = 0;
         int BoardId = 0;
         int PlcLastPointLocation = -1;
-        bool IsXrayOnOff = false;
+        bool IsXrayOn = false;
         private void MonitorPLC()
         {
 
@@ -210,19 +210,21 @@ namespace LionSDKDotDemo
                 {
 
                     // 读取光源控制指令
-                    bool on_off_flag = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
-                    if (on_off_flag && !IsXrayOnOff)
+                    bool xray_cmd = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
+                    if (xray_cmd && !IsXrayOn)
                     {
-                        // 打开光源
+                        // 如果是 打开光源 的命令，且光源未打开，则打开光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 打开光源 ");
                         XrayOnOff(true);
                     }
-
-                    if (on_off_flag)
+                    else if (!xray_cmd && IsXrayOn)
                     {
-                        // 关闭光源
+                        // 如果是 关闭光源 的命令，且光源已打开，则 关闭光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 关闭光源 ");
                         XrayOnOff(false);
+                    }
+                    else {
+                        Console.WriteLine("PLC_REG_XRAY_ONOFF = {0}, IsXrayOn = {1}");
                     }
 
                     Console.WriteLine("延时 {0} ms", delay_ms);
@@ -244,7 +246,7 @@ namespace LionSDKDotDemo
                     Console.WriteLine("ACQ = {0},PlcLastStep = {1}, PLC Current Step = {2}, Board Type = {3}, BoardNum = {4}", acq_flag, PlcPointLocation, PlcLastPointLocation, BoardType, BoardId);
 
                     //  Console.WriteLine("currentPos {0}, lastPos {1},xrayOnOff {2}", pos, lastPos, xrayOnOff);
-                    if (on_off_flag && acq_flag && (PlcLastPointLocation != PlcPointLocation))
+                    if (xray_cmd && acq_flag && (PlcLastPointLocation != PlcPointLocation))
                     {
                         PlcLastPointLocation = PlcPointLocation;
 
@@ -1556,7 +1558,7 @@ namespace LionSDKDotDemo
                     pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
 
                 }
-                IsXrayOnOff = arg;
+                IsXrayOn = arg;
                 pictureBoxXrayOnOff.Invalidate();
             }));
 
