@@ -16,6 +16,8 @@ using SerialPortController;
 using DAL;
 using System.Collections;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
 
 
 namespace LionSDKDotDemo
@@ -195,6 +197,116 @@ namespace LionSDKDotDemo
 
         }
 
+
+        void checkAndClearDir(string path) {
+            
+            if (Directory.Exists(path))
+            {
+                // 清空目录中的所有文件
+                DirectoryInfo directory = new DirectoryInfo(path);
+                foreach (FileInfo file in directory.GetFiles())
+                {
+                    file.Delete();
+                }
+            }
+            else
+            {
+                // 创建目录
+                Directory.CreateDirectory(path);
+            }
+        }
+        void reportMES(){
+
+
+            // 1. 遍历D:\temp目录下的所有图片文件名
+
+            string[] fileNames = Directory.GetFiles(@"D:\temp");
+
+
+            // 2. 创建mes.csv文件
+            string csvFilePath = @"D:\temp\mes.csv";
+
+            // 3. 将文件名信息写入csv
+            // Create a new StreamWriter to write to the file
+            using (StreamWriter sw = new StreamWriter(csvFilePath))
+            {
+                // Write the headers
+                sw.WriteLine("测试时间,镍片编号,测试结果,原因");
+
+                // 检测处理后的图：日期_版型_版号_点位_序列号_镍片号.jpg
+                // D:\temp\20220716115919_0_7021002580_23_L_B-V10_NG.jpg
+                char[] delimiters = new char[] { '_', '\\','.' };
+                foreach (string fileName in fileNames)
+                {
+                    if (!fileName.Contains("OK") && !fileName.Contains("NG")) {
+                        continue;
+                    }
+                    Console.WriteLine(fileName);
+                    string[] temp = fileName.Split(delimiters);
+                    // 测试时间,镍片编号,测试结果,	原因
+                    string line = temp[2] + "," + temp[7]+ "," + temp[8];
+                    // Write some data rows
+                    sw.WriteLine(line);
+                }
+ 
+            }
+
+            Console.WriteLine("CSV file created and written to successfully.");
+
+
+            // 4. 检查D:/mes/ 下面是否有目录, 并获取目录名字
+            string path = @"D:\mes\";
+            string targetDirName = "";
+            if (Directory.Exists(path))
+            {
+                string[] subdirs = Directory.GetDirectories(path);
+                if (subdirs.Length > 0)
+                {
+                    foreach (string subdir in subdirs)
+                    {
+                       
+                        targetDirName = subdir;
+                        // 只要一个目录!!, 所以break;
+                        break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No subdirectories found.");
+                    throw new Exception("D:\\mes 下面没有找到子目录!!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Directory does not exist.");
+                throw new Exception("D:\\mes 目录不存在!!");
+            }
+
+            DirectoryInfo targetDir = new DirectoryInfo(targetDirName);
+
+
+            // 6. 将图片和mes.csv 剪切到D:/mes/PRODUCT目录下
+            string sourceDir = @"D:\temp\";
+ 
+            foreach (string file in Directory.GetFiles(sourceDir))
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(targetDir.FullName, fileName);
+                File.Move(file, destFile);
+                Console.WriteLine($"File {file} move to {destFile}.");
+            }
+
+            // 5. 重命名csv文件名字为产品名
+            string targetXlsFileName = Path.Combine(targetDir.FullName, targetDir.Name + ".xls");
+            string newCsvFilePath = Path.Combine(targetDir.FullName, "mes.csv");
+            File.Move(newCsvFilePath, targetXlsFileName);
+
+            // 7. 在D:/mes 下面创建ready.txt 文件
+            string ready = Path.Combine(targetDir.FullName, "ready.txt");
+            File.Create(ready);
+
+            // 9. 结束
+        }
         int PlcPointLocation = 0;
         int BoardType = 0;
         int BoardId = 0;
@@ -216,12 +328,30 @@ namespace LionSDKDotDemo
                         // 如果是 打开光源 的命令，且光源未打开，则打开光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 打开光源 ");
                         XrayOnOff(true);
+
+                        //开始测试
+                        // 清空temp目录
+                        checkAndClearDir(@"D:\temp");
+
+
                     }
                     else if (!xray_cmd && IsXrayOn)
                     {
                         // 如果是 关闭光源 的命令，且光源已打开，则 关闭光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 关闭光源 ");
                         XrayOnOff(false);
+
+                        //结束测试
+
+                        // 上报mes
+                        try
+                        {
+                            reportMES();
+                        }
+                        catch (Exception e){
+                            MessageBox.Show(e.Message);
+                        }
+                        
                     }
                     else {
                         Console.WriteLine("PLC_REG_XRAY_ONOFF = {0}, IsXrayOn = {1}");
@@ -1044,7 +1174,7 @@ namespace LionSDKDotDemo
             /*
 
 
-            检测处理后的图：日期_版型_版号_点位_传感器序列号_镍片号.jpg
+            检测处理后的图：日期_版型_版号_点位_序列号_镍片号.jpg
             20220716115919_0_7021002580_23_L_B-V10_NG.jpg
              
              */
@@ -1488,6 +1618,7 @@ namespace LionSDKDotDemo
         private void buttonClearImage_Click(object sender, EventArgs e)
         {
 
+            reportMES();
             /// 清空图像可以加载一张提前准备好的图像。
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
