@@ -198,6 +198,25 @@ namespace LionSDKDotDemo
         }
 
 
+
+        void backupImages(string sourceDir, string backupdir) {
+            if (!Directory.Exists(backupdir))
+            {
+                // 创建目录
+                Directory.CreateDirectory(backupdir);
+            }
+
+            foreach (string file in Directory.GetFiles(sourceDir))
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(backupdir, fileName);
+                File.Move(file, destFile);
+                Console.WriteLine($"File {file} move to {destFile}.");
+            }
+
+
+
+        }
         void checkAndClearDir(string path) {
             
             if (Directory.Exists(path))
@@ -292,8 +311,8 @@ namespace LionSDKDotDemo
             {
                 string fileName = Path.GetFileName(file);
                 string destFile = Path.Combine(targetDir.FullName, fileName);
-                File.Move(file, destFile);
-                Console.WriteLine($"File {file} move to {destFile}.");
+                File.Copy(file, destFile, true);
+                Console.WriteLine($"File {file} copyied to {destFile}.");
             }
 
             // 5. 重命名csv文件名字为产品名
@@ -301,7 +320,7 @@ namespace LionSDKDotDemo
             string newCsvFilePath = Path.Combine(targetDir.FullName, "mes.csv");
             File.Move(newCsvFilePath, targetXlsFileName);
 
-            // 7. 在D:/mes 下面创建ready.txt 文件
+            // 7. 在D:/mes/PRODUCT 下面创建ready.txt 文件
             string ready = Path.Combine(targetDir.FullName, "ready.txt");
             File.Create(ready);
 
@@ -342,7 +361,9 @@ namespace LionSDKDotDemo
                         XrayOnOff(false);
 
                         //结束测试
+                        // 先在本地备份
 
+                        backupImages(@"D:\temp", @"D:\backup");
                         // 上报mes
                         try
                         {
