@@ -404,7 +404,8 @@ namespace LionSDKDotDemo
                         Thread.Sleep(delay_ms);
                         //开始测试
                         // 清空temp目录
-                        //  checkAndClearDir(@"D:\temp");
+                        buttonClearImage_Click(null,null);
+                        checkAndClearDir(@"D:\temp");
                         IsXrayOn = true;
 
                     }
@@ -423,6 +424,7 @@ namespace LionSDKDotDemo
                         try
                         {
                             reportMES();
+                          
                         }
                         catch (Exception e)
                         {
