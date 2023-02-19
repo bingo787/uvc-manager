@@ -17,8 +17,8 @@ using DAL;
 using System.Collections;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-
-
+using Microsoft.Office.Interop.Excel;
+using Action = System.Action;
 
 namespace LionSDKDotDemo
 {
@@ -234,6 +234,35 @@ namespace LionSDKDotDemo
                 Directory.CreateDirectory(path);
             }
         }
+
+        static void CSV2XLS(string csvPath, string excelPath)
+        {
+
+
+            // 创建一个 Excel 应用程序对象
+            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+
+            // 打开 CSV 文件
+            Workbook workbook = excel.Workbooks.Open(csvPath,
+                Type.Missing, Type.Missing, Type.Missing, Type.Missing,
+                Type.Missing, Type.Missing, Type.Missing, Type.Missing,
+                Type.Missing, Type.Missing, Type.Missing, Type.Missing,
+                Type.Missing, Type.Missing);
+
+            // 将 CSV 数据复制到新的 Excel 工作簿中
+            Worksheet worksheet = workbook.Sheets[1];
+            worksheet.Copy(Type.Missing, Type.Missing);
+
+            // 将新的工作簿保存为 Excel 文件
+            Workbook newWorkbook = excel.ActiveWorkbook;
+            newWorkbook.SaveAs(excelPath, XlFileFormat.xlWorkbookDefault,
+                Type.Missing, Type.Missing, Type.Missing, Type.Missing,
+                XlSaveAsAccessMode.xlNoChange, Type.Missing, Type.Missing,
+                Type.Missing, Type.Missing, Type.Missing);
+
+            // 关闭 Excel 应用程序
+            excel.Quit();
+        }
         void reportMES(){
 
 
@@ -318,7 +347,10 @@ namespace LionSDKDotDemo
             // 5. 重命名csv文件名字为产品名
             string targetXlsFileName = Path.Combine(targetDir.FullName, targetDir.Name + ".xls");
             string newCsvFilePath = Path.Combine(targetDir.FullName, "mes.csv");
-            File.Move(newCsvFilePath, targetXlsFileName);
+
+            CSV2XLS(newCsvFilePath, targetXlsFileName);
+            File.Delete(newCsvFilePath);
+           
 
             // 7. 在D:/mes/PRODUCT 下面创建ready.txt 文件
             string ready = @"D:/mes/ready.txt";
@@ -1358,7 +1390,7 @@ namespace LionSDKDotDemo
 
             }
 
-            Application.Exit();
+            System.Windows.Forms.Application.Exit();
         }
 
 
@@ -1648,7 +1680,8 @@ namespace LionSDKDotDemo
 
         private void buttonClearImage_Click(object sender, EventArgs e)
         {
- 
+
+        
             /// 清空图像可以加载一张提前准备好的图像。
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
