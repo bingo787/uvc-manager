@@ -210,7 +210,7 @@ namespace LionSDKDotDemo
             {
                 string fileName = Path.GetFileName(file);
                 string destFile = Path.Combine(backupdir, fileName);
-                File.Move(file, destFile);
+                File.Copy(file, destFile,true);
                 Console.WriteLine($"File {file} move to {destFile}.");
             }
 
@@ -321,8 +321,9 @@ namespace LionSDKDotDemo
             File.Move(newCsvFilePath, targetXlsFileName);
 
             // 7. 在D:/mes/PRODUCT 下面创建ready.txt 文件
-            string ready = Path.Combine(targetDir.FullName, "ready.txt");
-            File.Create(ready);
+            string ready = @"D:/mes/ready.txt";
+ 
+            File.WriteAllText(ready, "NG");
 
             // 9. 结束
         }
@@ -342,47 +343,10 @@ namespace LionSDKDotDemo
 
                     // 读取光源控制指令
                     bool xray_cmd = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
-                    if (xray_cmd && !IsXrayOn)
-                    {
-                        // 如果是 打开光源 的命令，且光源未打开，则打开光源
-                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 打开光源 ");
-                        XrayOnOff(true);
-
-                        //开始测试
-                        // 清空temp目录
-                        checkAndClearDir(@"D:\temp");
-
-
-                    }
-                    else if (!xray_cmd && IsXrayOn)
-                    {
-                        // 如果是 关闭光源 的命令，且光源已打开，则 关闭光源
-                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 关闭光源 ");
-                        XrayOnOff(false);
-
-                        //结束测试
-                        // 先在本地备份
-
-                        backupImages(@"D:\temp", @"D:\backup");
-                        // 上报mes
-                        try
-                        {
-                            reportMES();
-                        }
-                        catch (Exception e){
-                            MessageBox.Show(e.Message);
-                        }
-                        
-                    }
-                    else {
-                        Console.WriteLine("PLC_REG_XRAY_ONOFF = {0}, IsXrayOn = {1}");
-                    }
-
-                    Console.WriteLine("延时 {0} ms", delay_ms);
-                    Thread.Sleep(delay_ms);
+                
 
                     // 读取采集图像指令
-                    bool acq_flag = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
+                    bool acq_cmd = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
 
 
                     // 读取运动装置的位置
@@ -394,10 +358,56 @@ namespace LionSDKDotDemo
                     // 读取隔离板编号
                     BoardId = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_NUM);
 
-                    Console.WriteLine("ACQ = {0},PlcLastStep = {1}, PLC Current Step = {2}, Board Type = {3}, BoardNum = {4}", acq_flag, PlcPointLocation, PlcLastPointLocation, BoardType, BoardId);
+                    Console.WriteLine("acq_cmd = {0},PlcPointLocation = {1}, PlcLastPointLocation = {2}, BoardType = {3}, BoardId = {4}", acq_cmd, PlcPointLocation, PlcLastPointLocation, BoardType, BoardId);
+
+                    Console.WriteLine("xray_cmd = {0}, IsXrayOn = {1}",xray_cmd, IsXrayOn);
+
+                    if (xray_cmd && !IsXrayOn)
+                    {
+                        // 1, 0
+                        // 如果是 打开光源 的命令，且光源未打开，则打开光源
+                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 打开光源 ");
+                        XrayOnOff(true);
+                        Console.WriteLine("延时 {0} ms", delay_ms);
+                        Thread.Sleep(delay_ms);
+                        //开始测试
+                        // 清空temp目录
+                        //  checkAndClearDir(@"D:\temp");
+                        IsXrayOn = true;
+
+                    }
+                    else if (!xray_cmd && IsXrayOn)
+                    {
+                        // 0, 1
+                        // 如果是 关闭光源 的命令，且光源已打开，则 关闭光源
+                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 关闭光源 ");
+                        XrayOnOff(false);
+                        IsXrayOn = false;
+                        //结束测试
+                        // 先在本地备份
+
+                        backupImages(@"D:\temp", @"D:\rayonbackup");
+                        // 上报mes
+                        try
+                        {
+                            reportMES();
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.Message);
+                        }
+
+                    }
+                    else {
+                        Console.WriteLine("光源无操作");
+                    }
+
+
+
+
 
                     //  Console.WriteLine("currentPos {0}, lastPos {1},xrayOnOff {2}", pos, lastPos, xrayOnOff);
-                    if (xray_cmd && acq_flag && (PlcLastPointLocation != PlcPointLocation))
+                    if (xray_cmd && acq_cmd && (PlcLastPointLocation != PlcPointLocation))
                     {
                         PlcLastPointLocation = PlcPointLocation;
 
@@ -1638,8 +1648,7 @@ namespace LionSDKDotDemo
 
         private void buttonClearImage_Click(object sender, EventArgs e)
         {
-
-            reportMES();
+ 
             /// 清空图像可以加载一张提前准备好的图像。
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
@@ -1701,6 +1710,8 @@ namespace LionSDKDotDemo
                     toolStripStatusLabel_XrayOnOff.Text = "XRay ON";
                     toolStripStatusLabel_XrayOnOff.ForeColor = Color.Red;
                     pictureBoxXrayOnOff.Image = Properties.Resources.fushe_red;
+                    IsXrayOn = true;
+                    Console.WriteLine("光源回调 打开， IsXrayOn = {0}", IsXrayOn);
 
                 }
                 else
@@ -1708,9 +1719,11 @@ namespace LionSDKDotDemo
                     toolStripStatusLabel_XrayOnOff.Text = "Xray OFF";
                     toolStripStatusLabel_XrayOnOff.ForeColor = Color.Black;
                     pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
+                    IsXrayOn = false;
+                    Console.WriteLine("光源回调 关闭， IsXrayOn = {0}", IsXrayOn);
 
                 }
-                IsXrayOn = arg;
+               
                 pictureBoxXrayOnOff.Invalidate();
             }));
 
