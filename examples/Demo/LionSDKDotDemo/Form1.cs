@@ -266,6 +266,8 @@ namespace LionSDKDotDemo
         void reportMES(){
 
 
+            bool hasNG = false;
+
             // 1. 遍历D:\temp目录下的所有图片文件名
 
             string[] fileNames = Directory.GetFiles(@"D:\temp");
@@ -286,9 +288,17 @@ namespace LionSDKDotDemo
                 char[] delimiters = new char[] { '_', '\\','.' };
                 foreach (string fileName in fileNames)
                 {
+
+                   
+
                     if (!fileName.Contains("OK") && !fileName.Contains("NG")) {
                         continue;
                     }
+
+                    if (fileName.Contains("NG")) {
+                        hasNG = true;
+                    }
+
                     Console.WriteLine(fileName);
                     string[] temp = fileName.Split(delimiters);
                     // 测试时间,镍片编号,测试结果,	原因
@@ -354,8 +364,15 @@ namespace LionSDKDotDemo
 
             // 7. 在D:/mes/PRODUCT 下面创建ready.txt 文件
             string ready = @"D:/mes/ready.txt";
- 
-            File.WriteAllText(ready, "NG");
+
+            if (hasNG)
+            {
+                File.WriteAllText(ready, "NG");
+            }
+            else {
+                File.WriteAllText(ready, "OK");
+            }
+          
 
             // 9. 结束
         }
