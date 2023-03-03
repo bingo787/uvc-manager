@@ -35,7 +35,7 @@ namespace LionSDKDotDemo
 
         private readonly Tuple<string, string>[] BigBoard = new[] {
                             Tuple.Create("B-V0",        "X"  ),  //0
-                            Tuple.Create("X",         "B-V2" ), //1
+                            Tuple.Create("B-V2",         "X" ), //1
                             Tuple.Create("B-V4",    "B-V6"  ), //2
                             Tuple.Create("B-V8",    "B-V10" ), //3
                             Tuple.Create("B-V12",   "B-V14" ), //4
@@ -59,7 +59,7 @@ namespace LionSDKDotDemo
                             Tuple.Create("A-V15",   "A-V13" ), //22
                             Tuple.Create("A-V19",   "A-V17" ), //23
                             Tuple.Create("A-V23",   "X" ), //24
-                            Tuple.Create("X",   "X" ), //25
+                            Tuple.Create("A-V21",   "X" ), //25
                             Tuple.Create("X",   "X" ), //26
                             Tuple.Create("X",   "X" ), //27
                             Tuple.Create("X",   "X" ), //28
@@ -281,7 +281,7 @@ namespace LionSDKDotDemo
             using (StreamWriter sw = new StreamWriter(csvFilePath))
             {
                 // Write the headers
-                sw.WriteLine("测试时间,镍片编号,测试结果,原因");
+                sw.WriteLine("测试时间,镍片编号,测试结果,原因,文件名");
 
                 // 检测处理后的图：日期_版型_版号_点位_序列号_镍片号.jpg
                 // D:\temp\20220716115919_0_7021002580_23_L_B-V10_NG.jpg
@@ -289,7 +289,10 @@ namespace LionSDKDotDemo
                 foreach (string fileName in fileNames)
                 {
 
-                   
+                    if (fileName.Contains("X"))
+                    {
+                        continue;
+                    }
 
                     if (!fileName.Contains("OK") && !fileName.Contains("NG")) {
                         continue;
@@ -301,8 +304,12 @@ namespace LionSDKDotDemo
 
                     Console.WriteLine(fileName);
                     string[] temp = fileName.Split(delimiters);
-                    // 测试时间,镍片编号,测试结果,	原因
-                    string line = temp[2] + "," + temp[7]+ "," + temp[8];
+
+                    FileInfo fileInfo = new FileInfo(fileName);
+                    string mesFileName = fileInfo.Name;
+                    string whyNG = "";
+                    // 测试时间,镍片编号,测试结果,	原因,文件名
+                    string line = temp[2] + "," + temp[7]+ "," + temp[8] + ","  + whyNG +","+ mesFileName;
                     // Write some data rows
                     sw.WriteLine(line);
                 }
@@ -349,6 +356,10 @@ namespace LionSDKDotDemo
             foreach (string file in Directory.GetFiles(sourceDir))
             {
                 string fileName = Path.GetFileName(file);
+                if (fileName.Contains("X"))
+                {
+                    continue;
+                }
                 string destFile = Path.Combine(targetDir.FullName, fileName);
                 File.Copy(file, destFile, true);
                 Console.WriteLine($"File {file} copyied to {destFile}.");
