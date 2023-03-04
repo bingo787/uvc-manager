@@ -23,10 +23,6 @@ using Action = System.Action;
 namespace LionSDKDotDemo
 {
 
-
-
-
-
     public partial class Demo : Form
     {
 
@@ -199,7 +195,8 @@ namespace LionSDKDotDemo
 
 
 
-        void backupImages(string sourceDir, string backupdir) {
+        void backupImages(string sourceDir, string backupdir)
+        {
             if (!Directory.Exists(backupdir))
             {
                 // 创建目录
@@ -210,15 +207,16 @@ namespace LionSDKDotDemo
             {
                 string fileName = Path.GetFileName(file);
                 string destFile = Path.Combine(backupdir, fileName);
-                File.Copy(file, destFile,true);
+                File.Copy(file, destFile, true);
                 Console.WriteLine($"File {file} move to {destFile}.");
             }
 
 
 
         }
-        void checkAndClearDir(string path) {
-            
+        void checkAndClearDir(string path)
+        {
+
             if (Directory.Exists(path))
             {
                 // 清空目录中的所有文件
@@ -260,10 +258,13 @@ namespace LionSDKDotDemo
                 XlSaveAsAccessMode.xlNoChange, Type.Missing, Type.Missing,
                 Type.Missing, Type.Missing, Type.Missing);
 
+            workbook.Close();
+            newWorkbook.Close();
             // 关闭 Excel 应用程序
             excel.Quit();
         }
-        void reportMES(){
+        void reportMES()
+        {
 
 
             bool hasNG = false;
@@ -285,7 +286,7 @@ namespace LionSDKDotDemo
 
                 // 检测处理后的图：日期_版型_版号_点位_序列号_镍片号.jpg
                 // D:\temp\20220716115919_0_7021002580_23_L_B-V10_NG.jpg
-                char[] delimiters = new char[] { '_', '\\','.' };
+                char[] delimiters = new char[] { '_', '\\', '.' };
                 foreach (string fileName in fileNames)
                 {
 
@@ -294,11 +295,13 @@ namespace LionSDKDotDemo
                         continue;
                     }
 
-                    if (!fileName.Contains("OK") && !fileName.Contains("NG")) {
+                    if (!fileName.Contains("OK") && !fileName.Contains("NG"))
+                    {
                         continue;
                     }
 
-                    if (fileName.Contains("NG")) {
+                    if (fileName.Contains("NG"))
+                    {
                         hasNG = true;
                     }
 
@@ -309,11 +312,11 @@ namespace LionSDKDotDemo
                     string mesFileName = fileInfo.Name;
                     string whyNG = "";
                     // 测试时间,镍片编号,测试结果,	原因,文件名
-                    string line = temp[2] + "," + temp[7]+ "," + temp[8] + ","  + whyNG +","+ mesFileName;
+                    string line = temp[2] + "," + temp[7] + "," + temp[8] + "," + whyNG + "," + mesFileName;
                     // Write some data rows
                     sw.WriteLine(line);
                 }
- 
+
             }
 
             Console.WriteLine("CSV file created and written to successfully.");
@@ -329,7 +332,7 @@ namespace LionSDKDotDemo
                 {
                     foreach (string subdir in subdirs)
                     {
-                       
+
                         targetDirName = subdir;
                         // 只要一个目录!!, 所以break;
                         break;
@@ -352,7 +355,7 @@ namespace LionSDKDotDemo
 
             // 6. 将图片和mes.csv 剪切到D:/mes/PRODUCT目录下
             string sourceDir = @"D:\temp\";
- 
+
             foreach (string file in Directory.GetFiles(sourceDir))
             {
                 string fileName = Path.GetFileName(file);
@@ -371,7 +374,7 @@ namespace LionSDKDotDemo
 
             CSV2XLS(newCsvFilePath, targetXlsFileName);
             File.Delete(newCsvFilePath);
-           
+
 
             // 7. 在D:/mes/PRODUCT 下面创建ready.txt 文件
             string ready = @"D:/mes/ready.txt";
@@ -380,17 +383,19 @@ namespace LionSDKDotDemo
             {
                 File.WriteAllText(ready, "NG");
             }
-            else {
+            else
+            {
                 File.WriteAllText(ready, "OK");
             }
-          
+
 
             // 9. 结束
         }
-        int PlcPointLocation = 0;
-        int BoardType = 0;
-        int BoardId = 0;
-        int PlcLastPointLocation = -1;
+
+        int reg_postion = 0;
+        int reg_board_type = 0;
+        int reg_board_id = 0;
+        int last_reg_postion = -1;
         bool IsXrayOn = false;
         private void MonitorPLC()
         {
@@ -402,27 +407,29 @@ namespace LionSDKDotDemo
                 {
 
                     // 读取光源控制指令
-                    bool xray_cmd = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
-                
+                    bool reg_xray_onoff = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
 
                     // 读取采集图像指令
-                    bool acq_cmd = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
+                    bool reg_acq_onoff = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_ACQ);
 
 
                     // 读取运动装置的位置
-                    PlcPointLocation = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_POSTION);
+                    reg_postion = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_POSTION);
 
                     // 读取隔离板型号
-                    BoardType = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_TYPE);
+                    reg_board_type = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_TYPE);
 
                     // 读取隔离板编号
-                    BoardId = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_NUM);
+                    reg_board_id = PLCHelperModbusTCP.fnGetInstance().ReadSingleDataRegInt16Cmd(PLC_REG_BOARD_NUM);
 
-                    Console.WriteLine("acq_cmd = {0},PlcPointLocation = {1}, PlcLastPointLocation = {2}, BoardType = {3}, BoardId = {4}", acq_cmd, PlcPointLocation, PlcLastPointLocation, BoardType, BoardId);
 
-                    Console.WriteLine("xray_cmd = {0}, IsXrayOn = {1}",xray_cmd, IsXrayOn);
 
-                    if (xray_cmd && !IsXrayOn)
+                    Console.WriteLine("xray_onoff = {0}, reg_xray_onoff = {1}, reg_acq_onoff = {2}," +
+                        " reg_postion = {3}, last_postion = {4} reg_board_type = {5}, reg_board_id = {6}", 
+                        IsXrayOn, reg_xray_onoff, reg_acq_onoff, reg_postion,last_reg_postion, reg_board_type, reg_board_id);
+
+
+                    if (reg_xray_onoff && !IsXrayOn)
                     {
                         // 1, 0
                         // 如果是 打开光源 的命令，且光源未打开，则打开光源
@@ -432,27 +439,25 @@ namespace LionSDKDotDemo
                         Thread.Sleep(delay_ms);
                         //开始测试
                         // 清空temp目录
-                        buttonClearImage_Click(null,null);
+                        buttonClearImage_Click(null, null);
                         checkAndClearDir(@"D:\temp");
-                        IsXrayOn = true;
+
 
                     }
-                    else if (!xray_cmd && IsXrayOn)
+                    else if (!reg_xray_onoff && IsXrayOn)
                     {
                         // 0, 1
                         // 如果是 关闭光源 的命令，且光源已打开，则 关闭光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 关闭光源 ");
                         XrayOnOff(false);
-                        IsXrayOn = false;
                         //结束测试
                         // 先在本地备份
-
                         backupImages(@"D:\temp", @"D:\rayonbackup");
                         // 上报mes
                         try
                         {
                             reportMES();
-                          
+
                         }
                         catch (Exception e)
                         {
@@ -460,18 +465,10 @@ namespace LionSDKDotDemo
                         }
 
                     }
-                    else {
-                        Console.WriteLine("光源无操作");
-                    }
 
-
-
-
-
-                    //  Console.WriteLine("currentPos {0}, lastPos {1},xrayOnOff {2}", pos, lastPos, xrayOnOff);
-                    if (xray_cmd && acq_cmd && (PlcLastPointLocation != PlcPointLocation))
+                    if (reg_xray_onoff && reg_acq_onoff && (last_reg_postion != reg_postion))
                     {
-                        PlcLastPointLocation = PlcPointLocation;
+                        last_reg_postion = reg_postion;
 
                         this.BeginInvoke(new Action(() =>
                         {
@@ -479,11 +476,6 @@ namespace LionSDKDotDemo
                             buttonAsynchronous_Click(null, null);
                         }));
 
-                    }
-                    else
-                    {
-
-                        // 不拍照
                     }
                 }
                 catch (Exception ex)
@@ -525,13 +517,64 @@ namespace LionSDKDotDemo
 
         }
 
+
+        void OpenXraySerialPortAndInit() {
+            try
+            {
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
+                    int.Parse(this.comboBoxHVBaudRate.Text),
+                    (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
+                    int.Parse(this.comBoxHVDataBit.Text),
+                    (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
+
+
+                double kv = 0;
+
+                if (!double.TryParse(textBoxKV.Text.ToString(), out kv))
+                {
+
+                    MessageBox.Show("输入的参数非法");
+                    return;
+                }
+                if (kv > HV_MaxKV)
+                {
+                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxKV.ToString());
+                    return;
+                }
+
+                double power;
+                if (!double.TryParse(textBoxCurrent.Text.ToString(), out power))
+                {
+
+                    MessageBox.Show("输入的参数非法");
+                    return;
+                }
+                if (power > HV_MaxPower)
+                {
+                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxPower.ToString());
+                    return;
+                }
+
+                Console.WriteLine("KV {0}, Power {1}", kv, power);
+
+
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.Connect(kv, power);
+            }
+            catch
+            {
+                MessageBox.Show("高压串口打开失败, 请检查串口 " + this.comboBoxHVPort.Text);
+                return;
+            }
+
+        }
+
         public void OneKeyStart()
         {
 
 
             try
             {
-                PlcLastPointLocation = -1;
+                last_reg_postion = -1;
 
 
                 // 1. 检查设备
@@ -551,21 +594,7 @@ namespace LionSDKDotDemo
                 }
 
                 // 3. 打开高压串口
-                try
-                {
-                    SerialPortControler_RS232PROTOCOL_MC110.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
-                        int.Parse(this.comboBoxHVBaudRate.Text),
-                        (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
-                        int.Parse(this.comBoxHVDataBit.Text),
-                        (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
-
-                    SerialPortControler_RS232PROTOCOL_MC110.Instance.Connect();
-                }
-                catch
-                {
-                    MessageBox.Show("高压串口打开失败, 请检查串口 " + this.comboBoxHVPort.Text);
-                    return;
-                }
+                OpenXraySerialPortAndInit();
 
                 // 5. 连接图像处理服务
 
@@ -591,10 +620,6 @@ namespace LionSDKDotDemo
                 }));
 
                 monitorPlcCommandThread.Start();
-
-
-
-
 
             }
             catch
@@ -1218,34 +1243,34 @@ namespace LionSDKDotDemo
             string target = "UNKNOW";
             try
             {
-                if (BoardType == BOARD_TYPE_BIG)
+                if (reg_board_type == BOARD_TYPE_BIG)
                 {
                     // BigBoard
                     if (SN == SN_R)
                     {
-                        target = BigBoard[PlcPointLocation].Item1;
+                        target = BigBoard[reg_postion].Item1;
                     }
                     else if (SN == SN_L)
                     {
-                        target = BigBoard[PlcPointLocation].Item2;
+                        target = BigBoard[reg_postion].Item2;
                     }
                 }
-                else if (BoardType == BORAD_TYPE_SMALL)
+                else if (reg_board_type == BORAD_TYPE_SMALL)
                 {
                     // Small Board
                     if (SN == SN_R)
                     {
-                        target = SmallBoard[PlcPointLocation].Item1;
+                        target = SmallBoard[reg_postion].Item1;
                     }
                     else if (SN == SN_L)
                     {
-                        target = SmallBoard[PlcPointLocation].Item2;
+                        target = SmallBoard[reg_postion].Item2;
                     }
 
                 }
                 else
                 {
-                    MessageBox.Show("未知的版型 {0}", BoardType.ToString());
+                    MessageBox.Show("未知的版型 {0}", reg_board_type.ToString());
                 }
 
             }
@@ -1278,9 +1303,9 @@ namespace LionSDKDotDemo
 
             string datetime = DateTime.Now.ToString("yyyyMMddhhmmss");
             string newImageFileName = datetime + "_"                // 日期
-                            + BoardType.ToString() + "_"            // 版型
-                            + BoardId.ToString() + "_"              // 版号
-                            + PlcPointLocation.ToString() + "_"     // 点位
+                            + reg_board_type.ToString() + "_"            // 版型
+                            + reg_board_id.ToString() + "_"              // 版号
+                            + reg_postion.ToString() + "_"     // 点位
                             + SN + "_"                              // 序列号   
                             + target + ".jpg";                      // 镍片号
 
@@ -1441,24 +1466,13 @@ namespace LionSDKDotDemo
             {
                 SerialPortControler_RS232PROTOCOL_MC110.Instance.CloseControlSystem();
                 toolStripStatusLabel_HVConn.Text = "高压-已断开";
+                buttonConnectHVPort.Text = "打开光源串口";
             }
             else
             {
-                try
-                {
-                    SerialPortControler_RS232PROTOCOL_MC110.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
-                        int.Parse(this.comboBoxHVBaudRate.Text),
-                        (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
-                        int.Parse(this.comBoxHVDataBit.Text),
-                        (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
-
-                    SerialPortControler_RS232PROTOCOL_MC110.Instance.Connect();
-                    buttonConnectHVPort.Text = "关闭光源串口";
-                }
-                catch
-                {
-                    MessageBox.Show("高压串口打开失败");
-                }
+                OpenXraySerialPortAndInit();
+                
+                buttonConnectHVPort.Text = "关闭光源串口";
 
             }
 
@@ -1568,45 +1582,19 @@ namespace LionSDKDotDemo
             if (on)
             {
                 // 打开光源
-                double kv = 0;
 
-                if (!double.TryParse(textBoxKV.Text.ToString(), out kv))
-                {
 
-                    MessageBox.Show("输入的参数非法");
-                    return;
-                }
-                if (kv > HV_MaxKV)
-                {
-                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxKV.ToString());
-                    return;
-                }
-
-                double power;
-                if (!double.TryParse(textBoxCurrent.Text.ToString(), out power))
-                {
-
-                    MessageBox.Show("输入的参数非法");
-                    return;
-                }
-                if (power > HV_MaxPower)
-                {
-                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxPower.ToString());
-                    return;
-                }
-
-                Console.WriteLine("KV {0}, Power {1}", kv, power);
-                SerialPortControler_RS232PROTOCOL_MC110.Instance.Preheat(kv, power);
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOn();
+                Thread.Sleep(200);
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOn();
                 buttonXrayOnOff.Text = "关闭光源";
-                this.pictureBoxXrayOnOff.Image = Properties.Resources.fushe_red;
-                this.pictureBoxXrayOnOff.Invalidate();
             }
             else
             {
                 SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
+                Thread.Sleep(200);
+                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
                 buttonXrayOnOff.Text = "打开光源";
-                this.pictureBoxXrayOnOff.Image = Properties.Resources.fushe_black;
-                this.pictureBoxXrayOnOff.Invalidate();
             }
 
         }
@@ -1624,46 +1612,14 @@ namespace LionSDKDotDemo
             if (buttonXrayOnOff.Text == "打开光源")
             {
                 // 打开光源
-                double kv = 0;
 
-                if (!double.TryParse(textBoxKV.Text.ToString(), out kv))
-                {
+                XrayOnOff(true);
 
-                    MessageBox.Show("输入的参数非法");
-                    return;
-                }
-                if (kv > HV_MaxKV)
-                {
-                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxKV.ToString());
-                    return;
-                }
-
-                double power;
-                if (!double.TryParse(textBoxCurrent.Text.ToString(), out power))
-                {
-
-                    MessageBox.Show("输入的参数非法");
-                    return;
-                }
-                if (power > HV_MaxPower)
-                {
-                    MessageBox.Show("输入的参数超过最大值 " + HV_MaxPower.ToString());
-                    return;
-                }
-
-                Console.WriteLine("KV {0}, Power {1}", kv, power);
-                SerialPortControler_RS232PROTOCOL_MC110.Instance.Preheat(kv, power);
-
-
-
-                buttonXrayOnOff.Text = "关闭光源";
             }
             else
             {
                 // 关闭
-
-                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
-                buttonXrayOnOff.Text = "打开光源";
+                XrayOnOff(false);
             }
         }
 
@@ -1711,7 +1667,7 @@ namespace LionSDKDotDemo
         private void buttonClearImage_Click(object sender, EventArgs e)
         {
 
-        
+
             /// 清空图像可以加载一张提前准备好的图像。
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
@@ -1727,12 +1683,12 @@ namespace LionSDKDotDemo
         /// 高压温度监控
         /// </summary>
         /// <param name="arg"></param>
-        void ControlSystem_TemperatureChanged(double arg)
+        void ControlSystem_TemperatureChanged(string arg)
         {
 
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_Temp.Text = arg.ToString("f2") + "℃";
+                toolStripStatusLabel_HV_Temp.Text = arg + "℃";
                 //this.Log("高压温度: " + lblHV_Temperature.Content.ToString());
             }));
         }
@@ -1741,22 +1697,22 @@ namespace LionSDKDotDemo
         /// 电流监控
         /// </summary>
         /// <param name="arg"></param>
-        void ControlSystem_CurrentChanged(uint arg)
+        void ControlSystem_CurrentChanged(string arg)
         {
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_Cur.Text = (arg / 10.0).ToString("f2") + "W";
+                toolStripStatusLabel_HV_Cur.Text = arg + "(unit:0.1uA)";
             }));
         }
         /// <summary>
         /// 电压监控
         /// </summary>
         /// <param name="arg"></param>
-        void ControlSystem_VoltageChanged(double arg)
+        void ControlSystem_VoltageChanged(string arg)
         {
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_KV.Text = arg.ToString("f2") + "kV";
+                toolStripStatusLabel_HV_KV.Text = arg + "V";
             }));
         }
         /// <summary>
@@ -1786,7 +1742,7 @@ namespace LionSDKDotDemo
                     Console.WriteLine("光源回调 关闭， IsXrayOn = {0}", IsXrayOn);
 
                 }
-               
+
                 pictureBoxXrayOnOff.Invalidate();
             }));
 

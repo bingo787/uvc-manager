@@ -35,7 +35,7 @@ namespace SerialPortController
 
         private SerialPortControler_RS232PROTOCOL_MC110()
         {
-             InitilizeHVStatusThread();
+            InitilizeHVStatusThread();
         }
         /// <summary>
         /// 初始化高压XRay曝光状态
@@ -52,19 +52,20 @@ namespace SerialPortController
                         if (_serialPort == null)
                             continue;
                         GetHVStatus();
-                       
+
 
                     }
                     catch { }
                 }
-            })) { IsBackground = true }.Start();
+            }))
+            { IsBackground = true }.Start();
 
         }
-#region 字段
+        #region 字段
         SerialPort _serialPort;
-#endregion
+        #endregion
 
- 
+
 
         /// <summary>
 
@@ -74,26 +75,39 @@ namespace SerialPortController
         public void OpenSerialPort(string portName, int baudRate, Parity parity, int dataBits, StopBits stopbits)
         {
 
-            Console.WriteLine("{0},{1}", portName, baudRate);
-            _serialPort = new SerialPort(portName, baudRate, parity, dataBits, stopbits);
-            _serialPort.DataReceived += _serialPort_DataReceived;
-            _serialPort.WriteTimeout = 1000;
-            _serialPort.ReadTimeout = 1000;
-            _serialPort.Open();
-            _is_open = true;
-            _running = true;
+            try {
+                Console.WriteLine("{0},{1}", portName, baudRate);
+                _serialPort = new SerialPort(portName, baudRate, parity, dataBits, stopbits);
+                _serialPort.DataReceived += _serialPort_DataReceived;
+                _serialPort.WriteTimeout = 1000;
+                _serialPort.ReadTimeout = 1000;
+                _serialPort.Open();
+                _is_open = true;
+                _running = true;
+
+                if (Connected != null)
+                {
+                    Connected();
+                }
+            }
+            catch (Exception e) {
+                _is_open = false;
+                _running = false;
+                MessageBox.Show(e.Message);
+            }
+
 
         }
 
-        public bool IsOpen() {
-           return  _is_open;
+        public bool IsOpen()
+        {
+            return _is_open;
         }
         public void CloseControlSystem()
         {
             _running = false;
             _serialPort.Close();
         }
-        string _lastMessage = string.Empty;
 
         string recieve_buffer_;
         bool cacheSerialPortMessage(string head_tag, string tail_tag,
@@ -151,35 +165,20 @@ namespace SerialPortController
                 byte[] buffer = new byte[1024];
                 int len = port.Read(buffer, 0, buffer.Length);
                 string data = ASCIIEncoding.ASCII.GetString(buffer, 0, len);
-                string message ="";
-                //  Console.WriteLine("Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
+                string message = "";
+                Console.WriteLine("Serial Port Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + data);
 
-                if (!cacheSerialPortMessage("<", ">", data, ref message)) {
+                /*
+
+                bool completed = cacheSerialPortMessage("<", ">", data, ref message);
+                if (!completed)
+                {
+                    Console.WriteLine("消息不完整！");
                     continue;
                 }
+                */
+                ReceivedMessage(data);
 
-                string[] messes = message.Split(EndTag);
-                if (messes.Length > 0)
-                {
-                    for (int i = 0; i < messes.Length; i++)
-                    {
-                        string m = messes[i];
-
-                        if (m.StartsWith(StartTag.ToString()))
-                        {
-                            string mes = messes[i].TrimStart(StartTag);
-
-                            try
-                            {
-                                ReceivedMessage(mes);
-                            }
-                            catch (Exception ex) {
-                                MessageBox.Show(ex.ToString());
-                            }
-                           
-                        }
-                    }
-                }
             }
 
         }
@@ -192,28 +191,18 @@ namespace SerialPortController
         /// <summary>
         /// 电压改变
         /// </summary>
-        public event DoubleValueChangedDelegate VoltageChanged;
-        /// <summary>
-        /// 电压改变
-        /// </summary>
-        public event DoubleValueChangedDelegate VoltageSettingChanged;
+        public event ReportedHandler VoltageChanged;
 
         /// <summary>
         /// 温度改变
         /// </summary>
-        public event DoubleValueChangedDelegate TemperatureChanged;
-        /// <summary>
-        /// 射线管灯丝
-        /// </summary>
-        public event UIntValueChangedDelegate FilamentMonitorChanged;
+        public event ReportedHandler TemperatureChanged;
+
         /// <summary>
         /// 电流改变
         /// </summary>
-        public event UIntValueChangedDelegate CurrentChanged;
-        /// <summary>
-        /// 电流改变
-        /// </summary>
-        public event UIntValueChangedDelegate CurrentSettingChanged;
+        public event ReportedHandler CurrentChanged;
+
         /// <summary>
         /// 清空状态错误
         /// </summary>
@@ -223,13 +212,13 @@ namespace SerialPortController
         public event BoolValueChangedDelegate WatchDogEnableChanged;
         public event BoolValueChangedDelegate WatchDogOnChanged;
         public event ReportedHandler StateReported;
-        private string _lastCommand = "NO";
+
         private bool _isNeedFeeddingDog = false;
-        public bool IsWarming  = false;
+        public bool IsWarming = false;
 
 
         public string TS_Step = "";
-        public string TS_Volt_Step="";
+        public string TS_Volt_Step = "";
         public string TS_Pwr_Step = "";
         public string TS_Elapsed_Time = "";
 
@@ -239,42 +228,20 @@ namespace SerialPortController
         /// <param name="message"></param>
         private void ReceivedMessage(string message)
         {
-
-            string arg;
-            int temp;
-            string RES_OK = "[ERR:0]";
-         //   Console.WriteLine("[ReceivedMessage][" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message + " lastComand:" + _lastCommand);
-            ///处理错误代码
-            //if (message.StartsWith("[ERR:"))
+            /*
             {
-                /// 错误码
-                // ERR: 27, 29]
-                // 首先从接收到的信息里面提取错误码，错误码一般都是在最后一个出现，[Err:29]
-                /*
-                 <STATUS:0,0,0,0,1,2,60000,90,0:6,67,33[ERR:27,29]>
-                    <TMP1:35[ERR:27,29]>
-                    <STATUS:0,0,0,0,1,2,60000,90,0:10,67,33[ERR:27,29]>
-                 */
+
                 string ResponseError = message.Split('[').Last().TrimEnd(']'); // --> ERR:27,29
-            //    Console.WriteLine("Error Code : {0}", ResponseError);
-
                 string[] ResponseErrorCode = ResponseError.Split(new Char[] { ':', ',' });
-
-               
                 string error_message = string.Empty;
-                for (int i = 1; i< ResponseErrorCode.Length; i++) {
-
-
+                for (int i = 1; i < ResponseErrorCode.Length; i++)
+                {
                     string error_code = ResponseErrorCode[i]; //ERR 27 29
                     switch (error_code)
                     {
                         case "0":
                             {
                                 error_message = string.Empty;
-                                //if (FaultCleared != null)
-                                //{
-                                //    FaultCleared();
-                                //}
                             }
                             break;
                         case "1": error_message += "Invalid Command"; break;
@@ -311,77 +278,13 @@ namespace SerialPortController
                         default: error_message += "Unknow"; break;
                     }
                 }
-
-               // System.Console.WriteLine("Error message : " + error_message);
                 if (StateReported != null && !string.IsNullOrEmpty(error_message))
                     StateReported(error_message);
             }
 
+            */
 
-
-            if (_lastCommand.StartsWith("SDATE:") && message == RES_OK)
-            {
-                System.Console.WriteLine("Set Tube Date Success!!");
-            
-                _lastCommand = string.Empty;
-            }
-            else if (_lastCommand.StartsWith("EH:") && message == RES_OK)
-            {
-
-                System.Console.WriteLine("Enable Heater Success!!");
-                if (Connected != null)
-                {
-                    System.Console.WriteLine("Connected!!");
-                    Connected();
-                }
-                _lastCommand = string.Empty;
-            }
-            else if (_lastCommand.StartsWith("EP:") && message == RES_OK)
-            {
-                bool isXrayOn = _lastCommand[3] == '1';
-                if (XRayOnChanged != null)
-                {
-                    XRayOnChanged(isXrayOn);
-                }
-                _lastCommand = string.Empty;
-
-            }
-            else if (_lastCommand.StartsWith("SAV:") && message == RES_OK)
-            {
-                arg = _lastCommand.TrimStart("SAV:".ToArray());
-                if (int.TryParse(arg, out temp))
-                {
-                    double kv = temp * 0.001;
-                    if (VoltageSettingChanged != null)
-                        VoltageSettingChanged(kv);
-                }
-                _lastCommand = string.Empty;
-            }
-            else if (_lastCommand.StartsWith("SPWR:") && message == RES_OK)
-            {
-                arg = _lastCommand.TrimStart("SPWR:".ToArray());
-                if (int.TryParse(arg, out temp))
-                {
-                    //todo: 这里需要好好显示下
-
-                    if (CurrentSettingChanged != null)
-                        CurrentSettingChanged((uint)temp);  //W
-                }
-                _lastCommand = string.Empty;
-            }
-            else if (message.StartsWith("TMP1:") && message.EndsWith(RES_OK))
-            {
-                //< TMP1: - 1 0 [E R R: 0] > 单位C
-                arg = message.TrimStart("TMP1:".ToArray()).Replace(RES_OK, "");
-                if (int.TryParse(arg, out temp))
-                {
-                    int value = temp;
-                    if (TemperatureChanged != null)
-                        TemperatureChanged(value);
-                }
-                _lastCommand = string.Empty;
-            }
-            else if (message.StartsWith("STATUS:"))
+            if (message.StartsWith("<STATUS:"))
             {
 
                 /**
@@ -410,14 +313,27 @@ namespace SerialPortController
                  */
 
                 string[] msg = message.Split(',');
+                string power_enable = msg.ElementAt(3);
                 string TubeContionActivate = msg.ElementAt(4);
                 string AV = "";
                 string TC = "";
 
+
+                Console.WriteLine("power_enable flag : " + power_enable);
+                if (power_enable == "1" && XRayOnChanged != null) {
+                        XRayOnChanged(true);
+                }
+                if (power_enable == "0" && XRayOnChanged != null)
+                {
+                       XRayOnChanged(false);
+                }
+
+
+
                 if ("1" == TubeContionActivate)
                 {
                     IsWarming = true;
-                  //  Console.WriteLine("Tube Conditioning ON");
+                    //  Console.WriteLine("Tube Conditioning ON");
 
                     TS_Step = msg.ElementAt(5);
                     TS_Volt_Step = msg.ElementAt(6);
@@ -429,56 +345,51 @@ namespace SerialPortController
                 else
                 {
                     IsWarming = false;
-                   // Console.WriteLine("Tube Conditioning OFF");
+                    // Console.WriteLine("Tube Conditioning OFF");
                     AV = msg.ElementAt(5);
                     TC = msg.ElementAt(6).Split('[').ElementAt(0);
+
+                }
+
+                // 显示电压和电流
+                Console.WriteLine("AV {0},TC {1}", AV, TC);
+                if (VoltageChanged != null) {
+                    VoltageChanged(AV);
+                }
+
+                if (CurrentChanged != null) {
+                    CurrentChanged(TC);
+                }
                    
-                }
+ 
 
-                // 调用回调函数显示
-              //  Console.WriteLine("AV {0},TC {1}",AV,TC);
-                if (int.TryParse(AV, out temp))
-                {
-                    double value = temp / 1000.0f;
-                    if (VoltageChanged != null)
-                        VoltageChanged(value);
-                }
-
-                if (int.TryParse(TC, out temp))
-                {
-                    if (CurrentChanged != null)
-                        CurrentChanged((uint)temp);
-                }
             }
-            else if (message.StartsWith("TC Date:")) {
-
-                // 7-30
-                // 30-90
-                // 大于90 
-                // 75 min , 47 min. 16 min
-                // TC Date:30:7:2022[Error,xx,xx]
-                try
-                {
-                    string[] date = message.Split((new Char[] { ':', '[' }));
-                    DateTime last = Convert.ToDateTime(date[3] + "-" + date[2] + "-" + date[1]);
 
 
-                    DateTime current = DateTime.Now;
-                    TimeSpan sp = current.Subtract(last);
-                    int days = sp.Days;
-                    Console.WriteLine(string.Format("上次日期:{0}，当前日期:{1} 间隔了{2}天", last.ToString(), current.ToLocalTime(),days.ToString()) );
+            if (message.StartsWith("<TMP")) {
 
+                /*
+                 Example (Get Temperature Sensor 1, Returned temp is -10C):
+                Get Temperature from sensor 1:
+                <GTMP:1>
+                Response:
+                <TMP1:-10[ERR:0]>
+                 
+                 */
 
+                string[] msg = message.Split(new Char[] {':' , '['});
+                string tmp = msg[1];
+
+                if (TemperatureChanged != null) { 
+                    TemperatureChanged(tmp);
                 }
-                catch {
 
 
-                }
-              
             }
+
 
             return;
-           
+
         }
 
         /// <summary>
@@ -493,21 +404,23 @@ namespace SerialPortController
             command.AddRange(cmd);
             command.Add(CR);
 
-            if (!string.IsNullOrEmpty(_lastCommand)) {
-             //   Console.WriteLine("上一次的命令是 " + _lastCommand);
-                Thread.Sleep(300);
-            }
-           
-            _lastCommand = message;
 
             if (_serialPort.IsOpen)
             {
                 _serialPort.Write(command.ToArray(), 0, command.Count);
+                _serialPort.WriteLine("");
+                
+                Console.WriteLine("Send to [" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + command.ToString());
+
+
+            }
+            else {
+                Console.WriteLine("发送命令失败，串口未打开");
             }
             _isNeedFeeddingDog = false;
- 
-        //   Console.WriteLine("Send [" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
- 
+
+
+
         }
         /// <summary>
         /// 发送命令
@@ -659,9 +572,10 @@ namespace SerialPortController
             })).Start();
 
         }
-        public void MC110UpdateCMD(double kv, double p) {
+        public void MC110UpdateCMD(double kv, double p)
+        {
 
-            Console.WriteLine("更新光源设置参数 电压：{0}， 功率：{1}",kv,p);
+            Console.WriteLine("更新光源设置参数 电压：{0}， 功率：{1}", kv, p);
 
             new Thread(new ThreadStart(delegate
             {
@@ -679,11 +593,14 @@ namespace SerialPortController
         {
             Console.WriteLine("执行打开光源");
             SendCommand("EP:1");
+            
         }
         public void XRayOff()
         {
             Console.WriteLine("执行关闭光源");
             SendCommand("EP:0");
+            
+
         }
 
         /// <summary>
@@ -715,7 +632,7 @@ namespace SerialPortController
             if (p < 0)
                 p = 0;
             uint power = ((uint)(p * 10));
-            Console.WriteLine("设置功率为：{0}",power);
+            Console.WriteLine("设置功率为：{0}", power);
             SendCommand("SPWR:" + power.ToString());
         }
 
@@ -746,12 +663,14 @@ namespace SerialPortController
              */
 
             SendCommand("GTMP:1");
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
+            SendCommand("GTMP:2");
+            Thread.Sleep(500);
             SendCommand("GSTAT");
 
         }
 
-        public void Connect()
+        public void Connect(double kv, double p)
         {
             /*
             1 Send the current date and wait for conditioning to complete – <SDATE:DD,MM,YYYY>
@@ -761,31 +680,23 @@ namespace SerialPortController
             5 Enable the Power Supply - <EP:1>
             */
 
-
-
-
             DateTime dt = DateTime.Now;
             string year = dt.Year.ToString();
             string day = dt.Day.ToString();
             string month = dt.Month.ToString();
             string date = day + "," + month + "," + year;
 
-           // date = "31,12,2023";
-           Console.WriteLine("SDATE {0}", date);
-           
+            // date = "31,12,2023";
+            Console.WriteLine("SDATE {0}", date);
             SendCommand("SDATE:" + date);
             Thread.Sleep(200);
-          
-            // 为了获取热机的时间
-            SendCommand("GDATE");
-          //  Thread.Sleep(200);
-          //  SendCommand("SAV:1");
-          //  Thread.Sleep(200);
-          //  SendCommand("SPWR:1");
+            SetKV(kv);
+            Thread.Sleep(200);
+            SetPower(p);
             Thread.Sleep(200);
             SendCommand("EH:1");
-         //   Thread.Sleep(200);
-            SendCommand("EP:1");
+            Thread.Sleep(2000);
+
 
         }
     }
