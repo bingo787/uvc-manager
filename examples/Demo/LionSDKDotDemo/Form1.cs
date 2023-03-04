@@ -194,26 +194,31 @@ namespace LionSDKDotDemo
         }
 
 
-
-        void backupImages(string sourceDir, string backupdir)
+        // 拷贝一个文件夹
+        public static void CopyDirectory(string sourceDir, string destDir)
         {
-            if (!Directory.Exists(backupdir))
+            // 如果目标目录不存在，则创建它
+            if (!Directory.Exists(destDir))
             {
-                // 创建目录
-                Directory.CreateDirectory(backupdir);
+                Directory.CreateDirectory(destDir);
             }
 
-            foreach (string file in Directory.GetFiles(sourceDir))
+            // 获取源目录下的所有文件和子目录
+            string[] files = Directory.GetFiles(sourceDir);
+ 
+
+            // 拷贝所有文件
+            foreach (string file in files)
             {
-                string fileName = Path.GetFileName(file);
-                string destFile = Path.Combine(backupdir, fileName);
+
+                string destFile = Path.Combine(destDir, Path.GetFileName(file));
+                Console.WriteLine("copy src {0}, dst {1}",file, destFile);
                 File.Copy(file, destFile, true);
-                Console.WriteLine($"File {file} move to {destFile}.");
             }
 
-
-
+ 
         }
+
         void checkAndClearDir(string path)
         {
 
@@ -233,7 +238,7 @@ namespace LionSDKDotDemo
             }
         }
 
-        static void CSV2XLS(string csvPath, string excelPath)
+        void CSV2XLS(string csvPath, string excelPath)
         {
 
 
@@ -251,6 +256,10 @@ namespace LionSDKDotDemo
             Worksheet worksheet = workbook.Sheets[1];
             worksheet.Copy(Type.Missing, Type.Missing);
 
+            if (File.Exists(excelPath)) {
+                File.Delete(excelPath);
+            }
+
             // 将新的工作簿保存为 Excel 文件
             Workbook newWorkbook = excel.ActiveWorkbook;
             newWorkbook.SaveAs(excelPath, XlFileFormat.xlWorkbookDefault,
@@ -261,11 +270,11 @@ namespace LionSDKDotDemo
             workbook.Close();
             newWorkbook.Close();
             // 关闭 Excel 应用程序
+            
             excel.Quit();
         }
         void reportMES()
         {
-
 
             bool hasNG = false;
 
@@ -316,13 +325,15 @@ namespace LionSDKDotDemo
                     // Write some data rows
                     sw.WriteLine(line);
                 }
+                sw.Close();
 
             }
 
             Console.WriteLine("CSV file created and written to successfully.");
 
 
-            // 4. 检查D:/mes/ 下面是否有目录, 并获取目录名字
+            // 4. 检查@"D:\mes\"; 下面是否有目录, 并获取目录名字
+           
             string path = @"D:\mes\";
             string targetDirName = "";
             if (Directory.Exists(path))
@@ -353,7 +364,7 @@ namespace LionSDKDotDemo
             DirectoryInfo targetDir = new DirectoryInfo(targetDirName);
 
 
-            // 6. 将图片和mes.csv 剪切到D:/mes/PRODUCT目录下
+            // 6. 将图片和mes.csv 拷贝到D:/mes/PRODUCT目录下
             string sourceDir = @"D:\temp\";
 
             foreach (string file in Directory.GetFiles(sourceDir))
@@ -372,10 +383,16 @@ namespace LionSDKDotDemo
             string targetXlsFileName = Path.Combine(targetDir.FullName, targetDir.Name + ".xls");
             string newCsvFilePath = Path.Combine(targetDir.FullName, "mes.csv");
 
+            Console.WriteLine("CSV转成XLS");
             CSV2XLS(newCsvFilePath, targetXlsFileName);
             File.Delete(newCsvFilePath);
 
-
+            // 6 将产品本地备份
+            string datetime = DateTime.Now.ToString("yyyyMMddhhmmss");
+            string copyDirName = Path.Combine(@"D:\rayonbackup", targetDir.Name + "_" + datetime);
+            Console.WriteLine("备份到本地");
+            CopyDirectory(targetDir.FullName, copyDirName);
+            
             // 7. 在D:/mes/PRODUCT 下面创建ready.txt 文件
             string ready = @"D:/mes/ready.txt";
 
@@ -396,6 +413,7 @@ namespace LionSDKDotDemo
         int reg_board_type = 0;
         int reg_board_id = 0;
         int last_reg_postion = -1;
+        bool reported_mes = false;
         bool IsXrayOn = false;
         private void MonitorPLC()
         {
@@ -405,6 +423,8 @@ namespace LionSDKDotDemo
 
                 try
                 {
+
+                    Thread.Sleep(500);
 
                     // 读取光源控制指令
                     bool reg_xray_onoff = PLCHelperModbusTCP.fnGetInstance().ReadSingleCoilRegistor(PLC_REG_XRAY_ONOFF);
@@ -441,6 +461,7 @@ namespace LionSDKDotDemo
                         // 清空temp目录
                         buttonClearImage_Click(null, null);
                         checkAndClearDir(@"D:\temp");
+                        reported_mes = false;
 
 
                     }
@@ -450,19 +471,7 @@ namespace LionSDKDotDemo
                         // 如果是 关闭光源 的命令，且光源已打开，则 关闭光源
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " 关闭光源 ");
                         XrayOnOff(false);
-                        //结束测试
-                        // 先在本地备份
-                        backupImages(@"D:\temp", @"D:\rayonbackup");
-                        // 上报mes
-                        try
-                        {
-                            reportMES();
 
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show(e.Message);
-                        }
 
                     }
 
@@ -477,6 +486,23 @@ namespace LionSDKDotDemo
                         }));
 
                     }
+
+                    if ((reg_postion ==26) &&(last_reg_postion !=-1) && (IsXrayOn == false) &&  (reported_mes == false)) {
+
+                        // 上报mes
+                        try
+                        {
+                            reportMES();
+
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show(e.Message);
+                        }
+                        reported_mes = true;
+
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -612,6 +638,7 @@ namespace LionSDKDotDemo
                 {
                     return;
                 }
+                toolStripStatusLabel_PLCConn.Text = "PLC-已连接";
 
                 // 创建PLC监控线程
                 monitorPlcCommandThread = new Thread(new ThreadStart(delegate
