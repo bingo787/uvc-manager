@@ -228,7 +228,13 @@ namespace LionSDKDotDemo
                 DirectoryInfo directory = new DirectoryInfo(path);
                 foreach (FileInfo file in directory.GetFiles())
                 {
-                    file.Delete();
+
+                    try {
+                        file.Delete();
+                    } catch (Exception e) { 
+                        Console.WriteLine($"Error: {e}");
+                    }
+                    
                 }
             }
             else
@@ -1694,7 +1700,15 @@ namespace LionSDKDotDemo
         private void buttonClearImage_Click(object sender, EventArgs e)
         {
 
+            if (pictureBoxImage.Image != null) {
+                pictureBoxImage.Image.Dispose();
+            }
 
+            if (pictureBoxImage1.Image != null) {
+                pictureBoxImage1.Image.Dispose();
+            }
+            
+           
             /// 清空图像可以加载一张提前准备好的图像。
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
