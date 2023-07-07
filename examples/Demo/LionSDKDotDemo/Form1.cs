@@ -21,6 +21,7 @@ using Microsoft.Office.Interop.Excel;
 using Action = System.Action;
 using static System.Net.WebRequestMethods;
 using System.IO.Pipes;
+using System.Reflection;
 
 namespace LionSDKDotDemo
 {
@@ -687,6 +688,7 @@ namespace LionSDKDotDemo
 
         public Demo()
         {
+
             try {
                 // 创建一个文件流，用于写入日志文件
                 FileStream fileStream = new FileStream(logFilePath, FileMode.Append);
@@ -700,6 +702,9 @@ namespace LionSDKDotDemo
 
                 MessageBox.Show(e.ToString());
             }
+
+
+            Console.WriteLine(Assembly.GetEntryAssembly().GetName().Version.ToString());
 
 
             InitializeComponent();
