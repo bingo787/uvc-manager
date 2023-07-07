@@ -20,6 +20,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Office.Interop.Excel;
 using Action = System.Action;
 using static System.Net.WebRequestMethods;
+using System.IO.Pipes;
 
 namespace LionSDKDotDemo
 {
@@ -75,6 +76,8 @@ namespace LionSDKDotDemo
                         Tuple.Create("B-V1",    "B-V3"  ),
 
         };
+
+
 
         // PLC 寄存器定义
 
@@ -206,18 +209,18 @@ namespace LionSDKDotDemo
 
             // 获取源目录下的所有文件和子目录
             string[] files = Directory.GetFiles(sourceDir);
- 
+
 
             // 拷贝所有文件
             foreach (string file in files)
             {
 
                 string destFile = Path.Combine(destDir, Path.GetFileName(file));
-                Console.WriteLine("copy src {0}, dst {1}",file, destFile);
+                Console.WriteLine("copy src {0}, dst {1}", file, destFile);
                 System.IO.File.Copy(file, destFile, true);
             }
 
- 
+
         }
 
         void checkAndClearDir(string path)
@@ -230,12 +233,15 @@ namespace LionSDKDotDemo
                 foreach (FileInfo file in directory.GetFiles())
                 {
 
-                    try {
+                    try
+                    {
                         file.Delete();
-                    } catch (Exception e) { 
+                    }
+                    catch (Exception e)
+                    {
                         Console.WriteLine($"Error: {e}");
                     }
-                    
+
                 }
             }
             else
@@ -263,7 +269,8 @@ namespace LionSDKDotDemo
             Worksheet worksheet = workbook.Sheets[1];
             worksheet.Copy(Type.Missing, Type.Missing);
 
-            if (System.IO.File.Exists(excelPath)) {
+            if (System.IO.File.Exists(excelPath))
+            {
                 System.IO.File.Delete(excelPath);
             }
 
@@ -277,7 +284,7 @@ namespace LionSDKDotDemo
             workbook.Close();
             newWorkbook.Close();
             // 关闭 Excel 应用程序
-            
+
             excel.Quit();
         }
         void reportMES()
@@ -340,7 +347,7 @@ namespace LionSDKDotDemo
 
 
             // 4. 检查@"D:\mes\"; 下面是否有目录, 并获取目录名字
-           
+
             string path = @"D:\mes\";
             string targetDirName = "";
             if (Directory.Exists(path))
@@ -399,7 +406,7 @@ namespace LionSDKDotDemo
             string copyDirName = Path.Combine(@"D:\rayonbackup", targetDir.Name + "_" + datetime);
             Console.WriteLine("备份到本地");
             CopyDirectory(targetDir.FullName, copyDirName);
-            
+
             // 7. 在D:/mes/PRODUCT 下面创建ready.txt 文件
             string ready = @"D:/mes/ready.txt";
 
@@ -452,8 +459,8 @@ namespace LionSDKDotDemo
 
 
                     Console.WriteLine("xray_onoff = {0}, reg_xray_onoff = {1}, reg_acq_onoff = {2}," +
-                        " reg_postion = {3}, last_postion = {4} reg_board_type = {5}, reg_board_id = {6}", 
-                        IsXrayOn, reg_xray_onoff, reg_acq_onoff, reg_postion,last_reg_postion, reg_board_type, reg_board_id);
+                        " reg_postion = {3}, last_postion = {4} reg_board_type = {5}, reg_board_id = {6}",
+                        IsXrayOn, reg_xray_onoff, reg_acq_onoff, reg_postion, last_reg_postion, reg_board_type, reg_board_id);
 
 
                     if (reg_xray_onoff && !IsXrayOn)
@@ -494,7 +501,8 @@ namespace LionSDKDotDemo
 
                     }
 
-                    if ((reg_postion ==26) &&(last_reg_postion !=-1) && (IsXrayOn == false) &&  (reported_mes == false)) {
+                    if ((reg_postion == 26) && (last_reg_postion != -1) && (IsXrayOn == false) && (reported_mes == false))
+                    {
 
                         // 上报mes
                         try
@@ -551,7 +559,8 @@ namespace LionSDKDotDemo
         }
 
 
-        void OpenXraySerialPortAndInit() {
+        void OpenXraySerialPortAndInit()
+        {
             try
             {
                 SerialPortControler_RS232PROTOCOL_MC110.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
@@ -668,9 +677,31 @@ namespace LionSDKDotDemo
             buttonStart.Text = "正在运行";
 
         }
+        static string currentDate = DateTime.Now.ToString("yyyyMMdd") + ".log";
+        static string logFilePath = System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, currentDate);
+
+
+
+        StreamWriter logWriter = null;
+        FileStream fileStream = null;
 
         public Demo()
         {
+            try {
+                // 创建一个文件流，用于写入日志文件
+                FileStream fileStream = new FileStream(logFilePath, FileMode.Append);
+
+                // 将标准输出流重定向到文件流
+                StreamWriter logWriter = new StreamWriter(fileStream);
+
+                Console.SetOut(logWriter);
+            }
+            catch (Exception e) {
+
+                MessageBox.Show(e.ToString());
+            }
+
+
             InitializeComponent();
             //
             this.treeViewDevice.CheckBoxes = true;
@@ -1144,7 +1175,8 @@ namespace LionSDKDotDemo
 
         void DisplayImageByFileName(string file)
         {
-            if (string.IsNullOrEmpty(file)) {
+            if (string.IsNullOrEmpty(file))
+            {
 
                 return;
             }
@@ -1508,7 +1540,7 @@ namespace LionSDKDotDemo
             else
             {
                 OpenXraySerialPortAndInit();
-                
+
                 buttonConnectHVPort.Text = "关闭光源串口";
 
             }
@@ -1695,6 +1727,11 @@ namespace LionSDKDotDemo
                     // PLC
                     PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
 
+                    // 清理资源并关闭文件流
+                    logWriter.Flush();
+                    logWriter.Close();
+                    fileStream.Close();
+
                 }
                 catch
                 {
@@ -1713,15 +1750,17 @@ namespace LionSDKDotDemo
         private void buttonClearImage_Click(object sender, EventArgs e)
         {
 
-            if (pictureBoxImage.Image != null) {
+            if (pictureBoxImage.Image != null)
+            {
                 pictureBoxImage.Image.Dispose();
             }
 
-            if (pictureBoxImage1.Image != null) {
+            if (pictureBoxImage1.Image != null)
+            {
                 pictureBoxImage1.Image.Dispose();
             }
-            
-           
+
+
             /// 清空图像可以加载一张提前准备好的图像。
             pictureBoxImage.Image = Properties.Resources.no_image;
             pictureBoxImage.Invalidate();
