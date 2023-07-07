@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Office.Interop.Excel;
 using Action = System.Action;
+using static System.Net.WebRequestMethods;
 
 namespace LionSDKDotDemo
 {
@@ -123,7 +124,7 @@ namespace LionSDKDotDemo
         private Thread monitorPlcCommandThread;
         // 控制器对象
         private static TcpClient ImageProcessTcpClient = new TcpClient();
-
+        bool exitThread_ = false;
 
         //当前的设备对象
         private List<LU_DEVICE> listDev = new List<LU_DEVICE>();
@@ -213,7 +214,7 @@ namespace LionSDKDotDemo
 
                 string destFile = Path.Combine(destDir, Path.GetFileName(file));
                 Console.WriteLine("copy src {0}, dst {1}",file, destFile);
-                File.Copy(file, destFile, true);
+                System.IO.File.Copy(file, destFile, true);
             }
 
  
@@ -262,8 +263,8 @@ namespace LionSDKDotDemo
             Worksheet worksheet = workbook.Sheets[1];
             worksheet.Copy(Type.Missing, Type.Missing);
 
-            if (File.Exists(excelPath)) {
-                File.Delete(excelPath);
+            if (System.IO.File.Exists(excelPath)) {
+                System.IO.File.Delete(excelPath);
             }
 
             // 将新的工作簿保存为 Excel 文件
@@ -381,7 +382,7 @@ namespace LionSDKDotDemo
                     continue;
                 }
                 string destFile = Path.Combine(targetDir.FullName, fileName);
-                File.Copy(file, destFile, true);
+                System.IO.File.Copy(file, destFile, true);
                 Console.WriteLine($"File {file} copyied to {destFile}.");
             }
 
@@ -391,7 +392,7 @@ namespace LionSDKDotDemo
 
             Console.WriteLine("CSV转成XLS");
             CSV2XLS(newCsvFilePath, targetXlsFileName);
-            File.Delete(newCsvFilePath);
+            System.IO.File.Delete(newCsvFilePath);
 
             // 6 将产品本地备份
             string datetime = DateTime.Now.ToString("yyyyMMddhhmmss");
@@ -404,11 +405,11 @@ namespace LionSDKDotDemo
 
             if (hasNG)
             {
-                File.WriteAllText(ready, "NG");
+                System.IO.File.WriteAllText(ready, "NG");
             }
             else
             {
-                File.WriteAllText(ready, "OK");
+                System.IO.File.WriteAllText(ready, "OK");
             }
 
 
@@ -424,7 +425,7 @@ namespace LionSDKDotDemo
         private void MonitorPLC()
         {
 
-            while (PLCHelperModbusTCP.fnGetInstance().IsConnected)
+            while (!exitThread_ && PLCHelperModbusTCP.fnGetInstance().IsConnected)
             {
 
                 try
@@ -1143,7 +1144,10 @@ namespace LionSDKDotDemo
 
         void DisplayImageByFileName(string file)
         {
+            if (string.IsNullOrEmpty(file)) {
 
+                return;
+            }
             // "D:\temp\202223232121_0_23_L_A-V10_NG.jpg"
             try
             {
@@ -1224,7 +1228,7 @@ namespace LionSDKDotDemo
 
         private void ProcessImage()
         {
-            while (true)
+            while (!exitThread_)
             {
                 try
                 {
@@ -1344,7 +1348,7 @@ namespace LionSDKDotDemo
 
             string newFileName = "D:\\temp\\" + newImageFileName;
 
-            File.Move(imageFile, newFileName);
+            System.IO.File.Move(imageFile, newFileName);
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " Move {0} to {1} ", imageFile, newFileName);
 
             ImageQueueBuffer.Enqueue(newFileName);
@@ -1424,8 +1428,8 @@ namespace LionSDKDotDemo
 
                     try
                     {
-                        File.Delete(pFile.Replace("bmp", "raw"));
-                        File.Delete(pFile);
+                        System.IO.File.Delete(pFile.Replace("bmp", "raw"));
+                        System.IO.File.Delete(pFile);
                     }
                     catch (Exception ex)
                     {
@@ -1671,6 +1675,15 @@ namespace LionSDKDotDemo
 
                 try
                 {
+
+                    // 退出线程
+                    ImageQueueBuffer.Close();
+                    exitThread_ = true;
+                    // processImageThread_.Abort();
+                    // monitorPlcCommandThread.Abort();
+                    processImageThread_.Join();
+                    monitorPlcCommandThread.Join();
+
                     // 图像处理服务
                     ImageProcessTcpClient.Disconnect();
                     imageProcessServices.Kill();
