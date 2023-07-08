@@ -37,17 +37,9 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.pictureBoxImage1 = new System.Windows.Forms.PictureBox();
             this.pictureBoxImage = new System.Windows.Forms.PictureBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.comboBoxFilter = new System.Windows.Forms.ComboBox();
-            this.comboBoxModel = new System.Windows.Forms.ComboBox();
             this.textBoxActTime = new System.Windows.Forms.TextBox();
             this.buttonSetParameter = new System.Windows.Forms.Button();
-            this.buttonModifySerial = new System.Windows.Forms.Button();
-            this.textBoxSerial = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
             this.textBoxCurrent = new System.Windows.Forms.TextBox();
             this.textBoxKV = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -56,14 +48,6 @@
             this.buttonAbandon = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.pictureBoxXrayOnOff = new System.Windows.Forms.PictureBox();
-            this.comboBoxHVStopBit = new System.Windows.Forms.ComboBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.comBoxHVCheckBit = new System.Windows.Forms.ComboBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.comBoxHVDataBit = new System.Windows.Forms.ComboBox();
-            this.label21 = new System.Windows.Forms.Label();
-            this.comboBoxHVBaudRate = new System.Windows.Forms.ComboBox();
-            this.label20 = new System.Windows.Forms.Label();
             this.comboBoxHVPort = new System.Windows.Forms.ComboBox();
             this.label17 = new System.Windows.Forms.Label();
             this.buttonXrayOnOff = new System.Windows.Forms.Button();
@@ -96,7 +80,6 @@
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
-            this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxXrayOnOff)).BeginInit();
             this.groupBox6.SuspendLayout();
@@ -185,57 +168,18 @@
             this.pictureBoxImage.TabIndex = 0;
             this.pictureBoxImage.TabStop = false;
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.comboBoxFilter);
-            this.groupBox4.Controls.Add(this.comboBoxModel);
-            this.groupBox4.Controls.Add(this.textBoxActTime);
-            this.groupBox4.Controls.Add(this.buttonSetParameter);
-            this.groupBox4.Controls.Add(this.buttonModifySerial);
-            this.groupBox4.Controls.Add(this.textBoxSerial);
-            this.groupBox4.Controls.Add(this.label8);
-            this.groupBox4.Controls.Add(this.label6);
-            this.groupBox4.Controls.Add(this.label4);
-            this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Location = new System.Drawing.Point(13, 145);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Size = new System.Drawing.Size(319, 158);
-            this.groupBox4.TabIndex = 3;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "传感器参数设置";
-            // 
-            // comboBoxFilter
-            // 
-            this.comboBoxFilter.FormattingEnabled = true;
-            this.comboBoxFilter.Location = new System.Drawing.Point(89, 90);
-            this.comboBoxFilter.Margin = new System.Windows.Forms.Padding(2);
-            this.comboBoxFilter.Name = "comboBoxFilter";
-            this.comboBoxFilter.Size = new System.Drawing.Size(132, 20);
-            this.comboBoxFilter.TabIndex = 41;
-            // 
-            // comboBoxModel
-            // 
-            this.comboBoxModel.FormattingEnabled = true;
-            this.comboBoxModel.Location = new System.Drawing.Point(89, 59);
-            this.comboBoxModel.Margin = new System.Windows.Forms.Padding(2);
-            this.comboBoxModel.Name = "comboBoxModel";
-            this.comboBoxModel.Size = new System.Drawing.Size(132, 20);
-            this.comboBoxModel.TabIndex = 39;
-            // 
             // textBoxActTime
             // 
-            this.textBoxActTime.Location = new System.Drawing.Point(89, 118);
+            this.textBoxActTime.Location = new System.Drawing.Point(93, 140);
             this.textBoxActTime.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxActTime.Name = "textBoxActTime";
-            this.textBoxActTime.Size = new System.Drawing.Size(132, 21);
+            this.textBoxActTime.Size = new System.Drawing.Size(72, 21);
             this.textBoxActTime.TabIndex = 36;
             this.textBoxActTime.TextChanged += new System.EventHandler(this.textBoxActTime_TextChanged);
             // 
             // buttonSetParameter
             // 
-            this.buttonSetParameter.Location = new System.Drawing.Point(227, 118);
+            this.buttonSetParameter.Location = new System.Drawing.Point(201, 138);
             this.buttonSetParameter.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSetParameter.Name = "buttonSetParameter";
             this.buttonSetParameter.Size = new System.Drawing.Size(75, 23);
@@ -244,68 +188,19 @@
             this.buttonSetParameter.UseVisualStyleBackColor = true;
             this.buttonSetParameter.Click += new System.EventHandler(this.buttonSetParameter_Click);
             // 
-            // buttonModifySerial
-            // 
-            this.buttonModifySerial.Location = new System.Drawing.Point(227, 27);
-            this.buttonModifySerial.Margin = new System.Windows.Forms.Padding(2);
-            this.buttonModifySerial.Name = "buttonModifySerial";
-            this.buttonModifySerial.Size = new System.Drawing.Size(75, 23);
-            this.buttonModifySerial.TabIndex = 17;
-            this.buttonModifySerial.Text = "修改序列号";
-            this.buttonModifySerial.UseVisualStyleBackColor = true;
-            this.buttonModifySerial.Click += new System.EventHandler(this.buttonModifySerial_Click);
-            // 
-            // textBoxSerial
-            // 
-            this.textBoxSerial.Location = new System.Drawing.Point(89, 29);
-            this.textBoxSerial.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxSerial.Name = "textBoxSerial";
-            this.textBoxSerial.Size = new System.Drawing.Size(132, 21);
-            this.textBoxSerial.TabIndex = 16;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(26, 59);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(59, 12);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "出图模式:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(26, 88);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 12);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "图像处理:";
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 118);
+            this.label4.Location = new System.Drawing.Point(3, 142);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(83, 12);
             this.label4.TabIndex = 3;
             this.label4.Text = "曝光时间(ms):";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 29);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 12);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "设备序列号:";
-            // 
             // textBoxCurrent
             // 
-            this.textBoxCurrent.Location = new System.Drawing.Point(234, 59);
+            this.textBoxCurrent.Location = new System.Drawing.Point(99, 104);
             this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxCurrent.Name = "textBoxCurrent";
             this.textBoxCurrent.Size = new System.Drawing.Size(61, 21);
@@ -315,7 +210,7 @@
             // 
             // textBoxKV
             // 
-            this.textBoxKV.Location = new System.Drawing.Point(234, 33);
+            this.textBoxKV.Location = new System.Drawing.Point(99, 68);
             this.textBoxKV.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxKV.Name = "textBoxKV";
             this.textBoxKV.Size = new System.Drawing.Size(61, 21);
@@ -326,7 +221,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(171, 67);
+            this.label13.Location = new System.Drawing.Point(5, 104);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(53, 12);
@@ -336,7 +231,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(171, 41);
+            this.label2.Location = new System.Drawing.Point(5, 68);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 12);
@@ -367,15 +262,10 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.textBoxActTime);
+            this.groupBox5.Controls.Add(this.buttonSetParameter);
             this.groupBox5.Controls.Add(this.pictureBoxXrayOnOff);
-            this.groupBox5.Controls.Add(this.comboBoxHVStopBit);
-            this.groupBox5.Controls.Add(this.label23);
-            this.groupBox5.Controls.Add(this.comBoxHVCheckBit);
-            this.groupBox5.Controls.Add(this.label22);
-            this.groupBox5.Controls.Add(this.comBoxHVDataBit);
-            this.groupBox5.Controls.Add(this.label21);
-            this.groupBox5.Controls.Add(this.comboBoxHVBaudRate);
-            this.groupBox5.Controls.Add(this.label20);
+            this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.comboBoxHVPort);
             this.groupBox5.Controls.Add(this.label17);
             this.groupBox5.Controls.Add(this.label2);
@@ -384,93 +274,25 @@
             this.groupBox5.Controls.Add(this.textBoxKV);
             this.groupBox5.Location = new System.Drawing.Point(13, 308);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(319, 204);
+            this.groupBox5.Size = new System.Drawing.Size(320, 168);
             this.groupBox5.TabIndex = 25;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "高压参数设置";
+            this.groupBox5.Text = "X光设备参数";
             // 
             // pictureBoxXrayOnOff
             // 
             this.pictureBoxXrayOnOff.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBoxXrayOnOff.InitialImage")));
-            this.pictureBoxXrayOnOff.Location = new System.Drawing.Point(195, 93);
+            this.pictureBoxXrayOnOff.Location = new System.Drawing.Point(201, 20);
             this.pictureBoxXrayOnOff.Name = "pictureBoxXrayOnOff";
             this.pictureBoxXrayOnOff.Size = new System.Drawing.Size(100, 100);
             this.pictureBoxXrayOnOff.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxXrayOnOff.TabIndex = 48;
             this.pictureBoxXrayOnOff.TabStop = false;
             // 
-            // comboBoxHVStopBit
-            // 
-            this.comboBoxHVStopBit.FormattingEnabled = true;
-            this.comboBoxHVStopBit.Location = new System.Drawing.Point(65, 145);
-            this.comboBoxHVStopBit.Name = "comboBoxHVStopBit";
-            this.comboBoxHVStopBit.Size = new System.Drawing.Size(62, 20);
-            this.comboBoxHVStopBit.TabIndex = 1;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(12, 148);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(47, 12);
-            this.label23.TabIndex = 0;
-            this.label23.Text = "停止位:";
-            // 
-            // comBoxHVCheckBit
-            // 
-            this.comBoxHVCheckBit.FormattingEnabled = true;
-            this.comBoxHVCheckBit.Location = new System.Drawing.Point(65, 119);
-            this.comBoxHVCheckBit.Name = "comBoxHVCheckBit";
-            this.comBoxHVCheckBit.Size = new System.Drawing.Size(62, 20);
-            this.comBoxHVCheckBit.TabIndex = 1;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(12, 122);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(47, 12);
-            this.label22.TabIndex = 0;
-            this.label22.Text = "校验位:";
-            // 
-            // comBoxHVDataBit
-            // 
-            this.comBoxHVDataBit.FormattingEnabled = true;
-            this.comBoxHVDataBit.Location = new System.Drawing.Point(65, 89);
-            this.comBoxHVDataBit.Name = "comBoxHVDataBit";
-            this.comBoxHVDataBit.Size = new System.Drawing.Size(62, 20);
-            this.comBoxHVDataBit.TabIndex = 1;
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(12, 92);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(47, 12);
-            this.label21.TabIndex = 0;
-            this.label21.Text = "数据位:";
-            // 
-            // comboBoxHVBaudRate
-            // 
-            this.comboBoxHVBaudRate.FormattingEnabled = true;
-            this.comboBoxHVBaudRate.Location = new System.Drawing.Point(65, 61);
-            this.comboBoxHVBaudRate.Name = "comboBoxHVBaudRate";
-            this.comboBoxHVBaudRate.Size = new System.Drawing.Size(62, 20);
-            this.comboBoxHVBaudRate.TabIndex = 1;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(12, 64);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(47, 12);
-            this.label20.TabIndex = 0;
-            this.label20.Text = "波特率:";
-            // 
             // comboBoxHVPort
             // 
             this.comboBoxHVPort.FormattingEnabled = true;
-            this.comboBoxHVPort.Location = new System.Drawing.Point(65, 33);
+            this.comboBoxHVPort.Location = new System.Drawing.Point(98, 33);
             this.comboBoxHVPort.Name = "comboBoxHVPort";
             this.comboBoxHVPort.Size = new System.Drawing.Size(62, 20);
             this.comboBoxHVPort.TabIndex = 1;
@@ -478,7 +300,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(12, 36);
+            this.label17.Location = new System.Drawing.Point(3, 36);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(47, 12);
             this.label17.TabIndex = 0;
@@ -716,7 +538,6 @@
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -735,8 +556,6 @@
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxXrayOnOff)).EndInit();
@@ -756,32 +575,18 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button buttonEnumDev;
         private System.Windows.Forms.TreeView treeViewDevice;
         private System.Windows.Forms.TextBox textBoxDevInfo;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ComboBox comboBoxModel;
         private System.Windows.Forms.TextBox textBoxActTime;
         private System.Windows.Forms.TextBox textBoxCurrent;
         private System.Windows.Forms.TextBox textBoxKV;
         private System.Windows.Forms.Button buttonSetParameter;
-        private System.Windows.Forms.Button buttonModifySerial;
-        private System.Windows.Forms.TextBox textBoxSerial;
         private System.Windows.Forms.Button buttonAbandon;
         private System.Windows.Forms.PictureBox pictureBoxImage;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.ComboBox comboBoxHVStopBit;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.ComboBox comBoxHVCheckBit;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.ComboBox comBoxHVDataBit;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.ComboBox comboBoxHVBaudRate;
-        private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboBoxHVPort;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button buttonConnectHVPort;
@@ -793,8 +598,6 @@
         private System.Windows.Forms.Button buttonAsynchronous;
         private System.Windows.Forms.Button buttonClearImage;
         private System.Windows.Forms.PictureBox pictureBoxImage1;
-        private System.Windows.Forms.ComboBox comboBoxFilter;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBoxPort;
         private System.Windows.Forms.TextBox textBoxIpAddress;

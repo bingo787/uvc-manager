@@ -138,8 +138,8 @@ namespace LionSDKDotDemo
 
 
             // UVC
-            this.comboBoxModel.SelectedIndex = uvcMode.IndexOf(Config.Instance.ReadString("UVCSetting", "Mode"));
-            this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
+            //this.comboBoxModel.SelectedIndex = uvcMode.IndexOf(Config.Instance.ReadString("UVCSetting", "Mode"));
+            //this.comboBoxFilter.SelectedIndex = uvcFPGA.IndexOf(Config.Instance.ReadString("UVCSetting", "FPGA"));
             this.textBoxActTime.Text = Config.Instance.ReadString("UVCSetting", "ActTime");
 
             int.TryParse(Config.Instance.ReadString("UVCSetting", "DelayMs"), out delay_ms);
@@ -148,10 +148,10 @@ namespace LionSDKDotDemo
             // HV port
             PortPara HVPortPara = Config.Instance.GetPortPara("HVPortPara");
             this.comboBoxHVPort.SelectedIndex = port.IndexOf(HVPortPara.PortName);
-            this.comboBoxHVBaudRate.SelectedIndex = rate.IndexOf(HVPortPara.BaudRate.ToString());
-            this.comBoxHVDataBit.SelectedIndex = databit.IndexOf(HVPortPara.DataBits.ToString());
-            this.comBoxHVCheckBit.SelectedIndex = checkbit.IndexOf(HVPortPara.Parity.ToString());
-            this.comboBoxHVStopBit.SelectedIndex = stopbit.IndexOf(HVPortPara.StopBits.ToString());
+            //this.comboBoxHVBaudRate.SelectedIndex = rate.IndexOf(HVPortPara.BaudRate.ToString());
+            //this.comBoxHVDataBit.SelectedIndex = databit.IndexOf(HVPortPara.DataBits.ToString());
+            //this.comBoxHVCheckBit.SelectedIndex = checkbit.IndexOf(HVPortPara.Parity.ToString());
+            //this.comboBoxHVStopBit.SelectedIndex = stopbit.IndexOf(HVPortPara.StopBits.ToString());
 
             this.textBoxCurrent.Text = Config.Instance.ReadString("HVSettingPara", "Current");
             this.textBoxKV.Text = Config.Instance.ReadString("HVSettingPara", "KV");
@@ -179,16 +179,16 @@ namespace LionSDKDotDemo
         void SaveConfig()
         {
             Config.Instance.WriteString("HVPortPara", "PortName", this.comboBoxHVPort.Text);
-            Config.Instance.WriteString("HVPortPara", "BaudRate", this.comboBoxHVBaudRate.Text);
-            Config.Instance.WriteString("HVPortPara", "Parity", this.comBoxHVCheckBit.Text);
-            Config.Instance.WriteString("HVPortPara", "DataBits", this.comBoxHVDataBit.Text);
-            Config.Instance.WriteString("HVPortPara", "StopBits", this.comboBoxHVStopBit.Text);
+            //Config.Instance.WriteString("HVPortPara", "BaudRate", this.comboBoxHVBaudRate.Text);
+            //Config.Instance.WriteString("HVPortPara", "Parity", this.comBoxHVCheckBit.Text);
+            //Config.Instance.WriteString("HVPortPara", "DataBits", this.comBoxHVDataBit.Text);
+            //Config.Instance.WriteString("HVPortPara", "StopBits", this.comboBoxHVStopBit.Text);
 
             Config.Instance.WriteString("HVSettingPara", "KV", this.textBoxKV.Text);
             Config.Instance.WriteString("HVSettingPara", "Current", this.textBoxCurrent.Text);
 
-            Config.Instance.WriteString("UVCSetting", "Mode", this.comboBoxModel.Text);
-            Config.Instance.WriteString("UVCSetting", "FPGA", this.comboBoxFilter.Text);
+            //Config.Instance.WriteString("UVCSetting", "Mode", this.comboBoxModel.Text);
+            //Config.Instance.WriteString("UVCSetting", "FPGA", this.comboBoxFilter.Text);
             Config.Instance.WriteString("UVCSetting", "ActTime", this.textBoxActTime.Text);
 
             Config.Instance.WriteString("PLCPara", "IP", this.textBoxIpAddress.Text);
@@ -350,7 +350,7 @@ namespace LionSDKDotDemo
             // 4. 检查@"D:\mes\"; 下面是否有目录, 并获取目录名字
 
             string path = @"D:\mes\";
-            string targetDirName = "";
+            string targetDirName = path + DateTime.Now.ToString("yyyyMMddhhmmss");
             if (Directory.Exists(path))
             {
                 string[] subdirs = Directory.GetDirectories(path);
@@ -366,8 +366,9 @@ namespace LionSDKDotDemo
                 }
                 else
                 {
-                    Console.WriteLine("No subdirectories found.");
-                    throw new Exception("D:\\mes 下面没有找到子目录!!");
+                    Console.WriteLine("No subdirectories found. create one by timestamp");
+                    Directory.CreateDirectory(targetDirName);
+                    //  throw new Exception("D:\\mes 下面没找到子目录!!");
                 }
             }
             else
@@ -565,10 +566,10 @@ namespace LionSDKDotDemo
             try
             {
                 SerialPortControler_RS232PROTOCOL_MC110.Instance.OpenSerialPort(this.comboBoxHVPort.Text,
-                    int.Parse(this.comboBoxHVBaudRate.Text),
-                    (System.IO.Ports.Parity)Enum.Parse(typeof(System.IO.Ports.Parity), this.comBoxHVCheckBit.Text),
-                    int.Parse(this.comBoxHVDataBit.Text),
-                    (System.IO.Ports.StopBits)int.Parse(this.comboBoxHVStopBit.Text));
+                    19200,
+                    System.IO.Ports.Parity.None,
+                    8,
+                    System.IO.Ports.StopBits.One);
 
 
                 double kv = 0;
@@ -689,6 +690,7 @@ namespace LionSDKDotDemo
         public Demo()
         {
 
+#if LOG_TO_FILE
             try {
                 // 创建一个文件流，用于写入日志文件
                 FileStream fileStream = new FileStream(logFilePath, FileMode.Append);
@@ -704,8 +706,7 @@ namespace LionSDKDotDemo
             }
 
 
-            Console.WriteLine(Assembly.GetEntryAssembly().GetName().Version.ToString());
-
+#endif 
 
             InitializeComponent();
             //
@@ -719,15 +720,15 @@ namespace LionSDKDotDemo
             this.treeViewDevice.ShowRootLines = true;
 
             // 初始化参数
-            this.comboBoxModel.DataSource = uvcMode;
-            this.comboBoxFilter.DataSource = uvcFPGA;
+            //this.comboBoxModel.DataSource = uvcMode;
+            //this.comboBoxFilter.DataSource = uvcFPGA;
 
             // 初始化串口参数
             this.comboBoxHVPort.Items.AddRange(port.ToArray());
-            this.comboBoxHVBaudRate.Items.AddRange(rate.ToArray());
-            this.comBoxHVDataBit.Items.AddRange(databit.ToArray());
-            this.comBoxHVCheckBit.Items.AddRange(checkbit.ToArray());
-            this.comboBoxHVStopBit.Items.AddRange(stopbit.ToArray());
+            //this.comboBoxHVBaudRate.Items.AddRange(rate.ToArray());
+            //this.comBoxHVDataBit.Items.AddRange(databit.ToArray());
+            //this.comBoxHVCheckBit.Items.AddRange(checkbit.ToArray());
+            //this.comboBoxHVStopBit.Items.AddRange(stopbit.ToArray());
 
 
             // 高压初始化
@@ -802,7 +803,7 @@ namespace LionSDKDotDemo
                             "\n设备版本: " + listDev[d].uvcIdentity.MajorNum + "-" + listDev[d].uvcIdentity.MinorNum +
                             "\n设备序列号:" + System.Text.Encoding.ASCII.GetString(listDev[d].uvcIdentity.DevSerial) + "\n";
                         //
-                        this.textBoxSerial.Text = System.Text.Encoding.ASCII.GetString(listDev[d].uvcIdentity.DevSerial);
+                        //  this.textBoxSerial.Text = System.Text.Encoding.ASCII.GetString(listDev[d].uvcIdentity.DevSerial);
                         break;
                     }
                 }
@@ -816,6 +817,7 @@ namespace LionSDKDotDemo
             }
         }
 
+#if OLD_UI
         /// <summary>
         /// 修改序列号
         /// </summary>
@@ -839,7 +841,7 @@ namespace LionSDKDotDemo
                 {
                     LU_DEVICE luDev = listDev[d];
 
-                    string strSerial = this.textBoxSerial.Text;
+                  //  string strSerial = this.textBoxSerial.Text;
                     byte[] byteSerial = System.Text.Encoding.ASCII.GetBytes(strSerial);
                     if (LionCom.LU_SUCCESS == LionSDK.LionSDK.SetDeviceSerial(ref luDev, byteSerial))
                     {
@@ -859,13 +861,13 @@ namespace LionSDKDotDemo
                             "\n设备版本: " + listDev[d].uvcIdentity.MajorNum + "-" + listDev[d].uvcIdentity.MinorNum +
                             "\n设备序列号:" + System.Text.Encoding.ASCII.GetString(listDev[d].uvcIdentity.DevSerial) + "\n";
                     //
-                    this.textBoxSerial.Text = System.Text.Encoding.ASCII.GetString(listDev[d].uvcIdentity.DevSerial);
+                  //  this.textBoxSerial.Text = System.Text.Encoding.ASCII.GetString(listDev[d].uvcIdentity.DevSerial);
                     break;
                 }
             }
 
         }
-
+#endif
         /// <summary>
         /// 设置参数
         /// </summary>
@@ -875,11 +877,11 @@ namespace LionSDKDotDemo
         {
             //获取参数，设置参数
             //出图模式
-            int nImgModel = this.comboBoxModel.SelectedIndex;
+            int nImgModel = 0; // this.comboBoxModel.SelectedIndex;
             //Binning模式
             int nBinning = 0; //this.comboBoxBinning.SelectedIndex;
             //图像处理标志
-            int nFilter = this.comboBoxFilter.SelectedIndex;
+            int nFilter = 0; // this.comboBoxFilter.SelectedIndex;
             //X-RAY类型
             int nRay = 0;// this.comboBoxRay.SelectedIndex;
                          //检测图像时间
@@ -1283,7 +1285,8 @@ namespace LionSDKDotDemo
                         if (!res.Contains("OK") && !res.Contains("NG"))
                         {
 
-                            MessageBox.Show(res);
+                            //  MessageBox.Show(res);
+                            Console.WriteLine(res);
                             continue;
                         }
                         fileName = res.Split(',').ElementAt(1);
@@ -1799,7 +1802,8 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_Cur.Text = arg + "(unit:0.1uA)";
+                toolStripStatusLabel_HV_Cur.Text = arg;
+               
             }));
         }
         /// <summary>
@@ -1810,7 +1814,9 @@ namespace LionSDKDotDemo
         {
             this.BeginInvoke(new Action(() =>
             {
-                toolStripStatusLabel_HV_KV.Text = arg + "V";
+                toolStripStatusLabel_HV_KV.Text = arg;
+
+
             }));
         }
         /// <summary>
@@ -1860,6 +1866,7 @@ namespace LionSDKDotDemo
             {
                 toolStripStatusLabel_HVError.Text = report;
                 toolStripStatusLabel_HVError.ForeColor = Color.Red;
+
             }));
         }
         /// <summary>

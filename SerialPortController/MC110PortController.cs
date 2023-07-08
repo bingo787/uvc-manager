@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace SerialPortController
 {
 
@@ -75,7 +78,8 @@ namespace SerialPortController
         public void OpenSerialPort(string portName, int baudRate, Parity parity, int dataBits, StopBits stopbits)
         {
 
-            try {
+            try
+            {
                 Console.WriteLine("{0},{1}", portName, baudRate);
                 _serialPort = new SerialPort(portName, baudRate, parity, dataBits, stopbits);
                 _serialPort.DataReceived += _serialPort_DataReceived;
@@ -90,7 +94,8 @@ namespace SerialPortController
                     Connected();
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 _is_open = false;
                 _running = false;
                 MessageBox.Show(e.Message);
@@ -165,8 +170,8 @@ namespace SerialPortController
                 byte[] buffer = new byte[1024];
                 int len = port.Read(buffer, 0, buffer.Length);
                 string data = ASCIIEncoding.ASCII.GetString(buffer, 0, len);
-                string message = "";
-                Console.WriteLine("Serial Port Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + data);
+
+                Console.WriteLine("Receive[" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + data);
 
                 /*
 
@@ -177,7 +182,21 @@ namespace SerialPortController
                     continue;
                 }
                 */
-                ReceivedMessage(data);
+
+                if (!data.Contains(StartTag) && !data.Contains(EndTag)) {
+                    Console.WriteLine("消息不完整！");
+                    continue;
+                }
+                try
+                {
+                    ReceivedMessage(data);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+
+                }
+
 
             }
 
@@ -284,6 +303,22 @@ namespace SerialPortController
 
             */
 
+            // parse error code
+            // string input = "<TMP1:29[ERR:0,6,27]>";
+            string pattern = @"\[(.*?)\]"; // 正则表达式模式，匹配方括号内的内容
+
+            Match match = Regex.Match(message, pattern); // 进行匹配
+
+            if (match.Success)
+            {
+                string extractedNumbers = match.Groups[1].Value; // 提取匹配结果中的第一个分组
+                StateReported(extractedNumbers);
+                // 输出提取的数字
+                //   Console.WriteLine(extractedNumbers);
+
+            }
+
+
             if (message.StartsWith("<STATUS:"))
             {
 
@@ -317,15 +352,17 @@ namespace SerialPortController
                 string TubeContionActivate = msg.ElementAt(4);
                 string AV = "";
                 string TC = "";
+                string POWER = "";
 
 
                 Console.WriteLine("power_enable flag : " + power_enable);
-                if (power_enable == "1" && XRayOnChanged != null) {
-                        XRayOnChanged(true);
+                if (power_enable == "1" && XRayOnChanged != null)
+                {
+                    XRayOnChanged(true);
                 }
                 if (power_enable == "0" && XRayOnChanged != null)
                 {
-                       XRayOnChanged(false);
+                    XRayOnChanged(false);
                 }
 
 
@@ -352,21 +389,29 @@ namespace SerialPortController
                 }
 
                 // 显示电压和电流
-                Console.WriteLine("AV {0},TC {1}", AV, TC);
-                if (VoltageChanged != null) {
-                    VoltageChanged(AV);
+                Console.WriteLine("AV {0},TC {1}, POWER {2}", AV, TC, POWER);
+                if (VoltageChanged != null)
+                {
+                    double v = int.Parse(AV) / 1000.0; // kv
+                    VoltageChanged(v.ToString("0.00") + "kV");
                 }
 
-                if (CurrentChanged != null) {
-                    CurrentChanged(TC);
+                if (CurrentChanged != null)
+                {
+                    // 这里传入功率
+                    double v = int.Parse(AV) / 1000.0; // kv
+                    double a = int.Parse(TC) / 1000.0/ 10.0; // ma
+                    double power = v * a;
+                    CurrentChanged(power.ToString("0.00") + "W");
                 }
-                   
- 
+
+
 
             }
 
 
-            if (message.StartsWith("<TMP")) {
+            if (message.StartsWith("<TMP"))
+            {
 
                 /*
                  Example (Get Temperature Sensor 1, Returned temp is -10C):
@@ -377,10 +422,11 @@ namespace SerialPortController
                  
                  */
 
-                string[] msg = message.Split(new Char[] {':' , '['});
+                string[] msg = message.Split(new Char[] { ':', '[' });
                 string tmp = msg[1];
 
-                if (TemperatureChanged != null) { 
+                if (TemperatureChanged != null)
+                {
                     TemperatureChanged(tmp);
                 }
 
@@ -409,12 +455,13 @@ namespace SerialPortController
             {
                 _serialPort.Write(command.ToArray(), 0, command.Count);
                 _serialPort.WriteLine("");
-                
-                Console.WriteLine("Send to [" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + command.ToString());
+
+                Console.WriteLine("Send  [" + DateTime.Now.ToString("HH:mm:ss.ffff") + "] " + message);
 
 
             }
-            else {
+            else
+            {
                 Console.WriteLine("发送命令失败，串口未打开");
             }
             _isNeedFeeddingDog = false;
@@ -593,13 +640,13 @@ namespace SerialPortController
         {
             Console.WriteLine("执行打开光源");
             SendCommand("EP:1");
-            
+
         }
         public void XRayOff()
         {
             Console.WriteLine("执行关闭光源");
             SendCommand("EP:0");
-            
+
 
         }
 
