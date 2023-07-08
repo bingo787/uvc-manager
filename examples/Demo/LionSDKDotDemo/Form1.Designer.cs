@@ -32,8 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Demo));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.treeViewDevice = new System.Windows.Forms.TreeView();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBoxDevInfo = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.pictureBoxImage1 = new System.Windows.Forms.PictureBox();
             this.pictureBoxImage = new System.Windows.Forms.PictureBox();
@@ -76,7 +74,6 @@
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.buttonStart = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).BeginInit();
@@ -95,7 +92,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(262, 125);
+            this.groupBox1.Size = new System.Drawing.Size(320, 96);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设备列表";
@@ -107,53 +104,30 @@
             this.treeViewDevice.Location = new System.Drawing.Point(4, 16);
             this.treeViewDevice.Margin = new System.Windows.Forms.Padding(2);
             this.treeViewDevice.Name = "treeViewDevice";
-            this.treeViewDevice.Size = new System.Drawing.Size(250, 100);
+            this.treeViewDevice.Size = new System.Drawing.Size(297, 70);
             this.treeViewDevice.TabIndex = 0;
             this.treeViewDevice.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewDevice_AfterCheck);
-            this.treeViewDevice.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewDevice_NodeMouseClick);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.textBoxDevInfo);
-            this.groupBox2.Location = new System.Drawing.Point(279, 14);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(262, 125);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "设备信息";
-            // 
-            // textBoxDevInfo
-            // 
-            this.textBoxDevInfo.Location = new System.Drawing.Point(4, 16);
-            this.textBoxDevInfo.Margin = new System.Windows.Forms.Padding(2);
-            this.textBoxDevInfo.Multiline = true;
-            this.textBoxDevInfo.Name = "textBoxDevInfo";
-            this.textBoxDevInfo.ReadOnly = true;
-            this.textBoxDevInfo.Size = new System.Drawing.Size(250, 100);
-            this.textBoxDevInfo.TabIndex = 0;
-            this.textBoxDevInfo.Text = "设备名称:\r\n设备版本:\r\n设备路径:";
+          //  this.treeViewDevice.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewDevice_NodeMouseClick);
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.pictureBoxImage1);
             this.groupBox3.Controls.Add(this.pictureBoxImage);
-            this.groupBox3.Location = new System.Drawing.Point(559, 14);
+            this.groupBox3.Location = new System.Drawing.Point(338, 14);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox3.Size = new System.Drawing.Size(914, 601);
+            this.groupBox3.Size = new System.Drawing.Size(1135, 622);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "图像";
             // 
             // pictureBoxImage1
             // 
-            this.pictureBoxImage1.Location = new System.Drawing.Point(452, 16);
+            this.pictureBoxImage1.Location = new System.Drawing.Point(568, 16);
             this.pictureBoxImage1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxImage1.Name = "pictureBoxImage1";
-            this.pictureBoxImage1.Size = new System.Drawing.Size(415, 570);
+            this.pictureBoxImage1.Size = new System.Drawing.Size(550, 600);
             this.pictureBoxImage1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxImage1.TabIndex = 1;
             this.pictureBoxImage1.TabStop = false;
@@ -163,44 +137,44 @@
             this.pictureBoxImage.Location = new System.Drawing.Point(4, 16);
             this.pictureBoxImage.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBoxImage.Name = "pictureBoxImage";
-            this.pictureBoxImage.Size = new System.Drawing.Size(415, 570);
+            this.pictureBoxImage.Size = new System.Drawing.Size(550, 600);
             this.pictureBoxImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBoxImage.TabIndex = 0;
             this.pictureBoxImage.TabStop = false;
             // 
             // textBoxActTime
             // 
-            this.textBoxActTime.Location = new System.Drawing.Point(93, 140);
+            this.textBoxActTime.Location = new System.Drawing.Point(98, 104);
             this.textBoxActTime.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxActTime.Name = "textBoxActTime";
-            this.textBoxActTime.Size = new System.Drawing.Size(72, 21);
+            this.textBoxActTime.Size = new System.Drawing.Size(62, 21);
             this.textBoxActTime.TabIndex = 36;
             this.textBoxActTime.TextChanged += new System.EventHandler(this.textBoxActTime_TextChanged);
             // 
             // buttonSetParameter
             // 
-            this.buttonSetParameter.Location = new System.Drawing.Point(201, 138);
+            this.buttonSetParameter.Location = new System.Drawing.Point(115, 104);
             this.buttonSetParameter.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSetParameter.Name = "buttonSetParameter";
-            this.buttonSetParameter.Size = new System.Drawing.Size(75, 23);
+            this.buttonSetParameter.Size = new System.Drawing.Size(89, 21);
             this.buttonSetParameter.TabIndex = 23;
-            this.buttonSetParameter.Text = "设置";
+            this.buttonSetParameter.Text = "设置采集时间";
             this.buttonSetParameter.UseVisualStyleBackColor = true;
             this.buttonSetParameter.Click += new System.EventHandler(this.buttonSetParameter_Click);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 142);
+            this.label4.Location = new System.Drawing.Point(-2, 113);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(83, 12);
             this.label4.TabIndex = 3;
-            this.label4.Text = "曝光时间(ms):";
+            this.label4.Text = "采集时间(ms):";
             // 
             // textBoxCurrent
             // 
-            this.textBoxCurrent.Location = new System.Drawing.Point(99, 104);
+            this.textBoxCurrent.Location = new System.Drawing.Point(99, 78);
             this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxCurrent.Name = "textBoxCurrent";
             this.textBoxCurrent.Size = new System.Drawing.Size(61, 21);
@@ -210,7 +184,7 @@
             // 
             // textBoxKV
             // 
-            this.textBoxKV.Location = new System.Drawing.Point(99, 68);
+            this.textBoxKV.Location = new System.Drawing.Point(99, 49);
             this.textBoxKV.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxKV.Name = "textBoxKV";
             this.textBoxKV.Size = new System.Drawing.Size(61, 21);
@@ -221,7 +195,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(5, 104);
+            this.label13.Location = new System.Drawing.Point(6, 87);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(53, 12);
@@ -231,7 +205,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 68);
+            this.label2.Location = new System.Drawing.Point(3, 58);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 12);
@@ -240,7 +214,7 @@
             // 
             // buttonEnumDev
             // 
-            this.buttonEnumDev.Location = new System.Drawing.Point(49, 29);
+            this.buttonEnumDev.Location = new System.Drawing.Point(14, 30);
             this.buttonEnumDev.Margin = new System.Windows.Forms.Padding(2);
             this.buttonEnumDev.Name = "buttonEnumDev";
             this.buttonEnumDev.Size = new System.Drawing.Size(86, 23);
@@ -251,7 +225,7 @@
             // 
             // buttonAbandon
             // 
-            this.buttonAbandon.Location = new System.Drawing.Point(51, 99);
+            this.buttonAbandon.Location = new System.Drawing.Point(207, 31);
             this.buttonAbandon.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAbandon.Name = "buttonAbandon";
             this.buttonAbandon.Size = new System.Drawing.Size(86, 23);
@@ -263,7 +237,6 @@
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.textBoxActTime);
-            this.groupBox5.Controls.Add(this.buttonSetParameter);
             this.groupBox5.Controls.Add(this.pictureBoxXrayOnOff);
             this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.comboBoxHVPort);
@@ -272,9 +245,9 @@
             this.groupBox5.Controls.Add(this.textBoxCurrent);
             this.groupBox5.Controls.Add(this.label13);
             this.groupBox5.Controls.Add(this.textBoxKV);
-            this.groupBox5.Location = new System.Drawing.Point(13, 308);
+            this.groupBox5.Location = new System.Drawing.Point(13, 115);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(320, 168);
+            this.groupBox5.Size = new System.Drawing.Size(320, 145);
             this.groupBox5.TabIndex = 25;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "X光设备参数";
@@ -282,7 +255,7 @@
             // pictureBoxXrayOnOff
             // 
             this.pictureBoxXrayOnOff.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBoxXrayOnOff.InitialImage")));
-            this.pictureBoxXrayOnOff.Location = new System.Drawing.Point(201, 20);
+            this.pictureBoxXrayOnOff.Location = new System.Drawing.Point(201, 25);
             this.pictureBoxXrayOnOff.Name = "pictureBoxXrayOnOff";
             this.pictureBoxXrayOnOff.Size = new System.Drawing.Size(100, 100);
             this.pictureBoxXrayOnOff.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -292,7 +265,7 @@
             // comboBoxHVPort
             // 
             this.comboBoxHVPort.FormattingEnabled = true;
-            this.comboBoxHVPort.Location = new System.Drawing.Point(98, 33);
+            this.comboBoxHVPort.Location = new System.Drawing.Point(98, 25);
             this.comboBoxHVPort.Name = "comboBoxHVPort";
             this.comboBoxHVPort.Size = new System.Drawing.Size(62, 20);
             this.comboBoxHVPort.TabIndex = 1;
@@ -300,7 +273,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 36);
+            this.label17.Location = new System.Drawing.Point(3, 33);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(47, 12);
             this.label17.TabIndex = 0;
@@ -308,7 +281,7 @@
             // 
             // buttonXrayOnOff
             // 
-            this.buttonXrayOnOff.Location = new System.Drawing.Point(52, 169);
+            this.buttonXrayOnOff.Location = new System.Drawing.Point(115, 67);
             this.buttonXrayOnOff.Name = "buttonXrayOnOff";
             this.buttonXrayOnOff.Size = new System.Drawing.Size(85, 23);
             this.buttonXrayOnOff.TabIndex = 47;
@@ -318,7 +291,7 @@
             // 
             // buttonConnectHVPort
             // 
-            this.buttonConnectHVPort.Location = new System.Drawing.Point(51, 134);
+            this.buttonConnectHVPort.Location = new System.Drawing.Point(14, 67);
             this.buttonConnectHVPort.Name = "buttonConnectHVPort";
             this.buttonConnectHVPort.Size = new System.Drawing.Size(86, 23);
             this.buttonConnectHVPort.TabIndex = 2;
@@ -332,7 +305,7 @@
             this.groupBox6.Controls.Add(this.textBoxIpAddress);
             this.groupBox6.Controls.Add(this.label27);
             this.groupBox6.Controls.Add(this.label28);
-            this.groupBox6.Location = new System.Drawing.Point(13, 524);
+            this.groupBox6.Location = new System.Drawing.Point(17, 266);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(320, 91);
             this.groupBox6.TabIndex = 26;
@@ -375,7 +348,7 @@
             // 
             // buttonConnectPLC
             // 
-            this.buttonConnectPLC.Location = new System.Drawing.Point(53, 204);
+            this.buttonConnectPLC.Location = new System.Drawing.Point(210, 67);
             this.buttonConnectPLC.Name = "buttonConnectPLC";
             this.buttonConnectPLC.Size = new System.Drawing.Size(83, 23);
             this.buttonConnectPLC.TabIndex = 2;
@@ -386,22 +359,23 @@
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.buttonClearImage);
+            this.groupBox7.Controls.Add(this.buttonSetParameter);
             this.groupBox7.Controls.Add(this.buttonXrayOnOff);
             this.groupBox7.Controls.Add(this.buttonConnectPLC);
             this.groupBox7.Controls.Add(this.buttonEnumDev);
             this.groupBox7.Controls.Add(this.buttonAbandon);
             this.groupBox7.Controls.Add(this.buttonConnectHVPort);
             this.groupBox7.Controls.Add(this.buttonAsynchronous);
-            this.groupBox7.Location = new System.Drawing.Point(357, 146);
+            this.groupBox7.Location = new System.Drawing.Point(11, 363);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(184, 309);
+            this.groupBox7.Size = new System.Drawing.Size(326, 142);
             this.groupBox7.TabIndex = 27;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "调试区域";
             // 
             // buttonClearImage
             // 
-            this.buttonClearImage.Location = new System.Drawing.Point(53, 239);
+            this.buttonClearImage.Location = new System.Drawing.Point(15, 104);
             this.buttonClearImage.Margin = new System.Windows.Forms.Padding(2);
             this.buttonClearImage.Name = "buttonClearImage";
             this.buttonClearImage.Size = new System.Drawing.Size(85, 21);
@@ -412,7 +386,7 @@
             // 
             // buttonAsynchronous
             // 
-            this.buttonAsynchronous.Location = new System.Drawing.Point(49, 64);
+            this.buttonAsynchronous.Location = new System.Drawing.Point(114, 31);
             this.buttonAsynchronous.Margin = new System.Windows.Forms.Padding(2);
             this.buttonAsynchronous.Name = "buttonAsynchronous";
             this.buttonAsynchronous.Size = new System.Drawing.Size(86, 23);
@@ -509,9 +483,9 @@
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.buttonStart);
-            this.groupBox8.Location = new System.Drawing.Point(358, 469);
+            this.groupBox8.Location = new System.Drawing.Point(4, 511);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(183, 149);
+            this.groupBox8.Size = new System.Drawing.Size(333, 119);
             this.groupBox8.TabIndex = 30;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "控制区域";
@@ -520,11 +494,11 @@
             // 
             this.buttonStart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.buttonStart.Font = new System.Drawing.Font("宋体", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.buttonStart.Location = new System.Drawing.Point(6, 15);
+            this.buttonStart.Location = new System.Drawing.Point(9, 20);
             this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(169, 128);
+            this.buttonStart.Size = new System.Drawing.Size(314, 93);
             this.buttonStart.TabIndex = 0;
-            this.buttonStart.Text = "启动";
+            this.buttonStart.Text = "一键启动";
             this.buttonStart.UseVisualStyleBackColor = false;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
@@ -539,7 +513,6 @@
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -551,8 +524,6 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Demo_FormClosing);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxImage)).EndInit();
@@ -573,11 +544,9 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button buttonEnumDev;
         private System.Windows.Forms.TreeView treeViewDevice;
-        private System.Windows.Forms.TextBox textBoxDevInfo;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox textBoxActTime;

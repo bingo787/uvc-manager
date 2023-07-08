@@ -678,7 +678,12 @@ namespace LionSDKDotDemo
             buttonStart.BackColor = Color.Green;
             buttonStart.Text = "正在运行";
 
+
+            // 禁用调试按钮
+            groupBox7.Enabled = false;
+
         }
+
         static string currentDate = DateTime.Now.ToString("yyyyMMdd") + ".log";
         static string logFilePath = System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, currentDate);
 
@@ -785,6 +790,7 @@ namespace LionSDKDotDemo
 
         }
 
+#if OLD_UI
         private void treeViewDevice_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node.Parent != null)
@@ -817,7 +823,7 @@ namespace LionSDKDotDemo
             }
         }
 
-#if OLD_UI
+
         /// <summary>
         /// 修改序列号
         /// </summary>
