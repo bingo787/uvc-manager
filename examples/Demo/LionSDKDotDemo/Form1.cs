@@ -108,8 +108,7 @@ namespace LionSDKDotDemo
         int HV_MaxCurrent = 1000; //1000mA
         double HV_MaxPower = 15.0; //W
 
-        string ViFilePath = "";
-        string NiLabviewExePath = "";
+
 
         List<string> rate = new List<string> { "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200" };
         List<string> databit = new List<string> { "8", "7", "6" };
@@ -133,6 +132,9 @@ namespace LionSDKDotDemo
         //当前的设备对象
         private List<LU_DEVICE> listDev = new List<LU_DEVICE>();
         private int delay_ms = 1000;
+
+        string modelServicePath = "焊接检测系统V1.0.exe";
+
         private void LoadConfig()
         {
 
@@ -167,11 +169,8 @@ namespace LionSDKDotDemo
             this.textBoxIpAddress.Text = Config.Instance.ReadString("PLCPara", "IP");
             this.textBoxPort.Text = Config.Instance.ReadString("PLCPara", "Port");
 
-
-
-            NiLabviewExePath = Config.Instance.ReadString("ImageProcessService", "Path");
-            ViFilePath = Config.Instance.ReadString("ImageProcessService", "Arguments");
-
+            modelServicePath = Config.Instance.ReadString("ModelServices", "Path");
+            Console.WriteLine("modelServicePath: {0}", modelServicePath);
 
 
         }
@@ -532,29 +531,30 @@ namespace LionSDKDotDemo
 
 
         }
-        Process imageProcessServices;
-        void runImageProcessServices()
+        Process modelServicesProcess;
+        void runModelServices()
         {
 
             try
             {
-                imageProcessServices = new Process
+                modelServicesProcess = new Process
                 {
                     StartInfo =
                     {
-                        FileName = NiLabviewExePath,
-                        Arguments = ViFilePath,
+                        FileName = modelServicePath,
+                        Arguments = "",
                         UseShellExecute = false,
                         RedirectStandardInput = true,
                         RedirectStandardOutput = true,
                         CreateNoWindow = true
                     }
                 };
-                imageProcessServices.Start();
+                modelServicesProcess.Start();
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show("图像处理服务打开失败！ " + ViFilePath + ex.ToString());
+                MessageBox.Show("图像处理服务打开失败！ " + ex.ToString());
             }
 
 
@@ -618,7 +618,12 @@ namespace LionSDKDotDemo
 
             try
             {
+                buttonStart.Text = "一键启动";
+
                 last_reg_postion = -1;
+
+                // 启动模型服务
+                runModelServices();
 
 
                 // 1. 检查设备
@@ -640,8 +645,12 @@ namespace LionSDKDotDemo
                 // 3. 打开高压串口
                 OpenXraySerialPortAndInit();
 
-                // 5. 连接图像处理服务
 
+                // 等待3s 连接服务
+                Thread.Sleep(3000);
+               // SerialPortControler_RS232PROTOCOL_MC110.Instance.ResetHV();
+
+                // 5. 连接图像处理服务
                 ImageProcessTcpClient.Connect();
                 if (!ImageProcessTcpClient.IsConnected())
                 {
@@ -676,7 +685,7 @@ namespace LionSDKDotDemo
             UPDATE_PROGRESS(STEP.Idle);
 
             buttonStart.BackColor = Color.Green;
-            buttonStart.Text = "正在运行";
+            buttonStart.Text = "启动成功,正在运行";
 
 
             // 禁用调试按钮
@@ -1511,26 +1520,6 @@ namespace LionSDKDotDemo
             //}
         }
 
-        private void buttonExit_Click(object sender, EventArgs e)
-        {
-            try
-            {
-
-                SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
-                SerialPortControler_RS232PROTOCOL_MC110.Instance.CloseControlSystem();
-
-                ImageProcessTcpClient.Disconnect();
-                imageProcessServices.Kill();
-
-            }
-            catch
-            {
-
-            }
-
-            System.Windows.Forms.Application.Exit();
-        }
-
 
 
 
@@ -1725,27 +1714,29 @@ namespace LionSDKDotDemo
                     // 退出线程
                     ImageQueueBuffer.Close();
                     exitThread_ = true;
-                    // processImageThread_.Abort();
-                    // monitorPlcCommandThread.Abort();
+ 
                     processImageThread_.Join();
                     monitorPlcCommandThread.Join();
-
-                    // 图像处理服务
-                    ImageProcessTcpClient.Disconnect();
-                    imageProcessServices.Kill();
 
                     // 光源
                     SerialPortControler_RS232PROTOCOL_MC110.Instance.XRayOff();
                     SerialPortControler_RS232PROTOCOL_MC110.Instance.CloseControlSystem();
 
-                    // PLC
+                    // 图像处理服务
+                    ImageProcessTcpClient.Disconnect();
+                    // 退出PLC
                     PLCHelperModbusTCP.fnGetInstance().DisConnectServer();
 
+                    // 退出后台服务
+                    modelServicesProcess.Kill();
+                    modelServicesProcess.Dispose();
+                    
+#if LOG_TO_FILE
                     // 清理资源并关闭文件流
                     logWriter.Flush();
                     logWriter.Close();
                     fileStream.Close();
-
+#endif
                 }
                 catch
                 {

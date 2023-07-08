@@ -92,7 +92,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(320, 96);
+            this.groupBox1.Size = new System.Drawing.Size(324, 96);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "设备列表";
@@ -104,10 +104,9 @@
             this.treeViewDevice.Location = new System.Drawing.Point(4, 16);
             this.treeViewDevice.Margin = new System.Windows.Forms.Padding(2);
             this.treeViewDevice.Name = "treeViewDevice";
-            this.treeViewDevice.Size = new System.Drawing.Size(297, 70);
+            this.treeViewDevice.Size = new System.Drawing.Size(310, 70);
             this.treeViewDevice.TabIndex = 0;
             this.treeViewDevice.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeViewDevice_AfterCheck);
-          //  this.treeViewDevice.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewDevice_NodeMouseClick);
             // 
             // groupBox3
             // 
@@ -144,7 +143,7 @@
             // 
             // textBoxActTime
             // 
-            this.textBoxActTime.Location = new System.Drawing.Point(98, 104);
+            this.textBoxActTime.Location = new System.Drawing.Point(98, 107);
             this.textBoxActTime.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxActTime.Name = "textBoxActTime";
             this.textBoxActTime.Size = new System.Drawing.Size(62, 21);
@@ -165,7 +164,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(-2, 113);
+            this.label4.Location = new System.Drawing.Point(3, 111);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(83, 12);
@@ -174,7 +173,7 @@
             // 
             // textBoxCurrent
             // 
-            this.textBoxCurrent.Location = new System.Drawing.Point(99, 78);
+            this.textBoxCurrent.Location = new System.Drawing.Point(99, 81);
             this.textBoxCurrent.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxCurrent.Name = "textBoxCurrent";
             this.textBoxCurrent.Size = new System.Drawing.Size(61, 21);
@@ -184,7 +183,7 @@
             // 
             // textBoxKV
             // 
-            this.textBoxKV.Location = new System.Drawing.Point(99, 49);
+            this.textBoxKV.Location = new System.Drawing.Point(99, 55);
             this.textBoxKV.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxKV.Name = "textBoxKV";
             this.textBoxKV.Size = new System.Drawing.Size(61, 21);
@@ -195,7 +194,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 87);
+            this.label13.Location = new System.Drawing.Point(3, 85);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(53, 12);
@@ -205,7 +204,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 58);
+            this.label2.Location = new System.Drawing.Point(3, 59);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 12);
@@ -247,7 +246,7 @@
             this.groupBox5.Controls.Add(this.textBoxKV);
             this.groupBox5.Location = new System.Drawing.Point(13, 115);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(320, 145);
+            this.groupBox5.Size = new System.Drawing.Size(324, 145);
             this.groupBox5.TabIndex = 25;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "X光设备参数";
@@ -265,7 +264,7 @@
             // comboBoxHVPort
             // 
             this.comboBoxHVPort.FormattingEnabled = true;
-            this.comboBoxHVPort.Location = new System.Drawing.Point(98, 25);
+            this.comboBoxHVPort.Location = new System.Drawing.Point(99, 30);
             this.comboBoxHVPort.Name = "comboBoxHVPort";
             this.comboBoxHVPort.Size = new System.Drawing.Size(62, 20);
             this.comboBoxHVPort.TabIndex = 1;
@@ -492,7 +491,7 @@
             // 
             // buttonStart
             // 
-            this.buttonStart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.buttonStart.BackColor = System.Drawing.Color.Yellow;
             this.buttonStart.Font = new System.Drawing.Font("宋体", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.buttonStart.Location = new System.Drawing.Point(9, 20);
             this.buttonStart.Name = "buttonStart";

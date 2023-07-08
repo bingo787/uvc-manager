@@ -76,8 +76,9 @@ namespace LionSDKDotDemo
 
                     Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.ffff") + " heart beat...");
                 }
-                catch {
-                    MessageBox.Show("图像检测服务或已断开连接，心跳检测异常");
+                catch(Exception ex) {
+                    Console.WriteLine(ex.Message);
+                  //  MessageBox.Show("图像检测服务或已断开连接，心跳检测异常");
                     break;
                 }
 
