@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LionSDKDotDemo</RootNamespace>
-    <AssemblyName>LionSDKDotDemo</AssemblyName>
+    <AssemblyName>RayonXrayDetection</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
